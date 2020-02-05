@@ -24,10 +24,14 @@ mongoose.connect(mongoDBURI, {
  
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
- 
+
 var routesActors = require('./api/routes/actorRoutes');
+var routesApplications = require('./api/routes/applicationRoutes');
+var routesFinders = require('./api/routes/finderRoutes');
  
 routesActors(app);
+routesApplications(app);
+routesFinders(app);
  
 console.log("Connecting DB to: " + mongoDBURI);
 mongoose.connection.on("open", function (err, conn) {
