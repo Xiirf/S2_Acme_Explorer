@@ -3,15 +3,16 @@ Enum Status {
   REJECTED,
   PENDING,
   DUE,
-  ACCEPTED
+  ACCEPTED,
+  CANCELLED
 }
 
 Abstract Actor {
-  String name {NotBlank}
-  String surname {NotBlank}
-  String email {NotBlank}
-  String phone {NotBlank}
-  String address
+  name: String {NotBlank}
+  surname: String {NotBlank}
+  email: String {NotBlank}
+  phone: String
+  address: String
 }
 
 Class Administrator
@@ -23,44 +24,44 @@ Class Explorer
 Class Sponsor
 
 Class Trip {
-  String ticker {NotBlank}
-  String title {NotBlank}
-  String description {NotBlank}
-  Float price
-  Array[String] requirements
-  Date start {NotBlank}
-  Date End {NotBlank}
-  Array[Image] pictures
-  Boolean cancelled = False
-  String reasonCancelling
+  ticker: String {NotBlank}
+  title: String {NotBlank}
+  description: String {NotBlank}
+  price: Float
+  requirements: Array[String]
+  start: Date {NotBlank}
+  end: Date {NotBlank}
+  pictures: Array[Image]
+  cancelled: Boolean = False
+  reasonCancelling: String
 }
 
 Class Stage {
-  String title {NotBlank}
-  String Description {NotBlank}
-  Float price
+  title: String {NotBlank}
+  description: String {NotBlank}
+  price: Float
 }
 
 Class Application {
-  Date date {NotBlank}
-  Status status = Status.PENDING
-  String comments
-  String reasonCancelling
+  date: Date {NotBlank}
+  status: Status = Status.PENDING
+  comments: String
+  reasonCancelling: String
 }
 
 class Finder {
-  String keyWord
-  Float priceMin
-  Float priceMax
-  Date dateMin
-  Date dateMax
+  keyWord: String
+  priceMin: Float
+  priceMax: Float
+  dateMin: Date
+  dateMax: Date
 }
 
 Class Sponsorship {
-  Image banner {NotBlank}
-  String link {NotBlank}
-  Float price
-  Boolean payed = false
+  banner: Image {NotBlank}
+  link: String {NotBlank}
+  price: Float
+  payed: Boolean = false
 }
 
 Actor <|-- Administrator
@@ -71,8 +72,7 @@ Trip "1" *-- "1..*" Stage
 Manager "1" --> "*" Trip: Organize
 Explorer "*" --> "*" Trip: Apply
 (Explorer, Trip).. Application
-Explorer "*" --> "*" Trip: Search
-(Explorer, Trip) .. Finder
+Explorer "1" o-- "*" Finder
 Sponsor "*" --> "*" Trip: Sponsor
 (Sponsor , Trip) .. Sponsorship
 @enduml
