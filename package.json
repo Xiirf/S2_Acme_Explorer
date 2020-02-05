@@ -1,0 +1,19 @@
+{
+  "name": "acme-explorer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "App.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/Xiirf/S2_Acme_Explorer.git"
+  },
+  "author": "Flavien Coçu, Quentin Enjalbert, Pierre-François Giraud",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Xiirf/S2_Acme_Explorer/issues"
+  },
+  "homepage": "https://github.com/Xiirf/S2_Acme_Explorer#readme"
+}
