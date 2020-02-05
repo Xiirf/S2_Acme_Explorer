@@ -1,0 +1,78 @@
+@startuml
+Enum Status {
+  REJECTED,
+  PENDING,
+  DUE,
+  ACCEPTED
+}
+
+Abstract Actor {
+  String name {NotBlank}
+  String surname {NotBlank}
+  String email {NotBlank}
+  String phone {NotBlank}
+  String address
+}
+
+Class Administrator
+
+Class Manager
+
+Class Explorer
+
+Class Sponsor
+
+Class Trip {
+  String ticker {NotBlank}
+  String title {NotBlank}
+  String description {NotBlank}
+  Float price
+  Array[String] requirements
+  Date start {NotBlank}
+  Date End {NotBlank}
+  Array[Image] pictures
+  Boolean cancelled = False
+  String reasonCancelling
+}
+
+Class Stage {
+  String title {NotBlank}
+  String Description {NotBlank}
+  Float price
+}
+
+Class Application {
+  Date date {NotBlank}
+  Status status = Status.PENDING
+  String comments
+  String reasonCancelling
+}
+
+class Finder {
+  String keyWord
+  Float priceMin
+  Float priceMax
+  Date dateMin
+  Date dateMax
+}
+
+Class Sponsorship {
+  Image banner {NotBlank}
+  String link {NotBlank}
+  Float price
+  Boolean payed = false
+}
+
+Actor <|-- Administrator
+Actor <|-- Manager
+Actor <|-- Explorer
+Actor <|-- Sponsor
+Trip "1" *-- "1..*" Stage
+Manager "1" --> "*" Trip: Organize
+Explorer "*" --> "*" Trip: Apply
+(Explorer, Trip).. Application
+Explorer "*" --> "*" Trip: Search
+(Explorer, Trip) .. Finder
+Sponsor "*" --> "*" Trip: Sponsor
+(Sponsor , Trip) .. Sponsorship
+@enduml
