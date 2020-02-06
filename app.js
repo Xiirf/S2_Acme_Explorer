@@ -3,6 +3,8 @@ app = express(),
 port = process.env.PORT || 8080,
 mongoose = require('mongoose'),
 Actor = require('./api/models/actorModel'),
+Application = require('./api/models/applicationModel'),
+Finder = require('./api/models/finderModel'),
 bodyParser = require('body-parser');
  
 // MongoDB URI building
