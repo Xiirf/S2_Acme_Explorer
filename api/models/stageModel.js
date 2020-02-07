@@ -1,6 +1,6 @@
 var mongoose = require('mongoose')
 var Schema = mongoose.Schema;
-// TRIP?
+
 var stageModel = new Schema({
     title: {
         type: String,
