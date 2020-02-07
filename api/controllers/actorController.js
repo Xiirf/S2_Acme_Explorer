@@ -13,28 +13,28 @@ exports.list_all_actors = function(req, res) {
 
 exports.create_an_actor = function(req, res) {
     var new_actor = new Actors(req.body);
-    new_actor.save(function(err) {
+    new_actor.save(function(err, actor) {
         if(err) {
             res.send(err);
         } else {
-            res.sendStatus(201);
+            res.status(201);
+            res.send(actor);
         }
     });
 }
 
 exports.read_an_actor = function(req, res) {
-    var name = req.params.actorName;
-    Actors.find({ "name": name }, function (err, filteredActors) {
+    var id = req.params.actorId;
+    Actors.findById(id, function (err, actor) {
         if (err) {
           console.error('Error getting data from DB');
           res.sendStatus(500); // internal server error
         } else {
-          if (filteredActors.length > 0) {
-            var actor = filteredActors[0]; //since we expect to have exactly ONE actor with this name
+          if (actor) {
             console.info("Sending actor: " + JSON.stringify(actor, 2, null));
             res.send(actor);
           } else {
-            console.warn("There are no actor with name " + name);
+            console.warn("There are no actor with id " + id);
             res.sendStatus(404); // not found
           }
         }
@@ -43,23 +43,23 @@ exports.read_an_actor = function(req, res) {
 
 exports.edit_an_actor = function(req, res) {
     var updatedActor = req.body;
-    var name = req.params.actorName;
+    var id = req.params.actorId;
     if (!updatedActor) {
         console.warn("New PUT request to /actor/ without actor, sending 400...");
         res.sendStatus(400); // bad request
     } else {
-        console.info("New PUT request to /actor/" + name + " with data " + JSON.stringify(updatedActor, 2, null));
-        Actors.findOneAndUpdate({"name": name}, req.body, null, function(err, actor) {
+        console.info("New PUT request to /actor/" + id + " with data " + JSON.stringify(updatedActor, 2, null));
+        Actors.findOneAndUpdate({"_id": id}, updatedActor, null, function(err, actor) {
             if (err) {
                 console.error('Error getting data from DB');
                 res.sendStatus(500); // internal server error
             } else {
                 if (actor) {
-                console.info("Modifying actor with name " + name + " with data " + JSON.stringify(updatedActor, 2, null));
-                res.send(Object.assign(actor, updatedActor)); // return the updated actor
+                    console.info("Modifying actor with id " + id + " with data " + JSON.stringify(updatedActor, 2, null));
+                    res.send(Object.assign(actor, updatedActor)); // return the updated actor
                 } else {
-                console.warn("There are not any actor with name " + name);
-                res.sendStatus(404); // not found
+                    console.warn("There are not any actor with id " + id);
+                    res.sendStatus(404); // not found
                 }
             }
         });
@@ -67,13 +67,13 @@ exports.edit_an_actor = function(req, res) {
 }
 
 exports.delete_an_actor = function(req, res) {
-    var name = req.params.actorName;
-    Actors.deleteOne({ "name": name }, null, function (err) {
+    var id = req.params.actorId;
+    Actors.findOneAndDelete({"_id": id}, null, function (err) {
       if (err) {
         console.error('Error removing data from DB');
         res.sendStatus(500); // internal server error
       } else {
-        console.info("The actor with name " + name + " has been succesfully deleted, sending 204...");
+        console.info("The actor with id " + id + " has been succesfully deleted, sending 204...");
         res.sendStatus(204); // no content
       }
     });

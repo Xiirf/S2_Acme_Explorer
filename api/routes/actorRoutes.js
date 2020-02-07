@@ -5,7 +5,7 @@ module.exports = function(app) {
     app.route('/actors')
         .get(actors.list_all_actors)
         .post(actors.create_an_actor)
-    app.route('/actor/:actorName')
+    app.route('/actor/:actorId')
         .get(actors.read_an_actor)
         .put(actors.edit_an_actor)
         .delete(actors.delete_an_actor)        
