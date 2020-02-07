@@ -3,6 +3,7 @@ app = express(),
 port = process.env.PORT || 8080,
 mongoose = require('mongoose'),
 Actor = require('./api/models/actorModel'),
+Sponsorship = require('./api/models/sponsorshipModel'),
 bodyParser = require('body-parser');
  
 // MongoDB URI building
@@ -26,8 +27,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
  
 var routesActors = require('./api/routes/actorRoutes');
- 
+var routesSponsorships = require('./api/routes/sponsorshipRoutes');
+
 routesActors(app);
+routesSponsorships(app);
  
 console.log("Connecting DB to: " + mongoDBURI);
 mongoose.connection.on("open", function (err, conn) {
