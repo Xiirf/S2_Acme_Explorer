@@ -2,17 +2,17 @@ var mongoose = require('mongoose')
 Trips = mongoose.model('Trips');
 
 exports.list_all_trips = function(req, res) {
-    Trips.find({}), function(err, trips) {
+    Trips.find({}, function(err, trips) {
         if(err) {
             res.send(err);
         } else {
             res.json(trips);
         }
-    }
+    });
 }
 
 exports.create_a_trip = function(req, res) {
-    var new_trip = new Trip(req.body);
+    var new_trip = new Trips(req.body);
     new_trip.save(function(err) {
         if(err) {
             res.send(err);
@@ -23,7 +23,7 @@ exports.create_a_trip = function(req, res) {
 }
 
 exports.read_a_trip = function(req, res) {
-    Trips.findById(req.path.params.tripId, function(err, trip) {
+    Trips.findById(req.params.tripId, function(err, trip) {
         if(err) {
             res.send(err);
         } else {
@@ -33,7 +33,7 @@ exports.read_a_trip = function(req, res) {
 }
 
 exports.edit_a_trip = function(req, res) {
-    Trips.findOneAndUpdate({_id: req.path.params.tripsId}, req.body, null, function(err, trip) {
+    Trips.findOneAndUpdate({_id: req.params.tripId}, req.body, null, function(err, trip) {
         if(err) {
             res.send(err);
         } else {
@@ -43,7 +43,7 @@ exports.edit_a_trip = function(req, res) {
 }
 
 exports.delete_a_trip = function(req, res) {
-    Trips.deleteOne(req.path.params.tripsId, function(err) {
+    Trips.remove({_id: req.params.tripId}, function(err) {
         if(err) {
             res.send(err);
         } else {

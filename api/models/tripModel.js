@@ -1,5 +1,6 @@
-var mongoose = require('mongoose')
+var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
+var mongodb = require('mongodb');
 
 var tripModel = new Schema({
     ticker: { // Attention au match patern
@@ -31,10 +32,9 @@ var tripModel = new Schema({
         type: Boolean,
         default: false
     }, reasonCancelling: {
-        type: String,
-        required: 'Enter the cancelling reason of the trip please'
+        type: String
     }, stagesId: [{
-        type: String,
+        type: mongodb.ObjectID,
         required: 'Enter the stages of the trip please'
     }], managerId: {
         type: String,

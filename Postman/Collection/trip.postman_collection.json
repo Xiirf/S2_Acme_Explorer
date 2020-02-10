@@ -1,0 +1,186 @@
+{
+	"info": {
+		"_postman_id": "033e9052-c90e-4727-a054-b066d0142bd5",
+		"name": "trip",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "trip",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "3a625c7d-1bf2-4624-9175-6b2c647890ff",
+						"exec": [
+							"let t = Date.now()\r",
+							"pm.environment.set('start', t);\r",
+							"pm.environment.set('end', t);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"ticker\": \"testTicker\",\n  \"title\": \"testTitle\",\n  \"description\": \"testDescription\",\n  \"price\": 600,\n  \"requirements\": [\"testRequirement\"],\n  \"start\": {{start}},\n  \"end\": {{end}},\n  \"stagesId\": [\"5e40a6a22c8c093520b8369d\"],\n  \"managerId\": \"testmanagerId\"\n}"
+				},
+				"url": {
+					"raw": "{{host}}/trip",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"trip"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "trips",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/trips",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"trips"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "trip",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "f901ab41-ed39-4543-9859-5dcc899ae42f",
+						"exec": [
+							"var path = pm.variables.get(\"host\") + \"/trips\";",
+							"pm.sendRequest(path, function (err, response) {",
+							"    pm.environment.set(\"tripID\", response.json()[0]._id);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/trip/{{tripID}}",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"trip",
+						"{{tripID}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "trip",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "a820ef6b-cf99-4ca9-81e5-f07c34b4e51e",
+						"exec": [
+							"var path = pm.variables.get(\"host\") + \"/trips\";",
+							"pm.sendRequest(path, function (err, response) {",
+							"    pm.environment.set(\"tripID\", response.json()[0]._id);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"title\": \"testTitle Updated\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/trip/{{tripID}}",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"trip",
+						"{{tripID}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "trip",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "22e2f555-08f0-421b-b48b-1da4b221fa88",
+						"exec": [
+							"var path = pm.variables.get(\"host\") + \"/trips\";",
+							"pm.sendRequest(path, function (err, response) {",
+							"    pm.environment.set(\"tripID\", response.json()[0]._id);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/trip/{{tripID}}",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"trip",
+						"{{tripID}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
