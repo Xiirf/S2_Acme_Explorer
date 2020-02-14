@@ -50,27 +50,36 @@ exports.read_an_actor = function(req, res) {
 exports.edit_an_actor = function(req, res) {
     var updatedActor = req.body;
     var id = req.params.actorId;
+    console.log(updatedActor)
     if (!updatedActor) {
         console.warn("New PUT request to /actor/ without actor, sending 400...");
         res.sendStatus(400); // bad request
     } else {
         console.info("New PUT request to /actor/" + id + " with data " + JSON.stringify(updatedActor, 2, null));
-        Actors.findOneAndUpdate({"_id": id}, updatedActor, { new: true, runValidators: true }, function(err, actor) {
+        Actors.findById(id, function(err, actor) {
             if (err) {
-                if(err.name=='ValidationError') {
-                    res.status(422).send(err);
-                }
-                else{
-                    console.error('Error getting data from DB');
-                    res.status(500).send(err);
-                }
-            } else {
+                console.error('Error updating data in DB');
+                res.status(500).send(err); // internal server error
+              } else {
                 if (actor) {
-                    console.info("Modifying actor with id " + id + " with data " + JSON.stringify(updatedActor, 2, null));
-                    res.send(Object.assign(actor, updatedActor)); // return the updated actor
+                    actor = Object.assign(actor, updatedActor)
+                    actor.save(function(err2, newActor) {
+                        if (err2) {
+                            if(err.name=='ValidationError') {
+                                res.status(422).send(err2);
+                            }
+                            else{
+                                console.error('Error updating data from DB');
+                                res.status(500).send(err2);
+                            }
+                        } else {
+                            res.send(newActor); // return the updated actor
+                        }
+                    });
+                    
                 } else {
-                    console.warn("There are not any actor with id " + id);
-                    res.sendStatus(404); // not found
+                  console.warn("There are no actor with id " + id);
+                  res.sendStatus(404); // not found
                 }
             }
         });
@@ -78,14 +87,14 @@ exports.edit_an_actor = function(req, res) {
 }
 
 exports.handle_actor_banishment = function(req, res) {
-    var bannedObject = req.body;
+    var banned = req.body ? req.body.banned : undefined;
     var id = req.params.actorId;
-    if (!bannedObject || typeof(bannedObject.banned) != "boolean") {
+    if (!banned || typeof(banned) != "boolean") {
         console.warn("New PATCH request to /actor/id/ban without correct attribute banned, sending 400...");
         res.sendStatus(400);
     } else {
-        console.info("New PATCH request to /actor/" + id + "/ban with value " + JSON.stringify(bannedObject.banned, 2, null));
-        Actors.findOneAndUpdate({"_id": id}, bannedObject, { new: true }, function(err, actor) {
+        console.info("New PATCH request to /actor/" + id + "/ban with value " + JSON.stringify(banned, 2, null));
+        Actors.findOneAndUpdate({"_id": id}, { "banned": banned }, { new: true }, function(err, actor) {
             if (err) {
                 if(err.name=='ValidationError') {
                     res.status(422).send(err);

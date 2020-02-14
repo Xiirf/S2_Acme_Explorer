@@ -17,6 +17,16 @@ var actorModel = new Schema({
     }, password: {
         type: String,
         required: 'Enter the password of the actor please'
+        // set: function (password) {
+        //     console.log(password);
+        //     console.log(this.password);
+        //     if(password == this.password) {
+        //         return password;
+        //     } else {
+        //         this.password = bcrypt.hashSync(password, bcrypt.genSaltSync(5));
+        //         return this.password;
+        //     }
+        // }
     }, adress: {
         type: String
     }, phone: {
@@ -33,11 +43,12 @@ var actorModel = new Schema({
     strict: false
 })
 
+
+
 actorModel.pre('save', function(callback) {
     var actor = this;
     // Break out if the password hasn't changed
     if (!actor.isModified('password')) return callback();
-  
     // Password changed so we need to hash it
     bcrypt.genSalt(5, function(err, salt) {
         if (err) return callback(err);
@@ -48,6 +59,7 @@ actorModel.pre('save', function(callback) {
         });
     });
 });
+
   
 actorModel.methods.verifyPassword = function(password, cb) {
     bcrypt.compare(password, this.password, function(err, isMatch) {

@@ -377,7 +377,7 @@
 									"}",
 									"",
 									"pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200) });",
-									"pm.test(\"Return the right updated item\", function () { pm.expect(pm.response.json().password).to.eql(\"mdp\") && pm.expect(pm.response.json().role).to.eql(\"Sponsor\")});",
+									"pm.test(\"Return the right updated item\", function () { pm.expect(pm.response.json().phone).to.eql(\"987654321\") && pm.expect(pm.response.json().role).to.eql(\"Sponsor\")});",
 									"pm.test('Schema is valid', function() {",
 									"  pm.expect(ajv.validate(pm.response.json(), schema), JSON.stringify(ajv.errors)).to.be.true;",
 									"});",
@@ -403,7 +403,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"Antoño\",\n    \"surname\": \"Banderas\",\n    \"email\": \"f@f.com\",\n    \"phone\": \"012459786\",\n    \"password\": \"mdp\",\n    \"adress\": \"algun lugar\",\n    \"role\": \"Sponsor\"\n}",
+							"raw": "{\n    \"name\": \"Antoño\",\n    \"surname\": \"Banderas\",\n    \"email\": \"f@f.com\",\n    \"phone\": \"987654321\",\n    \"password\": \"mdp\",\n    \"adress\": \"algun lugar\",\n    \"role\": \"Sponsor\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -643,19 +643,19 @@
 	],
 	"variable": [
 		{
-			"id": "eb640fdb-4698-4f33-b7c7-bd7d528c405c",
+			"id": "b49e15f4-04a0-4850-b3fb-ca90477b1511",
 			"key": "host",
 			"value": "localhost:8080/v1",
 			"type": "string"
 		},
 		{
-			"id": "649668d0-36c1-4a0e-b3c0-bb60e28bfd90",
+			"id": "b9f1ff55-8528-40fc-8f58-4faf694a0fe1",
 			"key": "lastActorSubmittedId",
-			"value": "5e46c2000e024935dabbbe44",
+			"value": "5e471a95a3c3951536a79752",
 			"type": "string"
 		},
 		{
-			"id": "271993fb-e5bb-4a9f-b04e-1003a7e2c61e",
+			"id": "a26e6339-dc64-4a84-bc7d-25c6409ce67d",
 			"key": "lastSponsorshipSubmittedId",
 			"value": "5e432489f5bce7664b79e0b4",
 			"type": "string"

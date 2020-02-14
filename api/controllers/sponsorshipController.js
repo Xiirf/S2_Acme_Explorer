@@ -55,19 +55,26 @@ exports.edit_a_sponsorship = function(req, res) {
         res.sendStatus(400); // bad request
     } else {
         console.info("New PUT request to /sponsorship/" + id + " with data " + JSON.stringify(updatedSponsorship, 2, null));
-        Sponsorships.findOneAndUpdate({"_id": id}, updatedSponsorship, { new: true, runValidators: true }, function(err, sponsorship) {
+        Sponsorships.findById(id, function(err, sponsorship) {
             if (err) {
-                if(err.name=='ValidationError') {
-                    res.status(422).send(err);
-                }
-                else{
-                    console.error('Error getting data from DB');
-                    res.status(500).send(err);
-                }
+                console.error('Error getting data from DB');
+                res.status(500).send(err);
             } else {
                 if (sponsorship) {
-                    console.info("Modifying sponsorship with id " + id + " with data " + JSON.stringify(updatedSponsorship, 2, null));
-                    res.send(sponsorship); // return the updated sponsorship
+                    sponsorship = Object.assign(sponsorship, updatedSponsorship);
+                    sponsorship.save(function(err2, newSponsorship) {
+                        if (err2) {
+                            if(err.name=='ValidationError') {
+                                res.status(422).send(err2);
+                            }
+                            else{
+                                console.error('Error getting data from DB');
+                                res.status(500).send(err2);
+                            }
+                        } else {
+                            res.send(newSponsorship); // return the updated sponsorship
+                        }
+                    });
                 } else {
                     console.warn("There are not any sponsorship with id " + id);
                     res.sendStatus(404); // not found
