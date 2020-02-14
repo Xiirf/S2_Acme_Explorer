@@ -55,7 +55,7 @@ exports.edit_an_actor = function(req, res) {
         res.sendStatus(400); // bad request
     } else {
         console.info("New PUT request to /actor/" + id + " with data " + JSON.stringify(updatedActor, 2, null));
-        Actors.findOneAndUpdate({"_id": id}, updatedActor, null, function(err, actor) {
+        Actors.findOneAndUpdate({"_id": id}, updatedActor, { new: true, runValidators: true }, function(err, actor) {
             if (err) {
                 if(err.name=='ValidationError') {
                     res.status(422).send(err);
@@ -68,6 +68,35 @@ exports.edit_an_actor = function(req, res) {
                 if (actor) {
                     console.info("Modifying actor with id " + id + " with data " + JSON.stringify(updatedActor, 2, null));
                     res.send(Object.assign(actor, updatedActor)); // return the updated actor
+                } else {
+                    console.warn("There are not any actor with id " + id);
+                    res.sendStatus(404); // not found
+                }
+            }
+        });
+    }
+}
+
+exports.handle_actor_banishment = function(req, res) {
+    var bannedObject = req.body;
+    var id = req.params.actorId;
+    if (!bannedObject || typeof(bannedObject.banned) != "boolean") {
+        console.warn("New PATCH request to /actor/id/ban without correct attribute banned, sending 400...");
+        res.sendStatus(400);
+    } else {
+        console.info("New PATCH request to /actor/" + id + "/ban with value " + JSON.stringify(bannedObject.banned, 2, null));
+        Actors.findOneAndUpdate({"_id": id}, bannedObject, { new: true }, function(err, actor) {
+            if (err) {
+                if(err.name=='ValidationError') {
+                    res.status(422).send(err);
+                }
+                else{
+                    console.error('Error getting data from DB');
+                    res.status(500).send(err);
+                }
+            } else {
+                if (actor) {
+                    res.send(actor); // return the updated actor
                 } else {
                     console.warn("There are not any actor with id " + id);
                     res.sendStatus(404); // not found

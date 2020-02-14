@@ -54,14 +54,8 @@ exports.edit_a_sponsorship = function(req, res) {
         console.warn("New PUT request to /sponsorship/ without sponsorship, sending 400...");
         res.sendStatus(400); // bad request
     } else {
-        if(updatedSponsorship.sponsor_id) {
-            delete updatedSponsorship.sponsor_id;
-        }
-        if(updatedSponsorship.trip_id) {
-            delete updatedSponsorship.trip_id;
-        }
         console.info("New PUT request to /sponsorship/" + id + " with data " + JSON.stringify(updatedSponsorship, 2, null));
-        Sponsorships.findOneAndUpdate({"_id": id}, updatedSponsorship, null, function(err, sponsorship) {
+        Sponsorships.findOneAndUpdate({"_id": id}, updatedSponsorship, { new: true, runValidators: true }, function(err, sponsorship) {
             if (err) {
                 if(err.name=='ValidationError') {
                     res.status(422).send(err);
@@ -73,7 +67,36 @@ exports.edit_a_sponsorship = function(req, res) {
             } else {
                 if (sponsorship) {
                     console.info("Modifying sponsorship with id " + id + " with data " + JSON.stringify(updatedSponsorship, 2, null));
-                    res.send(Object.assign(sponsorship, updatedSponsorship)); // return the updated sponsorship
+                    res.send(sponsorship); // return the updated sponsorship
+                } else {
+                    console.warn("There are not any sponsorship with id " + id);
+                    res.sendStatus(404); // not found
+                }
+            }
+        });
+    }
+}
+
+exports.handle_sponsorship_payement = function(req, res) {
+    var payedObject = req.body;
+    var id = req.params.sponsorshipId;
+    if (!payedObject || typeof(payedObject.payed) != "boolean") {
+        console.warn("New PATCH request to /sponsorship/id/pay without correct attribute payed, sending 400...");
+        res.sendStatus(400);
+    } else {
+        console.info("New PATCH request to /sponsorship/" + id + "/pay with value " + JSON.stringify(payedObject.payed, 2, null));
+        Sponsorships.findOneAndUpdate({"_id": id}, payedObject, { new: true }, function(err, sponsorship) {
+            if (err) {
+                if(err.name=='ValidationError') {
+                    res.status(422).send(err);
+                }
+                else{
+                    console.error('Error getting data from DB');
+                    res.status(500).send(err);
+                }
+            } else {
+                if (sponsorship) {
+                    res.send(sponsorship); // return the updated sponsorship
                 } else {
                     console.warn("There are not any sponsorship with id " + id);
                     res.sendStatus(404); // not found
