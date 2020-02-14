@@ -6,7 +6,7 @@
 	},
 	"item": [
 		{
-			"name": "trip",
+			"name": "trips",
 			"event": [
 				{
 					"listen": "prerequest",
@@ -16,6 +16,22 @@
 							"let t = Date.now()\r",
 							"pm.environment.set('start', t);\r",
 							"pm.environment.set('end', t);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "6cddfd82-9de3-4484-b3e9-c280239a14e6",
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"pm.test(\"Price sum\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.price).to.eql(1000);",
+							"});"
 						],
 						"type": "text/javascript"
 					}
@@ -32,15 +48,15 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"ticker\": \"testTicker\",\n  \"title\": \"testTitle\",\n  \"description\": \"testDescription\",\n  \"price\": 600,\n  \"requirements\": [\"testRequirement\"],\n  \"start\": {{start}},\n  \"end\": {{end}},\n  \"stagesId\": [\"5e40a6a22c8c093520b8369d\"],\n  \"managerId\": \"testmanagerId\"\n}"
+					"raw": "{\n\t\"title\": \"testTitle\",\n\t\"description\": \"testDescription\",\n\t\"price\": 3,\n\t\"requirements\": [\"testRequirement\"],\n\t\"start\": {{start}},\n\t\"end\": {{end}},\n\t\"stages\": [\n\t\t{\n\t\t\t\"title\": \"Paris\",\n\t\t\t\"description\": \"Paris step\",\n\t\t\t\"price\": 620\n\t\t},\n\t\t{\n\t\t\t\"title\": \"Rouen\",\n\t\t\t\"description\": \"Rouen step\",\n\t\t\t\"price\": 380\n\t\t}\n\t],\n\t\"managerId\": \"5e40a6a22c8c093520b8369d\"\n}"
 				},
 				"url": {
-					"raw": "{{host}}/trip",
+					"raw": "{{host}}/trips",
 					"host": [
 						"{{host}}"
 					],
 					"path": [
-						"trip"
+						"trips"
 					]
 				}
 			},
@@ -64,7 +80,7 @@
 			"response": []
 		},
 		{
-			"name": "trip",
+			"name": "trips/:tripID",
 			"event": [
 				{
 					"listen": "prerequest",
@@ -85,12 +101,12 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{host}}/trip/{{tripID}}",
+					"raw": "{{host}}/trips/{{tripID}}",
 					"host": [
 						"{{host}}"
 					],
 					"path": [
-						"trip",
+						"trips",
 						"{{tripID}}"
 					]
 				}
@@ -98,7 +114,7 @@
 			"response": []
 		},
 		{
-			"name": "trip",
+			"name": "trips/:tripID",
 			"event": [
 				{
 					"listen": "prerequest",
@@ -135,12 +151,12 @@
 					}
 				},
 				"url": {
-					"raw": "{{host}}/trip/{{tripID}}",
+					"raw": "{{host}}/trips/{{tripID}}",
 					"host": [
 						"{{host}}"
 					],
 					"path": [
-						"trip",
+						"trips",
 						"{{tripID}}"
 					]
 				}
@@ -148,7 +164,7 @@
 			"response": []
 		},
 		{
-			"name": "trip",
+			"name": "trips/:tripID",
 			"event": [
 				{
 					"listen": "prerequest",
@@ -169,13 +185,64 @@
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "{{host}}/trip/{{tripID}}",
+					"raw": "{{host}}/trips/{{tripID}}",
 					"host": [
 						"{{host}}"
 					],
 					"path": [
-						"trip",
+						"trips",
 						"{{tripID}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "trips/:tripID/stage",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "df46a465-e4b9-4e87-9817-d80495e0be8d",
+						"exec": [
+							"var path = pm.variables.get(\"host\") + \"/trips\";",
+							"pm.sendRequest(path, function (err, response) {",
+							"    pm.environment.set(\"tripID\", response.json()[0]._id);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"title\": \"Le Havre\",\n\t\"description\": \"Le Havre step\",\n\t\"price\": 250.5\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/trips/{{tripID}}/stage",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"trips",
+						"{{tripID}}",
+						"stage"
 					]
 				}
 			},

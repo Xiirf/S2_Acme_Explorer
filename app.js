@@ -4,7 +4,6 @@ port = process.env.PORT || 8080,
 mongoose = require('mongoose'),
 Actor = require('./api/models/actorModel'),
 Trip = require('./api/models/tripModel'),
-Stage = require('./api/models/stageModel'),
 bodyParser = require('body-parser');
  
 // MongoDB URI building
@@ -21,19 +20,18 @@ mongoose.connect(mongoDBURI, {
     socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
     family: 4, // skip trying IPv6
     useNewUrlParser: true,
+    useFindAndModify: false,
     useUnifiedTopology: true
 });
  
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
- 
+
 var routesActors = require('./api/routes/actorRoutes'),
-routesTrips = require('./api/routes/tripRoutes'),
-routesStages = require('./api/routes/stageRoutes');
+routesTrips = require('./api/routes/tripRoutes');
  
 routesActors(app);
 routesTrips(app);
-routesStages(app);
 
 console.log("Connecting DB to: " + mongoDBURI);
 mongoose.connection.on("open", function (err, conn) {

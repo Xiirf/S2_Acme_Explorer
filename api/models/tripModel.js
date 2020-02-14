@@ -3,6 +3,9 @@ var Schema = mongoose.Schema;
 var mongodb = require('mongodb');
 const generate = require('nanoid/generate');
 const dateFormat = require('dateformat');
+//Après merge
+//var mongoose = require('mongoose')
+//Actors = mongoose.model('Actors');
 
 var stageSchema = new Schema({
     title: {
@@ -18,21 +21,19 @@ var stageSchema = new Schema({
     }
 }, {strict: false});
 
-var tripModel = new Schema({
-    ticker: { // Attention au match patern
+var tripSchema = new Schema({
+    //No es necesario hacer una verificación porque la generación es automática y 
+    //la validación no funciona después del "pre.save".
+    ticker: {
         type: String,
-        required: 'Enter the ticker of the trip please',
-        unique: true
+        unique: true,
+        unmodifiable: true
     }, title: {
         type: String,
         required: 'Enter the title of the trip please'
     }, description: {
         type: String,
         required: 'Enter the description of the trip please'
-    }, price: {
-        type: Number,
-        required: 'Enter the price of the trip please',
-        min: 0
     }, requirements: [{
         type: String,
         required: 'Enter the requirements of the trip please'
@@ -52,18 +53,35 @@ var tripModel = new Schema({
         default: false
     }, reasonCancelling: {
         type: String
-    }, stagesId: [stageSchema],
+    }, stages: [stageSchema],
     managerId: {
         type: mongodb.ObjectID,
         required: 'Enter the manager ID of the trip please'
+        //Ajouter une fois merge
+        /*validate: {
+            validator: async function(v) {
+                return Promise.resolve(Actors.findById(v, function(err, actor) {
+                    return actor && actor.role == "Manager";
+                }));
+            },
+            message: "There are no manager with this id"
+        }*/
     }
-}, {strict: false});
+}, {strict: true, toJSON: {virtuals: true}});
+
+tripSchema.virtual('price').get(function() {
+    var price = 0;
+    this.stages.forEach(stage => {
+        price += stage.price;
+    })
+    return price;
+});
 
 function dateValidator(value) {
     return this.start <= value;
 }
 
-tripModel.pre('save', function(callback) {
+tripSchema.pre('save', function(callback) {
     var new_trip = this;
 
     // Generación del Ticker
@@ -71,12 +89,8 @@ tripModel.pre('save', function(callback) {
     var generated_ticker = [date, generate('ABCDEFGHIJKLMNOPQRSTUVWXYZ', 4)].join('-')
     new_trip.ticker = generated_ticker;
 
-    // Cálculo del precio
-    new_trip.stagesId.forEach(stagesId => {
-        
-    });
-
     callback();
 });
 
-module.exports = mongoose.model('Trips', tripModel);
+module.exports = mongoose.model('Stages', stageSchema);
+module.exports = mongoose.model('Trips', tripSchema);
