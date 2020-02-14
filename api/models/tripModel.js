@@ -7,6 +7,31 @@ const dateFormat = require('dateformat');
 //var mongoose = require('mongoose')
 //Actors = mongoose.model('Actors');
 
+/**
+ * @swagger
+ *  components:
+ *    schemas:
+ *      Stage:
+ *        type: object
+ *        required:
+ *          - title
+ *          - description
+ *          - price
+ *        properties:
+ *          title:
+ *            type: string
+ *            description: Stage title.
+ *            example: 'testExample'
+ *          description:
+ *            type: string
+ *            description: Stage description.
+ *            example: 'descExample'
+ *          price:
+ *            type: number
+ *            description: Stage price.
+ *            example: 250
+ *           
+ */
 var stageSchema = new Schema({
     title: {
         type: String,
@@ -21,6 +46,67 @@ var stageSchema = new Schema({
     }
 }, {strict: false});
 
+/**
+ * @swagger
+ *  components:
+ *    schemas:
+ *      Trip:
+ *        type: object
+ *        required:
+ *          - title
+ *          - description
+ *          - requirements
+ *          - start
+ *          - end
+ *          - managerId
+ *        properties:
+ *          title:
+ *            type: string
+ *            description: Trip title.
+ *            example: 'testExample'
+ *          description:
+ *            type: string
+ *            description: Trip description.
+ *            example: 'descTrip'
+ *          requirements:
+ *            type: array
+ *            items: string
+ *            description: Trip requirements.
+ *            example: ["testReq"]
+ *          start:
+ *            type: Date
+ *            description: Trip start date.
+ *            example: 2020-02-14
+ *          end:
+ *            type: Date
+ *            description: Trip end date.
+ *            example: 2020-02-14
+ *          pictures:
+ *            type: array
+ *            items: object
+ *            properties:
+ *              data:
+ *                  type: Buffer
+ *              contentType:
+ *                  type: string
+ *            description: Array of Trip pictures.
+ *          cancelled:
+ *            type: boolean
+ *            description: Trip cancel or no.
+ *          reasonCancelling:
+ *            type: string
+ *            description: Trip calcel reason.
+ *          stages:
+ *            type: array
+ *            items: object
+ *            $ref: '#/components/schemas/Stage'
+ *            description: Array of Trip pictures.
+ *          managerId:
+ *            type: mongodb.ObjectID
+ *            description: ID of the trip manager.
+ *            example: 5e46e51d9ae2103198416348
+ *           
+ */
 var tripSchema = new Schema({
     //No es necesario hacer una verificación porque la generación es automática y 
     //la validación no funciona después del "pre.save".

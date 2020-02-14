@@ -48,7 +48,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"title\": \"testTitle\",\n\t\"description\": \"testDescription\",\n\t\"price\": 3,\n\t\"requirements\": [\"testRequirement\"],\n\t\"start\": {{start}},\n\t\"end\": {{end}},\n\t\"stages\": [\n\t\t{\n\t\t\t\"title\": \"Paris\",\n\t\t\t\"description\": \"Paris step\",\n\t\t\t\"price\": 620\n\t\t},\n\t\t{\n\t\t\t\"title\": \"Rouen\",\n\t\t\t\"description\": \"Rouen step\",\n\t\t\t\"price\": 380\n\t\t}\n\t],\n\t\"managerId\": \"5e40a6a22c8c093520b8369d\"\n}"
+					"raw": "{\n\t\"title\": \"testTitle\",\n\t\"description\": \"testDescription\",\n\t\"requirements\": [\"testRequirement\"],\n\t\"start\": {{start}},\n\t\"end\": {{end}},\n\t\"stages\": [\n\t\t{\n\t\t\t\"title\": \"Paris\",\n\t\t\t\"description\": \"Paris step\",\n\t\t\t\"price\": 620\n\t\t},\n\t\t{\n\t\t\t\"title\": \"Rouen\",\n\t\t\t\"description\": \"Rouen step\",\n\t\t\t\"price\": 380\n\t\t}\n\t],\n\t\"managerId\": \"5e40a6a22c8c093520b8369d\"\n}"
 				},
 				"url": {
 					"raw": "{{host}}/trips",

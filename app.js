@@ -4,7 +4,9 @@ port = process.env.PORT || 8080,
 mongoose = require('mongoose'),
 Actor = require('./api/models/actorModel'),
 Trip = require('./api/models/tripModel'),
+swaggerDoc = require('./api/routes/swaggerDoc'),
 bodyParser = require('body-parser');
+
  
 // MongoDB URI building
 var mongoDBHostname = process.env.mongoDBHostname || "localhost";
@@ -26,6 +28,7 @@ mongoose.connect(mongoDBURI, {
  
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use("/v1", swaggerDoc);
 
 var routesActors = require('./api/routes/actorRoutes'),
 routesTrips = require('./api/routes/tripRoutes');
