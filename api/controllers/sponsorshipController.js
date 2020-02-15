@@ -1,6 +1,61 @@
 var mongoose = require('mongoose')
 Sponsorships = mongoose.model('Sponsorships');
 
+/**
+ * @swagger
+ *  components:
+ *    schemas:
+ *      sponsorship:
+ *        allOf:
+ *        - type: object
+ *          properties:
+ *            _id:
+ *              type: string
+ *            banner:
+ *              type: array
+ *              items:
+ *                type: string
+ *            link:
+ *              type: string
+ *            price:
+ *              type: number
+ *            payed:
+ *              type: boolean
+ *            sponsor_id:
+ *              type: string
+ *            trip_id:
+ *              type: string
+ *            created_at:
+ *              type: string
+ *            __v:
+ *              type: integer
+ */
+
+ /**
+ * @swagger
+ * path:
+ *  '/sponsorships':
+ *    get:
+ *      tags:
+ *        - Sponsorship
+ *      description: >-
+ *        Retrieve all the sponsorships
+ *      operationId: getSponsorships
+ *      responses:
+ *        '200':
+ *          description: OK
+ *          content:
+ *            application/json:
+ *              schema:
+ *                allOf:
+ *                - type: array
+ *                  items:
+ *                    $ref: '#/components/schemas/sponsorship'
+ *        '500':
+ *           description: Internal server error
+ *           content: {}
+ */
+
 exports.list_all_sponsorships = function(req, res) {
     Sponsorships.find({}, function(err, sponsorships) {
         if(err) {
@@ -11,6 +66,56 @@ exports.list_all_sponsorships = function(req, res) {
     })
 }
 
+/**
+ * @swagger
+ * path:
+ *  '/sponsorships':
+ *    post:
+ *      tags:
+ *        - Sponsorship
+ *      description: >-
+ *        Create a new sponsorship
+ *      operationId: postSponsorships
+ *      requestBody:
+ *        required: true
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              required:
+ *                - banner
+ *                - link
+ *                - price
+ *                - sponsor_id
+ *                - trip_id
+ *              properties:
+ *                banner:
+ *                  type: array
+ *                  items:
+ *                    type: string
+ *                link:
+ *                  type: string
+ *                price:
+ *                  type: number
+ *                sponsor_id:
+ *                  type: string
+ *                trip_id:
+ *                  type: string
+ *      responses:
+ *        '201':
+ *          description: Created
+ *          content:
+ *            application/json:
+ *              schema:
+ *                allOf:
+ *                - $ref: '#/components/schemas/sponsorship'
+ *        '422':
+ *           description: Unprocesable entity
+ *           content: {}
+ *        '500':
+ *           description: Internal server error
+ *           content: {}
+ */
 exports.create_a_sponsorship = function(req, res) {
     var new_sponsorship = new Sponsorships(req.body);
     new_sponsorship.save(function(err, sponsorship) {
@@ -29,6 +134,38 @@ exports.create_a_sponsorship = function(req, res) {
     });
 }
 
+/**
+ * @swagger
+ * path:
+ *  '/sponsorship/{sponsorshipId}':
+ *    get:
+ *      tags:
+ *        - Sponsorship
+ *      description: >-
+ *        Retrieve details from a specific sponsorship
+ *      operationId: getSponsorship
+ *      parameters:
+ *         - name: sponsorshipId
+ *           in: path
+ *           description: id of the sponsorship you want to get details from
+ *           required: true
+ *           schema:
+ *             type: string
+ *      responses:
+ *        '200':
+ *          description: OK
+ *          content:
+ *            application/json:
+ *              schema:
+ *                allOf:
+ *                - $ref: '#/components/schemas/sponsorship'
+ *        '404':
+ *           description: Sponsorship not found
+ *           content: {}
+ *        '500':
+ *           description: Internal server error
+ *           content: {}
+ */
 exports.read_a_sponsorship = function(req, res) {
     var id = req.params.sponsorshipId;
     Sponsorships.findById(id, function (err, sponsorship) {
@@ -47,6 +184,48 @@ exports.read_a_sponsorship = function(req, res) {
     });
 }
 
+/**
+ * @swagger
+ * path:
+ *  '/sponsorship/{sponsorshipId}':
+ *    put:
+ *      tags:
+ *        - Sponsorship
+ *      description: >-
+ *        Update a specific sponsorship
+ *      operationId: putSponsorship
+ *      parameters:
+ *         - name: sponsorshipId
+ *           in: path
+ *           description: id of the sponsorship you want to update
+ *           required: true
+ *           schema:
+ *             type: string
+ *      requestBody:
+ *        required: true
+ *        content:
+ *          application/json:
+ *            schema:
+ *              allOf:
+ *                - $ref: '#/components/schemas/sponsorship'
+ *      responses:
+ *        '200':
+ *          description: Updated sponsorship
+ *          content:
+ *            application/json:
+ *              schema:
+ *                allOf:
+ *                - $ref: '#/components/schemas/sponsorship'
+ *        '404':
+ *           description: Sponsorship not found
+ *           content: {}
+ *        '422':
+ *           description: Unprocesable entity
+ *           content: {}
+ *        '500':
+ *           description: Internal server error
+ *           content: {}
+ */
 exports.edit_a_sponsorship = function(req, res) {
     var updatedSponsorship = req.body;
     var id = req.params.sponsorshipId;
@@ -84,6 +263,52 @@ exports.edit_a_sponsorship = function(req, res) {
     }
 }
 
+/**
+ * @swagger
+ * path:
+ *  '/sponsorship/{sponsorshipId}/pay':
+ *    patch:
+ *      tags:
+ *        - Sponsorship
+ *      description: >-
+ *        Pay or set to unpayed a sponsorship
+ *      operationId: patchSponsorshipPayement
+ *      parameters:
+ *         - name: sponsorshipId
+ *           in: path
+ *           description: id of the sponsorship you want to ban or unban
+ *           required: true
+ *           schema:
+ *             type: string
+ *      requestBody:
+ *        required: true
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              required:
+ *                - payed
+ *              properties:
+ *                payed:
+ *                  type: boolean
+ *      responses:
+ *        '200':
+ *          description: Updated sponsorship
+ *          content:
+ *            application/json:
+ *              schema:
+ *                allOf:
+ *                - $ref: '#/components/schemas/sponsorship'
+ *        '404':
+ *           description: Sponsorship not found
+ *           content: Not Found
+ *        '422':
+ *           description: Incorrect body
+ *           content: {}
+ *        '500':
+ *           description: Internal server error
+ *           content: {}
+ */
 exports.handle_sponsorship_payement = function(req, res) {
     var payedObject = req.body;
     var id = req.params.sponsorshipId;
@@ -113,6 +338,31 @@ exports.handle_sponsorship_payement = function(req, res) {
     }
 }
 
+/**
+ * @swagger
+ * path:
+ *  '/sponsorship/{sponsorshipId}':
+ *    delete:
+ *      tags:
+ *        - Sponsorship
+ *      description: >-
+ *        Delete a specific sponsorship
+ *      operationId: deleteSponsorship
+ *      parameters:
+ *         - name: sponsorshipId
+ *           in: path
+ *           description: id of the sponsorship you want to delete
+ *           required: true
+ *           schema:
+ *             type: string
+ *      responses:
+ *        '204':
+ *          description: No content
+ *          content: {}
+ *        '500':
+ *           description: Internal server error
+ *           content: {}
+ */
 exports.delete_a_sponsorship = function(req, res) {
     var id = req.params.sponsorshipId;
     Sponsorships.findOneAndDelete({"_id": id}, null, function (err) {

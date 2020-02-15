@@ -17,16 +17,6 @@ var actorModel = new Schema({
     }, password: {
         type: String,
         required: 'Enter the password of the actor please'
-        // set: function (password) {
-        //     console.log(password);
-        //     console.log(this.password);
-        //     if(password == this.password) {
-        //         return password;
-        //     } else {
-        //         this.password = bcrypt.hashSync(password, bcrypt.genSaltSync(5));
-        //         return this.password;
-        //     }
-        // }
     }, adress: {
         type: String
     }, phone: {
@@ -35,6 +25,9 @@ var actorModel = new Schema({
         type: String,
         required: 'Enter the role(s) of the actor please',
         enum: ['Administrator', 'Manager', 'Explorer', 'Sponsor']
+    }, banned: {
+        type: Boolean,
+        default: false
     }, createdAt: {
         type:Date,
         default: Date.now
