@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/Xiirf/S2_Acme_Explorer#readme",
   "dependencies": {
+    "bcrypt": "^3.0.8",
     "express": "^4.17.1",
     "mongoose": "^5.8.11"
   }
