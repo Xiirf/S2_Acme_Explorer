@@ -3,9 +3,8 @@ var Schema = mongoose.Schema;
 var mongodb = require('mongodb');
 const generate = require('nanoid/generate');
 const dateFormat = require('dateformat');
-//Après merge
-//var mongoose = require('mongoose')
-//Actors = mongoose.model('Actors');
+var mongoose = require('mongoose')
+Actors = mongoose.model('Actors');
 
 /**
  * @swagger
@@ -142,16 +141,15 @@ var tripSchema = new Schema({
     }, stages: [stageSchema],
     managerId: {
         type: mongodb.ObjectID,
-        required: 'Enter the manager ID of the trip please'
-        //Ajouter une fois merge
-        /*validate: {
+        required: 'Enter the manager ID of the trip please',
+        validate: {
             validator: async function(v) {
                 return Promise.resolve(Actors.findById(v, function(err, actor) {
                     return actor && actor.role == "Manager";
                 }));
             },
             message: "There are no manager with this id"
-        }*/
+        }
     }
 }, {strict: true, toJSON: {virtuals: true}});
 
