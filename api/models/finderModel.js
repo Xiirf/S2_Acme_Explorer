@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
+var mongodb = require('mongodb');
 //Après merge
 //var mongoose = require('mongoose')
 //Actors = mongoose.model('Actors');
@@ -40,7 +41,7 @@ var Schema = mongoose.Schema;
  */
 var finderSchema = new Schema({
     idExplorer: {
-        type: String,
+        type: mongodb.ObjectID,
         required: 'Kindly enter the idExplorer of the finder',
         //Ajouter une fois merge
         /*validate: {
