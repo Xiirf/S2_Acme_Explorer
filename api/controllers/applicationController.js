@@ -142,7 +142,7 @@ exports.read_an_application = function(req, res) {
  *              $ref: '#/components/schemas/Applications'
  *      responses:
  *        "200":
- *          description: Trip updated
+ *          description: Application updated
  *          content:
  *            application/json:
  *              schema:
@@ -157,18 +157,20 @@ exports.read_an_application = function(req, res) {
  */
 exports.update_an_application = function(req, res) {
     Applications.findOneAndUpdate({_id: req.params.applicationId}, req.body, {new:true, runValidators: true}, function(err, application) {
-        if (err){
-            if(err.name=='ValidationError') {
+        if (err) {
+            if (err.name=='ValidationError') {
                 res.status(422).send(err);
             }
             else{
               res.status(500).send(err);
             }
-        } else if (!trip) {
+        } 
+        else if (!application) {
             res.status(404)
                 .json({ error: 'No applications with this Id were found.'});
-        } else {
-            res.status(200).json(trip);
+        } 
+        else {
+            res.status(200).json(application);
         }
     })
 }
