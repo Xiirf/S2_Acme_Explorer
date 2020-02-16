@@ -63,7 +63,7 @@ exports.list_all_finders = function(req, res) {
  *        "500":
  *          description: Server error
  */
-exports.create_an_finder = function(req, res) {
+exports.create_a_finder = function(req, res) {
     var new_finder = new Finders(req.body);
     new_finder.save(function(err, finder) {
         if (err) {
@@ -106,7 +106,7 @@ exports.create_an_finder = function(req, res) {
  *        "500":
  *          description: Internal error
  */
-exports.read_an_finder = function(req, res) {
+exports.read_a_finder = function(req, res) {
     Finders.findById(req.params.finderId, function(err, finder) {
         if (err) {
             res.status(500).send(err);
@@ -155,7 +155,7 @@ exports.read_an_finder = function(req, res) {
  *        "500":
  *          description: Internal error
  */
-exports.update_an_finder = function(req, res) {
+exports.edit_a_finder = function(req, res) {
     Finders.findOneAndUpdate({_id: req.params.finderId}, req.body, {new:true, runValidators: true}, function(err, finder) {
         if (err) {
             if (err.name=='ValidationError') {
@@ -195,7 +195,7 @@ exports.update_an_finder = function(req, res) {
  *        "500":
  *          description: Internal error
  */
-exports.delete_an_finder = function(req, res) {
+exports.delete_a_finder = function(req, res) {
     Finders.findOneAndDelete({_id: req.params.finderId}, function(err, finder) {
         if(err) {
             res.status(500).send(err);

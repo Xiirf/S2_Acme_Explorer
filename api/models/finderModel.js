@@ -9,7 +9,7 @@ var mongodb = require('mongodb');
  * @swagger
  *  components:
  *    schemas:
- *      Applications:
+ *      Finders:
  *        type: object
  *        required:
  *          - idExplorer

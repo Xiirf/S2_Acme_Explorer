@@ -41,7 +41,7 @@ var mongodb = require('mongodb');
  *          reasonCancelling:
  *            type: String
  *            description: Reason why the application was cancelled.
- *            example: 'PENDING'
+ *            example: 'a reason'
  */
 var applicationSchema = new Schema({
     idExplorer: {

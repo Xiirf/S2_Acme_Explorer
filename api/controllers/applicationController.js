@@ -155,7 +155,7 @@ exports.read_an_application = function(req, res) {
  *        "500":
  *          description: Internal error
  */
-exports.update_an_application = function(req, res) {
+exports.edit_an_application = function(req, res) {
     Applications.findOneAndUpdate({_id: req.params.applicationId}, req.body, {new:true, runValidators: true}, function(err, application) {
         if (err) {
             if (err.name=='ValidationError') {
