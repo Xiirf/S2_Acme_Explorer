@@ -11,8 +11,10 @@ Abstract Actor {
   name: String {NotBlank}
   surname: String {NotBlank}
   email: String {NotBlank}
+  password: String {NotBlank}
   phone: String
   address: String
+  activated: Boolean = True
 }
 
 Class Administrator
@@ -32,6 +34,7 @@ Class Trip {
   start: Date {NotBlank}
   end: Date {NotBlank}
   pictures: Array[Image]
+  published: Boolean = False
   cancelled: Boolean = False
   reasonCancelling: String
 }
@@ -64,6 +67,12 @@ Class Sponsorship {
   payed: Boolean = false
 }
 
+Class GlobalVars {
+  flatRateSponsorship: Float
+  cacheTimeOutFinderResults: Integer
+  maxNumberFinderResults: Integer
+}
+
 Actor <|-- Administrator
 Actor <|-- Manager
 Actor <|-- Explorer
@@ -72,7 +81,7 @@ Trip "1" *-- "1..*" Stage
 Manager "1" --> "*" Trip: Organize
 Explorer "*" --> "*" Trip: Apply
 (Explorer, Trip).. Application
-Explorer "1" o-- "*" Finder
+Explorer *-- "1" Finder
 Sponsor "*" --> "*" Trip: Sponsor
 (Sponsor , Trip) .. Sponsorship
 @enduml
