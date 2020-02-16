@@ -18,7 +18,13 @@
   },
   "homepage": "https://github.com/Xiirf/S2_Acme_Explorer#readme",
   "dependencies": {
+    "dateformat": "^3.0.3",
+    "dotenv": "^8.2.0",
+    "bcrypt": "^3.0.8",
     "express": "^4.17.1",
-    "mongoose": "^5.8.11"
+    "mongoose": "^5.8.11",
+    "nanoid": "^2.1.11",
+    "swagger-jsdoc": "^3.5.0",
+    "swagger-ui-express": "^4.1.3"
   }
 }

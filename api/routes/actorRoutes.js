@@ -1,13 +1,19 @@
 'use strict';
+const express = require('express');
+var router = express.Router();
+
 module.exports = function(app) {
     var actors = require('../controllers/actorController');
-    
-    app.route('/actors')
+
+    router.route('/actors')
         .get(actors.list_all_actors)
-    app.route('actor')
-        .post(actors.create_an_actor)
-    app.route('actor/:actorId')
-        .post(actors.read_an_actor)
+        .post(actors.create_an_actor);
+    router.route('/actor/:actorId')
+        .get(actors.read_an_actor)
         .put(actors.edit_an_actor)
-        .delete(actors.delete_an_actor)        
+        .delete(actors.delete_an_actor)
+    router.route('/actor/:actorId/ban')
+        .patch(actors.handle_actor_banishment)
+
+    app.use("/v1", router)
 }

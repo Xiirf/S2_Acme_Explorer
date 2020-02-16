@@ -1,0 +1,834 @@
+{
+	"info": {
+		"_postman_id": "0919285f-e7ad-436b-914b-22a08c42c993",
+		"name": "Acme-Explorer Sponsorship",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "sponsorship",
+			"item": [
+				{
+					"name": "GET  sponsorship",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "3a111f6c-e4ee-4838-802c-1b8f6ed4f0fb",
+								"exec": [
+									"const echoPostRequestActor = {",
+									"    url: pm.variables.get('host') + '/actors',",
+									"    method: 'POST',",
+									"    header: {",
+									"        'content-type': 'application/json',",
+									"    },",
+									"    body: {",
+									"        mode: 'raw',",
+									"        raw: JSON.stringify({",
+									"            \"name\": \"Antoño\",",
+									"            \"surname\": \"Banderas\",",
+									"            \"email\": \"f@f.com\",",
+									"            \"phone\": \"012459786\",",
+									"            \"password\": \"pwd\",",
+									"            \"adress\": \"algun lugar\",",
+									"            \"role\": \"Sponsor\"",
+									"        })",
+									"    }",
+									"};",
+									"pm.sendRequest(echoPostRequestActor, function (err, res) {",
+									"    console.log(err ? err : res.json());",
+									"        if (err === null) {",
+									"            pm.collectionVariables.set('lastActorSubmittedId', res.json()._id)",
+									"        }",
+									"    const echoPostRequestSponsorship = {",
+									"        url: pm.variables.get('host') + '/sponsorships',",
+									"        method: 'POST',",
+									"        header: {",
+									"            'content-type': 'application/json',",
+									"        },",
+									"        body: {",
+									"            mode: 'raw',",
+									"            raw: JSON.stringify({",
+									"                \"banner\": [\"img\"],",
+									"                \"link\": \"github.com/\",",
+									"                \"price\": 1200,",
+									"                \"trip_id\": \"5e3da57ccf2c9627005ca04b\",",
+									"                \"sponsor_id\": res.json()._id",
+									"            })",
+									"        }",
+									"    };",
+									"    pm.sendRequest(echoPostRequestSponsorship)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "9dc77a59-8e21-4734-9480-8cd14c900bf8",
+								"exec": [
+									"var Ajv = require('ajv'),",
+									"    ajv = new Ajv({logger: console, allErrors: true}), schema = {",
+									"    \"type\": \"object\",",
+									"    \"required\": [\"_id\", \"banner\", \"email\", \"link\", \"price\", \"trip_id\", \"sponsor_id\", \"payed\", \"createdAt\"],",
+									"    \"properties\": {",
+									"        \"properties\": {",
+									"            \"_id\" : {",
+									"                \"type\" : \"string\"",
+									"            }, \"banner\" : {",
+									"                 \"type\" : \"object\"",
+									"            }, \"link\" : {",
+									"                 \"type\" : \"string\"",
+									"            }, \"price\" : {",
+									"                 \"type\" : \"float\"",
+									"            }, \"trip_id\" : {",
+									"                 \"type\" : \"string\"",
+									"            }, \"sponsor_id\" : {",
+									"                 \"type\" : \"string\"",
+									"            }, \"payed\" : {",
+									"                 \"type\" : \"boolean\"",
+									"            }, \"createdAt\" : {",
+									"                 \"format\": \"date\"",
+									"            }, \"__v\" : {",
+									"                 \"type\" : \"integer\"",
+									"            }",
+									"        }",
+									"    }",
+									"}",
+									"",
+									"pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200) });",
+									"pm.test(\"Return 1 item\", function () { pm.expect(pm.response.json().length).to.eql(1)});",
+									"pm.test(\"Return the right item\", function () { pm.expect(pm.response.json()[0].link).to.eql(\"github.com/\") && pm.expect(pm.response.json()[0].sponsor_id).to.eql(pm.collectionVariables.get('lastActorSubmittedId'))});",
+									"pm.test('Schema is valid', function() {",
+									"  pm.expect(ajv.validate(pm.response.json()[0], schema), JSON.stringify(ajv.errors)).to.be.true;",
+									"});",
+									"const echoDeleteRequestActor = {",
+									"  url: pm.variables.get('host') + '/actor/' + pm.collectionVariables.get('lastActorSubmittedId'),",
+									"  method: 'DELETE',",
+									"};",
+									"const echoDeleteRequestSponsorship = {",
+									"  url: pm.variables.get('host') + '/sponsorship/' + pm.response.json()[0]._id,",
+									"  method: 'DELETE',",
+									"};",
+									"pm.sendRequest(echoDeleteRequestSponsorship)",
+									"pm.sendRequest(echoDeleteRequestActor)"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/sponsorships",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"sponsorships"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST sponsorship",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "38ac690d-f62f-442a-86d2-b70b36a3da32",
+								"exec": [
+									"const echoPostRequestActor = {",
+									"    url: pm.variables.get('host') + '/actors',",
+									"    method: 'POST',",
+									"    header: {",
+									"        'content-type': 'application/json',",
+									"    },",
+									"    body: {",
+									"        mode: 'raw',",
+									"        raw: JSON.stringify({",
+									"            \"name\": \"Antoño\",",
+									"            \"surname\": \"Banderas\",",
+									"            \"email\": \"f@f.com\",",
+									"            \"phone\": \"012459786\",",
+									"            \"password\": \"pwd\",",
+									"            \"adress\": \"algun lugar\",",
+									"            \"role\": \"Sponsor\"",
+									"        })",
+									"    }",
+									"};",
+									"pm.sendRequest(echoPostRequestActor, function (err, res) {",
+									"    console.log(err ? err : res.json());",
+									"    if (err === null) {",
+									"        pm.collectionVariables.set('lastActorSubmittedId', res.json()._id)",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "b78c3567-b7de-4071-b4f2-1f317f35b35b",
+								"exec": [
+									"var Ajv = require('ajv'),",
+									"    ajv = new Ajv({logger: console, allErrors: true}), schema = {",
+									"    \"type\": \"object\",",
+									"    \"required\": [\"_id\", \"banner\", \"email\", \"link\", \"price\", \"trip_id\", \"sponsor_id\", \"payed\", \"createdAt\"],",
+									"    \"properties\": {",
+									"        \"properties\": {",
+									"            \"_id\" : {",
+									"                \"type\" : \"string\"",
+									"            }, \"banner\" : {",
+									"                 \"type\" : \"object\"",
+									"            }, \"link\" : {",
+									"                 \"type\" : \"string\"",
+									"            }, \"price\" : {",
+									"                 \"type\" : \"float\"",
+									"            }, \"trip_id\" : {",
+									"                 \"type\" : \"string\"",
+									"            }, \"sponsor_id\" : {",
+									"                 \"type\" : \"string\"",
+									"            }, \"payed\" : {",
+									"                 \"type\" : \"boolean\"",
+									"            }, \"createdAt\" : {",
+									"                 \"format\": \"date\"",
+									"            }, \"__v\" : {",
+									"                 \"type\" : \"integer\"",
+									"            }",
+									"        }",
+									"    }",
+									"}",
+									"",
+									"pm.test(\"Status code is 201\", function () { pm.expect(pm.response.code).to.be.oneOf([201]) });",
+									"pm.test(\"Return the created item\", function () { pm.expect(pm.response.json().link).to.eql(\"github.com/\") && pm.expect(pm.response.json().sponsor_id).to.eql(pm.collectionVariables.get('lastActorSubmittedId'))});",
+									"pm.test('Schema is valid', function() {",
+									"  pm.expect(ajv.validate(pm.response.json(), schema), JSON.stringify(ajv.errors)).to.be.true;",
+									"});",
+									"const echoDeleteRequestActor = {",
+									"  url: pm.variables.get('host') + '/actor/' + pm.collectionVariables.get('lastActorSubmittedId'),",
+									"  method: 'DELETE',",
+									"};",
+									"const echoDeleteRequestSponsorship = {",
+									"  url: pm.variables.get('host') + '/sponsorship/' + pm.response.json()._id,",
+									"  method: 'DELETE',",
+									"};",
+									"pm.sendRequest(echoDeleteRequestSponsorship)",
+									"pm.sendRequest(echoDeleteRequestActor)"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"banner\": [\"img\"],\n    \"link\": \"github.com/\",\n    \"price\": 1200,\n    \"trip_id\": \"5e3da57ccf2c9627005ca04b\",\n    \"sponsor_id\": \"{{lastActorSubmittedId}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/sponsorships",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"sponsorships"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET sponsorship",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "2bae875c-574e-4ab1-a7b1-1e75817f438f",
+								"exec": [
+									"const echoPostRequestActor = {",
+									"    url: pm.variables.get('host') + '/actors',",
+									"    method: 'POST',",
+									"    header: {",
+									"        'content-type': 'application/json',",
+									"    },",
+									"    body: {",
+									"        mode: 'raw',",
+									"        raw: JSON.stringify({",
+									"            \"name\": \"Antoño\",",
+									"            \"surname\": \"Banderas\",",
+									"            \"email\": \"f@f.com\",",
+									"            \"phone\": \"012459786\",",
+									"            \"password\": \"pwd\",",
+									"            \"adress\": \"algun lugar\",",
+									"            \"role\": \"Sponsor\"",
+									"        })",
+									"    }",
+									"};",
+									"pm.sendRequest(echoPostRequestActor, function (err, res) {",
+									"    console.log(err ? err : res.json());",
+									"        if (err === null) {",
+									"            pm.collectionVariables.set('lastActorSubmittedId', res.json()._id)",
+									"        }",
+									"    const echoPostRequestSponsorship = {",
+									"        url: pm.variables.get('host') + '/sponsorships',",
+									"        method: 'POST',",
+									"        header: {",
+									"            'content-type': 'application/json',",
+									"        },",
+									"        body: {",
+									"            mode: 'raw',",
+									"            raw: JSON.stringify({",
+									"                \"banner\": [\"img\"],",
+									"                \"link\": \"github.com/\",",
+									"                \"price\": 1200,",
+									"                \"trip_id\": \"5e3da57ccf2c9627005ca04b\",",
+									"                \"sponsor_id\": res.json()._id",
+									"            })",
+									"        }",
+									"    };",
+									"    pm.sendRequest(echoPostRequestSponsorship, function (err2, res2) {",
+									"    console.log(err2 ? err2 : res2.json());",
+									"        if (err2 === null) {",
+									"            pm.collectionVariables.set('lastSponsorshipSubmittedId', res2.json()._id)",
+									"        }",
+									"    });",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "7d5db873-a168-4c03-af4c-68fcade1a139",
+								"exec": [
+									"var Ajv = require('ajv'),",
+									"    ajv = new Ajv({logger: console, allErrors: true}), schema = {",
+									"    \"type\": \"object\",",
+									"    \"required\": [\"_id\", \"banner\", \"email\", \"link\", \"price\", \"trip_id\", \"sponsor_id\", \"payed\", \"createdAt\"],",
+									"    \"properties\": {",
+									"        \"properties\": {",
+									"            \"_id\" : {",
+									"                \"type\" : \"string\"",
+									"            }, \"banner\" : {",
+									"                 \"type\" : \"object\"",
+									"            }, \"link\" : {",
+									"                 \"type\" : \"string\"",
+									"            }, \"price\" : {",
+									"                 \"type\" : \"float\"",
+									"            }, \"trip_id\" : {",
+									"                 \"type\" : \"string\"",
+									"            }, \"sponsor_id\" : {",
+									"                 \"type\" : \"string\"",
+									"            }, \"payed\" : {",
+									"                 \"type\" : \"boolean\"",
+									"            }, \"createdAt\" : {",
+									"                 \"format\": \"date\"",
+									"            }, \"__v\" : {",
+									"                 \"type\" : \"integer\"",
+									"            }",
+									"        }",
+									"    }",
+									"}",
+									"",
+									"pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200) });",
+									"pm.test(\"Return the right item\", function () { pm.expect(pm.response.json().link).to.eql(\"github.com/\") && pm.expect(pm.response.json().sponsor_id).to.eql(pm.collectionVariables.get('lastActorSubmittedId'))});",
+									"pm.test('Schema is valid', function() {",
+									"  pm.expect(ajv.validate(pm.response.json(), schema), JSON.stringify(ajv.errors)).to.be.true;",
+									"});",
+									"const echoDeleteRequestActor = {",
+									"  url: pm.variables.get('host') + '/actor/' + pm.collectionVariables.get('lastActorSubmittedId'),",
+									"  method: 'DELETE',",
+									"};",
+									"const echoDeleteRequestSponsorship = {",
+									"  url: pm.variables.get('host') + '/sponsorship/' + pm.response.json()._id,",
+									"  method: 'DELETE',",
+									"};",
+									"pm.sendRequest(echoDeleteRequestSponsorship)",
+									"pm.sendRequest(echoDeleteRequestActor)"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "text/plain",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{host}}/sponsorship/{{lastSponsorshipSubmittedId}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"sponsorship",
+								"{{lastSponsorshipSubmittedId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PUT sponsorship",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "f0e6bddd-18f0-475a-a406-fa3a3e537a3a",
+								"exec": [
+									"const echoPostRequestActor = {",
+									"    url: pm.variables.get('host') + '/actors',",
+									"    method: 'POST',",
+									"    header: {",
+									"        'content-type': 'application/json',",
+									"    },",
+									"    body: {",
+									"        mode: 'raw',",
+									"        raw: JSON.stringify({",
+									"            \"name\": \"Antoño\",",
+									"            \"surname\": \"Banderas\",",
+									"            \"email\": \"f@f.com\",",
+									"            \"phone\": \"012459786\",",
+									"            \"password\": \"pwd\",",
+									"            \"adress\": \"algun lugar\",",
+									"            \"role\": \"Sponsor\"",
+									"        })",
+									"    }",
+									"};",
+									"pm.sendRequest(echoPostRequestActor, function (err, res) {",
+									"    console.log(err ? err : res.json());",
+									"        if (err === null) {",
+									"            pm.collectionVariables.set('lastActorSubmittedId', res.json()._id)",
+									"        }",
+									"    const echoPostRequestSponsorship = {",
+									"        url: pm.variables.get('host') + '/sponsorships',",
+									"        method: 'POST',",
+									"        header: {",
+									"            'content-type': 'application/json',",
+									"        },",
+									"        body: {",
+									"            mode: 'raw',",
+									"            raw: JSON.stringify({",
+									"                \"banner\": [\"img\"],",
+									"                \"link\": \"github.com/\",",
+									"                \"price\": 1200,",
+									"                \"trip_id\": \"5e3da57ccf2c9627005ca04b\",",
+									"                \"sponsor_id\": res.json()._id",
+									"            })",
+									"        }",
+									"    };",
+									"    pm.sendRequest(echoPostRequestSponsorship, function (err2, res2) {",
+									"    console.log(err2 ? err2 : res2.json());",
+									"        if (err2 === null) {",
+									"            pm.collectionVariables.set('lastSponsorshipSubmittedId', res2.json()._id)",
+									"        }",
+									"    });",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "8c040501-c35e-4ee4-9f6d-a658574028d2",
+								"exec": [
+									"var Ajv = require('ajv'),",
+									"    ajv = new Ajv({logger: console, allErrors: true}), schema = {",
+									"    \"type\": \"object\",",
+									"    \"required\": [\"_id\", \"banner\", \"email\", \"link\", \"price\", \"trip_id\", \"sponsor_id\", \"payed\", \"createdAt\"],",
+									"    \"properties\": {",
+									"        \"properties\": {",
+									"            \"_id\" : {",
+									"                \"type\" : \"string\"",
+									"            }, \"banner\" : {",
+									"                 \"type\" : \"object\"",
+									"            }, \"link\" : {",
+									"                 \"type\" : \"string\"",
+									"            }, \"price\" : {",
+									"                 \"type\" : \"float\"",
+									"            }, \"trip_id\" : {",
+									"                 \"type\" : \"string\"",
+									"            }, \"sponsor_id\" : {",
+									"                 \"type\" : \"string\"",
+									"            }, \"payed\" : {",
+									"                 \"type\" : \"boolean\"",
+									"            }, \"createdAt\" : {",
+									"                 \"format\": \"date\"",
+									"            }, \"__v\" : {",
+									"                 \"type\" : \"integer\"",
+									"            }",
+									"        }",
+									"    }",
+									"}",
+									"",
+									"pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200) });",
+									"pm.test(\"Return the right updated item\", function () { pm.expect(pm.response.json().price).to.eql(200) && pm.expect(pm.response.json().link).to.eql(\"google.com/\")});",
+									"pm.test('Schema is valid', function() {",
+									"  pm.expect(ajv.validate(pm.response.json(), schema), JSON.stringify(ajv.errors)).to.be.true;",
+									"});",
+									"const echoDeleteRequestActor = {",
+									"  url: pm.variables.get('host') + '/actor/' + pm.collectionVariables.get('lastActorSubmittedId'),",
+									"  method: 'DELETE',",
+									"};",
+									"const echoDeleteRequestSponsorship = {",
+									"  url: pm.variables.get('host') + '/sponsorship/' + pm.response.json()._id,",
+									"  method: 'DELETE',",
+									"};",
+									"pm.sendRequest(echoDeleteRequestSponsorship)",
+									"pm.sendRequest(echoDeleteRequestActor)"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"banner\": {\n        \"0\": \"img\"\n    },\n    \"_id\": \"{{lastSponsorshipSubmittedId}}\",\n    \"payed\": false,\n    \"link\": \"google.com/\",\n    \"price\": 200,\n    \"trip_id\": \"5e3da57ccf2c9627005ca04b\",\n    \"sponsor_id\": \"{{lastActorSubmittedId}}\",\n    \"createdAt\": \"2020-02-11T21:41:25.321Z\",\n    \"__v\": 0\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/sponsorship/{{lastSponsorshipSubmittedId}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"sponsorship",
+								"{{lastSponsorshipSubmittedId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PATCH sponsorship pay",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "f0e6bddd-18f0-475a-a406-fa3a3e537a3a",
+								"exec": [
+									"const echoPostRequestActor = {",
+									"    url: pm.variables.get('host') + '/actors',",
+									"    method: 'POST',",
+									"    header: {",
+									"        'content-type': 'application/json',",
+									"    },",
+									"    body: {",
+									"        mode: 'raw',",
+									"        raw: JSON.stringify({",
+									"            \"name\": \"Antoño\",",
+									"            \"surname\": \"Banderas\",",
+									"            \"email\": \"f@f.com\",",
+									"            \"phone\": \"012459786\",",
+									"            \"password\": \"pwd\",",
+									"            \"adress\": \"algun lugar\",",
+									"            \"role\": \"Sponsor\"",
+									"        })",
+									"    }",
+									"};",
+									"pm.sendRequest(echoPostRequestActor, function (err, res) {",
+									"    console.log(err ? err : res.json());",
+									"        if (err === null) {",
+									"            pm.collectionVariables.set('lastActorSubmittedId', res.json()._id)",
+									"        }",
+									"    const echoPostRequestSponsorship = {",
+									"        url: pm.variables.get('host') + '/sponsorships',",
+									"        method: 'POST',",
+									"        header: {",
+									"            'content-type': 'application/json',",
+									"        },",
+									"        body: {",
+									"            mode: 'raw',",
+									"            raw: JSON.stringify({",
+									"                \"banner\": [\"img\"],",
+									"                \"link\": \"github.com/\",",
+									"                \"price\": 1200,",
+									"                \"trip_id\": \"5e3da57ccf2c9627005ca04b\",",
+									"                \"sponsor_id\": res.json()._id",
+									"            })",
+									"        }",
+									"    };",
+									"    pm.sendRequest(echoPostRequestSponsorship, function (err2, res2) {",
+									"    console.log(err2 ? err2 : res2.json());",
+									"        if (err2 === null) {",
+									"            pm.collectionVariables.set('lastSponsorshipSubmittedId', res2.json()._id)",
+									"        }",
+									"    });",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "8c040501-c35e-4ee4-9f6d-a658574028d2",
+								"exec": [
+									"var Ajv = require('ajv'),",
+									"    ajv = new Ajv({logger: console, allErrors: true}), schema = {",
+									"    \"type\": \"object\",",
+									"    \"required\": [\"_id\", \"banner\", \"email\", \"link\", \"price\", \"trip_id\", \"sponsor_id\", \"payed\", \"createdAt\"],",
+									"    \"properties\": {",
+									"        \"properties\": {",
+									"            \"_id\" : {",
+									"                \"type\" : \"string\"",
+									"            }, \"banner\" : {",
+									"                 \"type\" : \"object\"",
+									"            }, \"link\" : {",
+									"                 \"type\" : \"string\"",
+									"            }, \"price\" : {",
+									"                 \"type\" : \"float\"",
+									"            }, \"trip_id\" : {",
+									"                 \"type\" : \"string\"",
+									"            }, \"sponsor_id\" : {",
+									"                 \"type\" : \"string\"",
+									"            }, \"payed\" : {",
+									"                 \"type\" : \"boolean\"",
+									"            }, \"createdAt\" : {",
+									"                 \"format\": \"date\"",
+									"            }, \"__v\" : {",
+									"                 \"type\" : \"integer\"",
+									"            }",
+									"        }",
+									"    }",
+									"}",
+									"",
+									"pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200) });",
+									"pm.test(\"Return the right updated item\", function () { pm.expect(pm.response.json().link).to.eql(\"github.com/\") && pm.expect(pm.response.json().payed).to.be.true});",
+									"pm.test('Schema is valid', function() {",
+									"  pm.expect(ajv.validate(pm.response.json(), schema), JSON.stringify(ajv.errors)).to.be.true;",
+									"});",
+									"const echoDeleteRequestActor = {",
+									"  url: pm.variables.get('host') + '/actor/' + pm.collectionVariables.get('lastActorSubmittedId'),",
+									"  method: 'DELETE',",
+									"};",
+									"const echoDeleteRequestSponsorship = {",
+									"  url: pm.variables.get('host') + '/sponsorship/' + pm.response.json()._id,",
+									"  method: 'DELETE',",
+									"};",
+									"pm.sendRequest(echoDeleteRequestSponsorship)",
+									"pm.sendRequest(echoDeleteRequestActor)"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"payed\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/sponsorship/{{lastSponsorshipSubmittedId}}/pay",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"sponsorship",
+								"{{lastSponsorshipSubmittedId}}",
+								"pay"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE sponsorship",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "260dd1a3-0457-4dbd-8fb6-b8dcfccef826",
+								"exec": [
+									"const echoPostRequestActor = {",
+									"    url: pm.variables.get('host') + '/actors',",
+									"    method: 'POST',",
+									"    header: {",
+									"        'content-type': 'application/json',",
+									"    },",
+									"    body: {",
+									"        mode: 'raw',",
+									"        raw: JSON.stringify({",
+									"            \"name\": \"Antoño\",",
+									"            \"surname\": \"Banderas\",",
+									"            \"email\": \"f@f.com\",",
+									"            \"phone\": \"012459786\",",
+									"            \"password\": \"pwd\",",
+									"            \"adress\": \"algun lugar\",",
+									"            \"role\": \"Sponsor\"",
+									"        })",
+									"    }",
+									"};",
+									"pm.sendRequest(echoPostRequestActor, function (err, res) {",
+									"    console.log(err ? err : res.json());",
+									"        if (err === null) {",
+									"            pm.collectionVariables.set('lastActorSubmittedId', res.json()._id)",
+									"        }",
+									"    const echoPostRequestSponsorship = {",
+									"        url: pm.variables.get('host') + '/sponsorships',",
+									"        method: 'POST',",
+									"        header: {",
+									"            'content-type': 'application/json',",
+									"        },",
+									"        body: {",
+									"            mode: 'raw',",
+									"            raw: JSON.stringify({",
+									"                \"banner\": [\"img\"],",
+									"                \"link\": \"github.com/\",",
+									"                \"price\": 1200,",
+									"                \"trip_id\": \"5e3da57ccf2c9627005ca04b\",",
+									"                \"sponsor_id\": res.json()._id",
+									"            })",
+									"        }",
+									"    };",
+									"    pm.sendRequest(echoPostRequestSponsorship, function (err2, res2) {",
+									"    console.log(err2 ? err2 : res2.json());",
+									"        if (err2 === null) {",
+									"            pm.collectionVariables.set('lastSponsorshipSubmittedId', res2.json()._id)",
+									"        }",
+									"    });",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "98a85a61-a056-4c29-93ea-e070c0f582f4",
+								"exec": [
+									"pm.test(\"Status code is 204\", function () { pm.response.to.have.status(204) });",
+									"const echoGetRequest = {",
+									"  url: pm.variables.get('host') + '/sponsorship/' + pm.collectionVariables.get('lastSponsorshipSubmittedId'),",
+									"  method: 'GET',",
+									"};",
+									"pm.sendRequest(echoGetRequest, function (err, res) {",
+									"    pm.test(\"Item has been deleted\", function () { pm.expect(res.code).to.be.oneOf([404]) });",
+									"});",
+									"const echoDeleteRequestActor = {",
+									"  url: pm.variables.get('host') + '/actor/' + pm.collectionVariables.get('lastActorSubmittedId'),",
+									"  method: 'DELETE',",
+									"};",
+									"pm.sendRequest(echoDeleteRequestActor)"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/sponsorship/{{lastSponsorshipSubmittedId}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"sponsorship",
+								"{{lastSponsorshipSubmittedId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "cfb2b784-3e9c-4a33-a1ec-6f6ee753dd81",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "30355f02-6e7d-47dd-a3b5-57cbfac2c3d9",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "2057d091-c551-4a95-a56c-95d72072ef54",
+			"key": "host",
+			"value": "localhost:8080/v1",
+			"type": "string"
+		},
+		{
+			"id": "aeb7c5b5-5d14-43aa-89a2-dc0c1ee8fab0",
+			"key": "lastActorSubmittedId",
+			"value": "5e4719a44dc796139d0efa9d",
+			"type": "string"
+		},
+		{
+			"id": "03ba52f6-dd98-40df-baf7-26f7f0620100",
+			"key": "lastSponsorshipSubmittedId",
+			"value": "5e4719a44dc796139d0efa9e",
+			"type": "string"
+		}
+	],
+	"protocolProfileBehavior": {}
+}
