@@ -1,4 +1,5 @@
 var express = require('express'),
+enable_cors = require('cors'),
 app = express(),
 port = process.env.PORT || 8080,
 mongoose = require('mongoose'),
@@ -29,6 +30,7 @@ mongoose.connect(mongoDBURI, {
  
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(enable_cors());
 
 app.use("/v1", swaggerDoc);
 

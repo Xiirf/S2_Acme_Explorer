@@ -13,39 +13,6 @@
 var mongoose = require('mongoose')
 Actors = mongoose.model('Actors');
 
-/**
- * @swagger
- *  components:
- *    schemas:
- *      actor:
- *        allOf:
- *        - type: object
- *          properties:
- *            _id:
- *              type: string
- *            name:
- *              type: string
- *            surname:
- *              type: string
- *            email:
- *              type: string
- *            password:
- *              type: string
- *            phone:
- *              type: string
- *            address:
- *              type: string
- *            role:
- *              type: string
- *              enum: [Administrator, Manager, Explorer, Sponsor]
- *            banned:
- *              type: boolean
- *            created_at:
- *              type: string
- *            __v:
- *              type: integer
- */
-
  /**
  * @swagger
  * path:
@@ -154,7 +121,7 @@ exports.create_an_actor = function(req, res) {
 /**
  * @swagger
  * path:
- *  '/actor/{actorId}':
+ *  '/actors/{actorId}':
  *    get:
  *      tags:
  *        - Actor
@@ -204,7 +171,7 @@ exports.read_an_actor = function(req, res) {
 /**
  * @swagger
  * path:
- *  '/actor/{actorId}':
+ *  '/actors/{actorId}':
  *    put:
  *      tags:
  *        - Actor
@@ -248,10 +215,10 @@ exports.edit_an_actor = function(req, res) {
     var id = req.params.actorId;
     console.log(updatedActor)
     if (!updatedActor) {
-        console.warn("New PUT request to /actor/ without actor, sending 400...");
+        console.warn("New PUT request to /actors/ without actor, sending 400...");
         res.sendStatus(400); // bad request
     } else {
-        console.info("New PUT request to /actor/" + id + " with data " + JSON.stringify(updatedActor, 2, null));
+        console.info("New PUT request to /actors/" + id + " with data " + JSON.stringify(updatedActor, 2, null));
         Actors.findById(id, function(err, actor) {
             if (err) {
                 console.error('Error updating data in DB');
@@ -286,7 +253,7 @@ exports.edit_an_actor = function(req, res) {
 /**
  * @swagger
  * path:
- *  '/actor/{actorId}/ban':
+ *  '/actors/{actorId}/ban':
  *    patch:
  *      tags:
  *        - Actor
@@ -333,10 +300,10 @@ exports.handle_actor_banishment = function(req, res) {
     var banned = req.body ? req.body.banned : undefined;
     var id = req.params.actorId;
     if (!banned || typeof(banned) != "boolean") {
-        console.warn("New PATCH request to /actor/id/ban without correct attribute banned, sending 422...");
+        console.warn("New PATCH request to /actors/id/ban without correct attribute banned, sending 422...");
         res.sendStatus(422);
     } else {
-        console.info("New PATCH request to /actor/" + id + "/ban with value " + JSON.stringify(banned, 2, null));
+        console.info("New PATCH request to /actors/" + id + "/ban with value " + JSON.stringify(banned, 2, null));
         Actors.findOneAndUpdate({"_id": id}, { "banned": banned }, { new: true }, function(err, actor) {
             if (err) {
                 console.error('Error getting data from DB');
@@ -356,7 +323,7 @@ exports.handle_actor_banishment = function(req, res) {
 /**
  * @swagger
  * path:
- *  '/actor/{actorId}':
+ *  '/actors/{actorId}':
  *    delete:
  *      tags:
  *        - Actor
