@@ -2,9 +2,12 @@ var express = require('express'),
 app = express(),
 port = process.env.PORT || 8080,
 mongoose = require('mongoose'),
+swaggerDoc = require('./api/routes/swaggerDoc'),
 Actor = require('./api/models/actorModel'),
 Sponsorship = require('./api/models/sponsorshipModel'),
+Trip = require('./api/models/tripModel'),
 bodyParser = require('body-parser');
+
  
 // MongoDB URI building
 var mongoDBHostname = process.env.mongoDBHostname || "localhost";
@@ -26,13 +29,17 @@ mongoose.connect(mongoDBURI, {
  
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
- 
-var routesActors = require('./api/routes/actorRoutes');
-var routesSponsorships = require('./api/routes/sponsorshipRoutes');
 
-routesActors(app);
-routesSponsorships(app);
+app.use("/v1", swaggerDoc);
+
+var routesActors = require('./api/routes/actorRoutes'),
+routesTrips = require('./api/routes/tripRoutes'),
+routesSponsorships = require('./api/routes/sponsorshipRoutes');
  
+routesActors(app);
+routesTrips(app);
+routesSponsorships(app);
+
 console.log("Connecting DB to: " + mongoDBURI);
 mongoose.connection.on("open", function (err, conn) {
     app.listen(port, function () {
