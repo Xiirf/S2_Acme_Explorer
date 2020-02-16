@@ -2,6 +2,38 @@ var mongoose = require('mongoose')
 var Schema = mongoose.Schema;
 var bcrypt = require('bcrypt');
 
+/**
+ * @swagger
+ *  components:
+ *    schemas:
+ *      actor:
+ *        allOf:
+ *        - type: object
+ *          properties:
+ *            _id:
+ *              type: string
+ *            name:
+ *              type: string
+ *            surname:
+ *              type: string
+ *            email:
+ *              type: string
+ *            password:
+ *              type: string
+ *            phone:
+ *              type: string
+ *            address:
+ *              type: string
+ *            role:
+ *              type: string
+ *              enum: [Administrator, Manager, Explorer, Sponsor]
+ *            banned:
+ *              type: boolean
+ *            created_at:
+ *              type: string
+ *            __v:
+ *              type: integer
+ */
 var actorModel = new Schema({
     name: {
         type: String,

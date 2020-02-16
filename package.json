@@ -18,9 +18,8 @@
   },
   "homepage": "https://github.com/Xiirf/S2_Acme_Explorer#readme",
   "dependencies": {
-    "dateformat": "^3.0.3",
-    "dotenv": "^8.2.0",
     "bcrypt": "^3.0.8",
+    "cors": "^2.8.5",
     "dateformat": "^3.0.3",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",

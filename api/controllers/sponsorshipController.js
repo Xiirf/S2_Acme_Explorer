@@ -1,36 +1,6 @@
 var mongoose = require('mongoose')
 Sponsorships = mongoose.model('Sponsorships');
 
-/**
- * @swagger
- *  components:
- *    schemas:
- *      sponsorship:
- *        allOf:
- *        - type: object
- *          properties:
- *            _id:
- *              type: string
- *            banner:
- *              type: array
- *              items:
- *                type: string
- *            link:
- *              type: string
- *            price:
- *              type: number
- *            payed:
- *              type: boolean
- *            sponsor_id:
- *              type: string
- *            trip_id:
- *              type: string
- *            created_at:
- *              type: string
- *            __v:
- *              type: integer
- */
-
  /**
  * @swagger
  * path:
@@ -137,7 +107,7 @@ exports.create_a_sponsorship = function(req, res) {
 /**
  * @swagger
  * path:
- *  '/sponsorship/{sponsorshipId}':
+ *  '/sponsorships/{sponsorshipId}':
  *    get:
  *      tags:
  *        - Sponsorship
@@ -187,7 +157,7 @@ exports.read_a_sponsorship = function(req, res) {
 /**
  * @swagger
  * path:
- *  '/sponsorship/{sponsorshipId}':
+ *  '/sponsorships/{sponsorshipId}':
  *    put:
  *      tags:
  *        - Sponsorship
@@ -230,10 +200,10 @@ exports.edit_a_sponsorship = function(req, res) {
     var updatedSponsorship = req.body;
     var id = req.params.sponsorshipId;
     if (!updatedSponsorship) {
-        console.warn("New PUT request to /sponsorship/ without sponsorship, sending 400...");
+        console.warn("New PUT request to /sponsorships/ without sponsorship, sending 400...");
         res.sendStatus(400); // bad request
     } else {
-        console.info("New PUT request to /sponsorship/" + id + " with data " + JSON.stringify(updatedSponsorship, 2, null));
+        console.info("New PUT request to /sponsorships/" + id + " with data " + JSON.stringify(updatedSponsorship, 2, null));
         Sponsorships.findById(id, function(err, sponsorship) {
             if (err) {
                 console.error('Error getting data from DB');
@@ -266,7 +236,7 @@ exports.edit_a_sponsorship = function(req, res) {
 /**
  * @swagger
  * path:
- *  '/sponsorship/{sponsorshipId}/pay':
+ *  '/sponsorships/{sponsorshipId}/pay':
  *    patch:
  *      tags:
  *        - Sponsorship
@@ -313,10 +283,10 @@ exports.handle_sponsorship_payement = function(req, res) {
     var payedObject = req.body;
     var id = req.params.sponsorshipId;
     if (!payedObject || typeof(payedObject.payed) != "boolean") {
-        console.warn("New PATCH request to /sponsorship/id/pay without correct attribute payed, sending 400...");
+        console.warn("New PATCH request to /sponsorships/id/pay without correct attribute payed, sending 400...");
         res.sendStatus(400);
     } else {
-        console.info("New PATCH request to /sponsorship/" + id + "/pay with value " + JSON.stringify(payedObject.payed, 2, null));
+        console.info("New PATCH request to /sponsorships/" + id + "/pay with value " + JSON.stringify(payedObject.payed, 2, null));
         Sponsorships.findOneAndUpdate({"_id": id}, payedObject, { new: true }, function(err, sponsorship) {
             if (err) {
                 if(err.name=='ValidationError') {
@@ -341,7 +311,7 @@ exports.handle_sponsorship_payement = function(req, res) {
 /**
  * @swagger
  * path:
- *  '/sponsorship/{sponsorshipId}':
+ *  '/sponsorships/{sponsorshipId}':
  *    delete:
  *      tags:
  *        - Sponsorship
