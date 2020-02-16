@@ -10,7 +10,7 @@ var Schema = mongoose.Schema;
  * @swagger
  *  components:
  *    schemas:
- *      Stage:
+ *      Applications:
  *        type: object
  *        required:
  *          - idExplorer
