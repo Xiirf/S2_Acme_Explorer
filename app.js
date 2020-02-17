@@ -1,4 +1,5 @@
 var express = require('express'),
+enable_cors = require('cors'),
 app = express(),
 port = process.env.PORT || 8080,
 mongoose = require('mongoose'),
@@ -6,6 +7,8 @@ swaggerDoc = require('./api/routes/swaggerDoc'),
 Actor = require('./api/models/actorModel'),
 Sponsorship = require('./api/models/sponsorshipModel'),
 Trip = require('./api/models/tripModel'),
+Application = require('./api/models/applicationModel'),
+Finder = require('./api/models/finderModel'),
 bodyParser = require('body-parser');
 
  
@@ -29,17 +32,23 @@ mongoose.connect(mongoDBURI, {
  
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(enable_cors());
 
 app.use("/v1", swaggerDoc);
 
 var routesActors = require('./api/routes/actorRoutes'),
 routesTrips = require('./api/routes/tripRoutes'),
-routesSponsorships = require('./api/routes/sponsorshipRoutes');
+routesSponsorships = require('./api/routes/sponsorshipRoutes'),
+routesActors = require('./api/routes/actorRoutes'),
+routesApplications = require('./api/routes/applicationRoutes'),
+routesFinders = require('./api/routes/finderRoutes');
  
 routesActors(app);
 routesTrips(app);
 routesSponsorships(app);
-
+routesApplications(app);
+routesFinders(app);
+ 
 console.log("Connecting DB to: " + mongoDBURI);
 mongoose.connection.on("open", function (err, conn) {
     app.listen(port, function () {

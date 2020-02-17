@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "033e9052-c90e-4727-a054-b066d0142bd5",
+		"_postman_id": "109a480e-ff2a-4deb-8e8e-8b7f31021ca1",
 		"name": "trip",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -13,6 +13,33 @@
 					"script": {
 						"id": "3a625c7d-1bf2-4624-9175-6b2c647890ff",
 						"exec": [
+							"const echoPostRequest = {\r",
+							"    url: pm.variables.get('host') + '/actors',\r",
+							"    method: 'POST',\r",
+							"    header: {\r",
+							"        'content-type': 'application/json',\r",
+							"    },\r",
+							"    body: {\r",
+							"        mode: 'raw',\r",
+							"        raw: JSON.stringify({\r",
+							"            \"name\": \"Antoño\",\r",
+							"            \"surname\": \"Banderas\",\r",
+							"            \"email\": \"f@test.com\",\r",
+							"            \"phone\": \"012459786\",\r",
+							"            \"password\": \"pwd\",\r",
+							"            \"adress\": \"algun lugar\",\r",
+							"            \"role\": \"Manager\"\r",
+							"        })\r",
+							"    }\r",
+							"};\r",
+							"pm.sendRequest(echoPostRequest, function (err, res) {\r",
+							"    console.log(err ? err : res.json());\r",
+							"        if (err === null) {\r",
+							"            console.log(res.json()._id)\r",
+							"            pm.environment.set('lastActorSubmittedId', res.json()._id)\r",
+							"        }\r",
+							"    });\r",
+							"\r",
 							"let t = Date.now()\r",
 							"pm.environment.set('start', t);\r",
 							"pm.environment.set('end', t);"
@@ -31,7 +58,14 @@
 							"pm.test(\"Price sum\", function () {",
 							"    var jsonData = pm.response.json();",
 							"    pm.expect(jsonData.price).to.eql(1000);",
-							"});"
+							"});",
+							"",
+							"const echoDeleteRequestActor = {",
+							"  url: pm.variables.get('host') + '/actors/' + pm.environment.get('lastActorSubmittedId'),",
+							"  method: 'DELETE',",
+							"};",
+							"",
+							"pm.sendRequest(echoDeleteRequestActor)"
 						],
 						"type": "text/javascript"
 					}
@@ -48,7 +82,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"title\": \"testTitle\",\n\t\"description\": \"testDescription\",\n\t\"requirements\": [\"testRequirement\"],\n\t\"start\": {{start}},\n\t\"end\": {{end}},\n\t\"stages\": [\n\t\t{\n\t\t\t\"title\": \"Paris\",\n\t\t\t\"description\": \"Paris step\",\n\t\t\t\"price\": 620\n\t\t},\n\t\t{\n\t\t\t\"title\": \"Rouen\",\n\t\t\t\"description\": \"Rouen step\",\n\t\t\t\"price\": 380\n\t\t}\n\t],\n\t\"managerId\": \"5e40a6a22c8c093520b8369d\"\n}"
+					"raw": "{\n\t\"title\": \"testTitle\",\n\t\"description\": \"testDescription\",\n\t\"requirements\": [\"testRequirement\"],\n\t\"start\": {{start}},\n\t\"end\": {{end}},\n\t\"stages\": [\n\t\t{\n\t\t\t\"title\": \"Paris\",\n\t\t\t\"description\": \"Paris step\",\n\t\t\t\"price\": 620\n\t\t},\n\t\t{\n\t\t\t\"title\": \"Rouen\",\n\t\t\t\"description\": \"Rouen step\",\n\t\t\t\"price\": 380\n\t\t}\n\t],\n\t\"managerId\": \"{{lastActorSubmittedId}}\"\n}"
 				},
 				"url": {
 					"raw": "{{host}}/trips",
@@ -164,40 +198,6 @@
 			"response": []
 		},
 		{
-			"name": "trips/:tripID",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"id": "22e2f555-08f0-421b-b48b-1da4b221fa88",
-						"exec": [
-							"var path = pm.variables.get(\"host\") + \"/trips\";",
-							"pm.sendRequest(path, function (err, response) {",
-							"    pm.environment.set(\"tripID\", response.json()[0]._id);",
-							"});",
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "DELETE",
-				"header": [],
-				"url": {
-					"raw": "{{host}}/trips/{{tripID}}",
-					"host": [
-						"{{host}}"
-					],
-					"path": [
-						"trips",
-						"{{tripID}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
 			"name": "trips/:tripID/stage",
 			"event": [
 				{
@@ -247,6 +247,48 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "trips/:tripID",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "22e2f555-08f0-421b-b48b-1da4b221fa88",
+						"exec": [
+							"var path = pm.variables.get(\"host\") + \"/trips\";",
+							"pm.sendRequest(path, function (err, response) {",
+							"    pm.environment.set(\"tripID\", response.json()[0]._id);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/trips/{{tripID}}",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"trips",
+						"{{tripID}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"id": "5f6ca187-db8d-4e0d-8552-9272c4c6fea6",
+			"key": "lastActorSubmittedId",
+			"value": null,
+			"type": "any"
 		}
 	],
 	"protocolProfileBehavior": {}

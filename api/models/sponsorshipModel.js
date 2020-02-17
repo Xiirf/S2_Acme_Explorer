@@ -3,6 +3,35 @@ var mongoose = require('mongoose')
 var Schema = mongoose.Schema;
 var Actors = mongoose.model('Actors');
 
+/**
+ * @swagger
+ *  components:
+ *    schemas:
+ *      sponsorship:
+ *        allOf:
+ *        - type: object
+ *          properties:
+ *            _id:
+ *              type: string
+ *            banner:
+ *              type: array
+ *              items:
+ *                type: string
+ *            link:
+ *              type: string
+ *            price:
+ *              type: number
+ *            payed:
+ *              type: boolean
+ *            sponsor_id:
+ *              type: string
+ *            trip_id:
+ *              type: string
+ *            created_at:
+ *              type: string
+ *            __v:
+ *              type: integer
+ */
 var sponsorshipModel = new Schema({
     banner: {
         data: Buffer,

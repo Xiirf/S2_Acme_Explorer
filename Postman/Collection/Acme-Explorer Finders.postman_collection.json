@@ -1,0 +1,299 @@
+{
+	"info": {
+		"_postman_id": "3e4f7b75-d35a-4737-be73-b90a15e2bfb2",
+		"name": "Acme-Explorer Finders",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "POST finders",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "6f4ed969-18e7-4c0b-a578-1478b0d711dd",
+						"exec": [
+							"const echoPostRequest = {",
+							"    url: pm.variables.get('host') + '/actors',",
+							"    method: 'POST',",
+							"    header: {",
+							"        'content-type': 'application/json',",
+							"    },",
+							"    body: {",
+							"        mode: 'raw',",
+							"        raw: JSON.stringify({",
+							"            \"name\": \"Antoño\",",
+							"            \"surname\": \"Banderas\",",
+							"            \"email\": \"f@f.com\",",
+							"            \"phone\": \"012459786\",",
+							"            \"password\": \"pwd\",",
+							"            \"adress\": \"algun lugar\",",
+							"            \"role\": \"Explorer\"",
+							"        })",
+							"    }",
+							"};",
+							"pm.sendRequest(echoPostRequest, function (err, res) {",
+							"    console.log(err ? err : res.json());",
+							"    if (err === null) {",
+							"        pm.collectionVariables.set('explorer', res.json()._id)",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "3c9425c5-6329-406a-87e8-b41f5a098764",
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"idExplorer\": \"{{explorer}}\",\r\n  \"keyWord\": \"Rouen\",\r\n  \"priceMin\": 200,\r\n  \"priceMax\": 500,\r\n  \"dateMin\": \"2020-02-12\",\r\n  \"dateMax\": \"2020-02-28\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/finders",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"finders"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET finders",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "dce4b05b-0925-4ecb-911a-98ba1a63c176",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Return 1 item\", function () { pm.expect(pm.response.json().length).to.eql(1)});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/finders",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"finders"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET finders/:finderId",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "d1000ce8-b5f8-4ed1-9c7b-866db579201b",
+						"exec": [
+							"var path = pm.variables.get(\"host\") + \"/finders\";",
+							"pm.sendRequest(path, function (err, response) {",
+							"    pm.collectionVariables.set(\"findersId\", response.json()[0]._id);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "b3c83f03-ea2b-4b4c-a965-f850784359a6",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/finders/{{findersId}}",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"finders",
+						"{{findersId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PUT finders/:finderId",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "35a888d6-daac-416f-b55e-1f30220ca4e4",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200) });"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"idExplorer\": \"{{explorer}}\",\r\n  \"keyWord\": \"Paris\",\r\n  \"priceMin\": 250,\r\n  \"priceMax\": 650,\r\n  \"dateMin\": \"2020-02-12\",\r\n  \"dateMax\": \"2020-02-28\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/finders/{{findersId}}",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"finders",
+						"{{findersId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE finders/:finderId",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "d768f78c-81e3-45ff-b80c-ba3050c499c8",
+						"exec": [
+							"pm.test(\"Status code is 204\", function () { pm.response.to.have.status(204) });",
+							"const echoGetRequest = {",
+							"  url: pm.variables.get('host') + '/finders/' + pm.collectionVariables.get('findersId'),",
+							"  method: 'GET',",
+							"};",
+							"pm.sendRequest(echoGetRequest, function (err, res) {",
+							"    pm.test(\"Item has been deleted\", function () { pm.expect(res.code).to.be.oneOf([404]) });",
+							"});",
+							"const echoDeleteRequest = {",
+							"  url: pm.variables.get('host') + '/actors/' + pm.collectionVariables.get('explorer'),",
+							"  method: 'DELETE',",
+							"};",
+							"pm.sendRequest(echoDeleteRequest)"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/finders/{{findersId}}",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"finders",
+						"{{findersId}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "c1fdbdb2-2099-4450-ab08-b23c3478475f",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "980c740b-3e85-4b6a-8826-655fcf3d5750",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "7bde3ab0-1a02-4ec3-b32c-7032aec9cc8b",
+			"key": "host",
+			"value": "localhost:8080/v1",
+			"type": "string"
+		},
+		{
+			"id": "5f481793-ebfa-4908-b498-3ef43774eaac",
+			"key": "explorer",
+			"value": "5e4ab03e7bf20d55050c469c",
+			"type": "string"
+		},
+		{
+			"id": "f5672282-0c8d-4c46-9ffd-0604f0589ed0",
+			"key": "findersId",
+			"value": "5e4ab03f7bf20d55050c469d",
+			"type": "string"
+		}
+	],
+	"protocolProfileBehavior": {}
+}
