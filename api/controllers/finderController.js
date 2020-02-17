@@ -107,7 +107,8 @@ exports.create_a_finder = function(req, res) {
  *          description: Internal error
  */
 exports.read_a_finder = function(req, res) {
-    Finders.findById(req.params.finderId, function(err, finder) {
+    var id = req.params.finderId;
+    Finders.findById(id, function(err, finder) {
         if (err) {
             res.status(500).send(err);
         } 
@@ -196,11 +197,13 @@ exports.edit_a_finder = function(req, res) {
  *          description: Internal error
  */
 exports.delete_a_finder = function(req, res) {
-    Finders.findOneAndDelete({_id: req.params.finderId}, function(err, finder) {
+    var id = req.params.finderId
+    Finders.findOneAndDelete({"_id": id}, null, function(err, finder) {
         if(err) {
             res.status(500).send(err);
         } 
         else {
+            res.status(204);
             res.json({message: 'Finder successfully deleted', finder});
         }
     })

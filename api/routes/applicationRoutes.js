@@ -6,10 +6,10 @@ var router = express.Router();
 module.exports = function(app) {
     var applications = require('../controllers/applicationController');
     
-    router.route('applications')
+    router.route('/applications')
         .get(applications.list_all_applications)
         .post(applications.create_an_application);
-    router.route('applications/:applicationId')
+    router.route('/applications/:applicationId')
         .get(applications.read_an_application)
         .put(applications.edit_an_application)
         .delete(applications.delete_an_application);

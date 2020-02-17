@@ -60,26 +60,13 @@ var finderSchema = new Schema({
         type: Number
     },
     priceMax: {
-        type: Number,
-        validate: [priceValidator,
-            'Min Price must be less than Max Price']
+        type: Number
     },
     dateMin: {
         type: Date
     },
     dateMax: {
-        type: Date,
-        validate: [dateValidator,
-            'Min Date must be less than Max Date']
+        type: Date
     }
 }, {strict:false});
-
-function priceValidator(value) {
-    return this.priceMin <= value;
-}
-
-function dateValidator(value) {
-    return this.dateMin <= value;
-}
-
 module.exports = mongoose.model('Finders', finderSchema);

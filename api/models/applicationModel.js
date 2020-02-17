@@ -84,13 +84,8 @@ var applicationSchema = new Schema({
     },
     reasonCancelling: {
         type: String,
-        validate: [reasonValidator,
-            'The application must be cancelled']
+        default: null
     }
 }, {strict:false});
-
-function reasonValidator(value) {
-    return this.status == 'CANCELLED';
-}
 
 module.exports = mongoose.model('Applications', applicationSchema);

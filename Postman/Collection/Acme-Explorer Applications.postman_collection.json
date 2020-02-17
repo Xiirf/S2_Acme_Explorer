@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "7a6b4edf-4e4c-4ebf-beb4-75158d4d681a",
+		"_postman_id": "8d97fcc8-2b3e-413c-b9ea-c1dc9a282798",
 		"name": "Acme-Explorer Applications",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -14,7 +14,7 @@
 						"id": "f6a5b166-802e-4cda-b9ec-ac76fd9a4dd6",
 						"exec": [
 							"const echoPostRequestExplorer = {",
-							"    url: pm.variables.get('host') + '/actors',",
+							"    url: pm.collectionVariables.get('host') + '/actors',",
 							"    method: 'POST',",
 							"    header: {",
 							"        'content-type': 'application/json',",
@@ -36,11 +36,9 @@
 							"    console.log(err ? err : res.json());",
 							"    if (err === null) {",
 							"        pm.collectionVariables.set('explorer', res.json()._id)",
-							"    }",
-							"});",
 							"",
 							"const echoPostRequestManager = {",
-							"    url: pm.variables.get('host') + '/actors',",
+							"    url: pm.collectionVariables.get('host') + '/actors',",
 							"    method: 'POST',",
 							"    header: {",
 							"        'content-type': 'application/json',",
@@ -62,11 +60,8 @@
 							"    console.log(err ? err : res.json());",
 							"    if (err === null) {",
 							"        pm.collectionVariables.set('manager', res.json()._id)",
-							"    }",
-							"});",
-							"",
-							"const echoPostRequestTrip = {",
-							"    url: pm.variables.get('host') + '/trips',",
+							"        const echoPostRequestTrip = {",
+							"    url: pm.collectionVariables.get('host') + '/trips',",
 							"    method: 'POST',",
 							"    header: {",
 							"        'content-type': 'application/json',",
@@ -100,7 +95,12 @@
 							"    if (err === null) {",
 							"        pm.collectionVariables.set('trip', res.json()._id)",
 							"    }",
-							"});"
+							"});",
+							"    }",
+							"});",
+							"    }",
+							"});",
+							""
 						],
 						"type": "text/javascript"
 					}
@@ -130,7 +130,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"idExplorer\": \"{{explorer}}\",\r\n  \"idTrip\": \"{{trip}}\",\r\n  \"createdAt\": null,\r\n  \"status\": \"PENDING\",\r\n  \"comments\": [\r\n    \"A comment\",\r\n    \"Another comment\"\r\n  ],\r\n  \"reasonCancelling\": null\r\n}",
+					"raw": "{\r\n  \"idExplorer\": \"{{explorer}}\",\r\n  \"idTrip\": \"{{trip}}\",\r\n  \"status\": \"PENDING\",\r\n  \"comments\": [\r\n    \"A comment\",\r\n    \"Another comment\"\r\n  ]\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -263,7 +263,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"idExplorer\": \"{{explorer}}\",\r\n  \"idTrip\": \"{{trip}}\",\r\n  \"createdAt\": null,\r\n  \"status\": \"CANCELLED\",\r\n  \"comments\": [\r\n    \"A comment\",\r\n    \"Another comment\"\r\n  ],\r\n  \"reasonCancelling\": \"A reason\"\r\n}",
+					"raw": "{\r\n  \"idExplorer\": \"{{explorer}}\",\r\n  \"idTrip\": \"{{trip}}\",\r\n  \"status\": \"CANCELLED\",\r\n  \"comments\": [\r\n    \"A comment\",\r\n    \"Another comment\"\r\n  ],\r\n  \"reasonCancelling\": \"A reason\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -312,11 +312,21 @@
 							"pm.sendRequest(echoGetRequest, function (err, res) {",
 							"    pm.test(\"Item has been deleted\", function () { pm.expect(res.code).to.be.oneOf([404]) });",
 							"});",
-							"const echoDeleteRequest = {",
+							"const echoDeleteRequest1 = {",
+							"  url: pm.variables.get('host') + '/trips/' + pm.collectionVariables.get('trip'),",
+							"  method: 'DELETE',",
+							"};",
+							"pm.sendRequest(echoDeleteRequest1)",
+							"const echoDeleteRequest2 = {",
 							"  url: pm.variables.get('host') + '/actors/' + pm.collectionVariables.get('explorer'),",
 							"  method: 'DELETE',",
 							"};",
-							"pm.sendRequest(echoDeleteRequest)"
+							"pm.sendRequest(echoDeleteRequest2)",
+							"const echoDeleteRequest3 = {",
+							"  url: pm.variables.get('host') + '/actors/' + pm.collectionVariables.get('manager'),",
+							"  method: 'DELETE',",
+							"};",
+							"pm.sendRequest(echoDeleteRequest3)"
 						],
 						"type": "text/javascript"
 					}
@@ -339,12 +349,58 @@
 			"response": []
 		}
 	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "2f6df438-f828-4236-bdac-b6149f0e137d",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "e035d5bb-56aa-41a5-97b3-f6a553d6a2a7",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
 	"variable": [
 		{
-			"id": "5f0f1eb0-ef18-41d3-920e-96d630e2d965",
+			"id": "a83256d6-581e-457c-9cbc-20c293a08f3f",
+			"key": "host",
+			"value": "localhost:8080/v1",
+			"type": "string"
+		},
+		{
+			"id": "e181e36d-0469-45bc-af0e-58fd43b5f556",
 			"key": "explorer",
-			"value": null,
-			"type": "any"
+			"value": "5e4aadcbb178d15139f51210",
+			"type": "string"
+		},
+		{
+			"id": "daa7f822-510a-4d64-a581-59c1392edbea",
+			"key": "manager",
+			"value": "5e4aadccb178d15139f51211",
+			"type": "string"
+		},
+		{
+			"id": "a7239606-1a2f-4cb8-b7b8-eebc6eac4779",
+			"key": "trip",
+			"value": "5e4aadccb178d15139f51212",
+			"type": "string"
+		},
+		{
+			"id": "6cb022c7-d1f9-46ec-b8c5-73983f2480dc",
+			"key": "applicationId",
+			"value": "5e4aadccb178d15139f51215",
+			"type": "string"
 		}
 	],
 	"protocolProfileBehavior": {}
