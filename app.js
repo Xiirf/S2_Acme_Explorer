@@ -10,13 +10,17 @@ Trip = require('./api/models/tripModel'),
 Application = require('./api/models/applicationModel'),
 Finder = require('./api/models/finderModel'),
 bodyParser = require('body-parser');
-
- 
+require('dotenv').config();
 // MongoDB URI building
+var mongoDBUser = process.env.MONGO_USER || "myUser";
+var mongoDBPass = process.env.MONGO_PASSWORD || "myUserPassword";
+var mongoDBCredentials = (mongoDBUser && mongoDBPass) ? mongoDBUser + ":" + mongoDBPass + "@" : "";
+
 var mongoDBHostname = process.env.mongoDBHostname || "localhost";
 var mongoDBPort = process.env.mongoDBPort || "27017";
 var mongoDBName = process.env.mongoDBName || "ACME-Explorer";
-var mongoDBURI = "mongodb://" + mongoDBHostname + ":" + mongoDBPort + "/" + mongoDBName;
+
+var mongoDBURI = "mongodb://" + mongoDBCredentials + mongoDBHostname + ":" + mongoDBPort + "/" + mongoDBName;
  
 mongoose.connect(mongoDBURI, {
     reconnectTries: 10,
