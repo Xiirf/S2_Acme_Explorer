@@ -22,6 +22,7 @@ exports.store_json_fs = function(req, res) {
 
         // create the writable stream
         const writableStream = streamToMongoDB(outputDBConfig);
+        console.log()
 
         // create readable stream and consume it
         console.log('starting streaming the json from file: '+sourceFile+', to dbURL: '+dbURL+ ', into the collection: '+collection);

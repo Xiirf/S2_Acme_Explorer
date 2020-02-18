@@ -15,8 +15,7 @@ module.exports = function(app) {
 	 * @param {string} sourceURL   //mandatory
 	 * @param {string} batchSize   //optional
 	 * @param {string} parseString //optional
-	 * Sample 1: http://localhost:8080/v1/storage/fs?dbURL=mongodb://myUser:myUserPassword@localhost:27017/ACME-Market&collection=test&batchSize=100&parseString=rows.*&sourceFile=c:\temp\many_npm.json
-	 * Sample 2: http://localhost:8080/v1/storage/fs?dbURL=mongodb://myUser:myUserPassword@localhost:27017/ACME-Market&collection=actors&batchSize=100&parseString=*&sourceFile=c:\temp\Customer.json
+	 * Sample 1: http://localhost:8080/v1/storage/fs?dbURL=mongodb://simpleUser:123456@localhost:27017/ACME-Explorer&collection=actors&batchSize=100&parseString=*&sourceFile=./dataActors.json
   */
   app.route('/v1/storage/fs')
 		.post(storage.store_json_fs);
