@@ -1,0 +1,181 @@
+{
+	"info": {
+		"_postman_id": "26bd96af-3e5d-4183-a9ef-99ec178a8a9f",
+		"name": "Acme-Explorer Massive Storage",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "POST actors",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/{{ressource}}?dbURL={{MongoDBURL}}&collection=actors&batchSize={{batchSize}}&parseString=*&sourceFile={{folderLocation}}/dataActors.json",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"{{ressource}}"
+					],
+					"query": [
+						{
+							"key": "dbURL",
+							"value": "{{MongoDBURL}}"
+						},
+						{
+							"key": "collection",
+							"value": "actors"
+						},
+						{
+							"key": "batchSize",
+							"value": "{{batchSize}}"
+						},
+						{
+							"key": "parseString",
+							"value": "*"
+						},
+						{
+							"key": "sourceFile",
+							"value": "{{folderLocation}}/dataActors.json"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST sponsorships",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/{{ressource}}?dbURL={{MongoDBURL}}&collection=sponsorships&batchSize={{batchSize}}&parseString=*&sourceFile={{folderLocation}}/dataSponsorships.json",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"{{ressource}}"
+					],
+					"query": [
+						{
+							"key": "dbURL",
+							"value": "{{MongoDBURL}}"
+						},
+						{
+							"key": "collection",
+							"value": "sponsorships"
+						},
+						{
+							"key": "batchSize",
+							"value": "{{batchSize}}"
+						},
+						{
+							"key": "parseString",
+							"value": "*"
+						},
+						{
+							"key": "sourceFile",
+							"value": "{{folderLocation}}/dataSponsorships.json"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST trips",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/{{ressource}}?dbURL={{MongoDBURL}}&collection=trips&batchSize={{batchSize}}&parseString=*&sourceFile={{folderLocation}}/dataTrips.json",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"{{ressource}}"
+					],
+					"query": [
+						{
+							"key": "dbURL",
+							"value": "{{MongoDBURL}}"
+						},
+						{
+							"key": "collection",
+							"value": "trips"
+						},
+						{
+							"key": "batchSize",
+							"value": "{{batchSize}}"
+						},
+						{
+							"key": "parseString",
+							"value": "*"
+						},
+						{
+							"key": "sourceFile",
+							"value": "{{folderLocation}}/dataTrips.json"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "b7467b85-aafa-4fdb-9e99-30c6df424ade",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "28f5f600-4e92-452e-94f8-2706a5407ba3",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "1528dbe0-5352-435e-8a61-c0a24e4938b2",
+			"key": "host",
+			"value": "localhost:8080/v1",
+			"type": "string"
+		},
+		{
+			"id": "d7238953-7e23-49fa-89c0-e555df00767e",
+			"key": "ressource",
+			"value": "storage/fs",
+			"type": "string"
+		},
+		{
+			"id": "b263419b-99e8-4ba7-a66e-3a2c2fe8a8d6",
+			"key": "MongoDBURL",
+			"value": "dbURL=mongodb://admin:mdp@localhost:27017/ACME-Explorer",
+			"type": "string"
+		},
+		{
+			"id": "ef75ec2a-8a54-4378-8b9d-955d5228bc8f",
+			"key": "batchSize",
+			"value": "100",
+			"type": "string"
+		},
+		{
+			"id": "6318195a-d564-4a84-a845-80267366a953",
+			"key": "folderLocation",
+			"value": ".",
+			"type": "string"
+		}
+	],
+	"protocolProfileBehavior": {}
+}
