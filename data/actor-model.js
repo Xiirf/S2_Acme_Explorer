@@ -13,6 +13,9 @@ module.exports = {
         faker: 'lorem.words(1)'
     },
     email: {
+        randexp: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
+    },
+    banned: {
         values: [true, false, false, false, false]
     },
     password: {
