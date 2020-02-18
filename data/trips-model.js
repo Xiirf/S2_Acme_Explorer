@@ -1,3 +1,6 @@
+const generate = require('nanoid/generate');
+const dateFormat = require('dateformat');
+
 String.prototype.hexEncode = function(){
     var hex, i;
 
@@ -13,6 +16,12 @@ String.prototype.hexEncode = function(){
 module.exports = {
     _id: {
         chance: 'guid'
+    },
+    ticker: {
+        function: function() {
+            var date=dateFormat(new Date(), "yymmdd");
+            return [date, generate('ABCDEFGHIJKLMNOPQRSTUVWXYZ', 4)].join('-');
+        }
     },
     name: {
         function: function() {
