@@ -13,7 +13,7 @@ module.exports = {
         faker: 'lorem.words(1)'
     },
     email: {
-        randexp: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
+        randexp: /^\w{1,3}([\.-]?\w{1,3}){2,15}@\w+([\.-]?\w{1,3}){2,5}(\.\w{2,3}){1,2}$/
     },
     banned: {
         values: [true, false, false, false, false]
