@@ -54,11 +54,13 @@ module.exports = {
         length: 4,
         fixedLength: false
     }
-],
-    managerId: {
+], managerId: {
         function: function() {
             while((actor = this.faker.random.arrayElement(this.db.actors)).role != "Manager") {}
             return actor._id;
         }
+    },
+    __v: {
+        static: 0
     }
 }
