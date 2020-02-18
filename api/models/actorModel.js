@@ -44,7 +44,6 @@ var actorModel = new Schema({
     }, email: {
         type: String,
         required: 'Enter the email of the actor please',
-        unique: true,
         match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please fill a valid email address']
     }, password: {
         type: String,

@@ -2,6 +2,7 @@ var mongodb = require('mongodb')
 var mongoose = require('mongoose')
 var Schema = mongoose.Schema;
 var Actors = mongoose.model('Actors');
+var Trips = mongoose.model('Trips');
 
 /**
  * @swagger
@@ -59,7 +60,15 @@ var sponsorshipModel = new Schema({
         }
     }, trip_id: {
         type: mongodb.ObjectID,
-        required: 'Enter the trip id of this sponsorship please'
+        required: 'Enter the trip id of this sponsorship please',
+        validate: {
+            validator: async function(v) {
+                return Promise.resolve(Trips.findById(v, function(err, trip) {
+                    return trip != null;
+                }));
+            },
+            message: "There are no trip with this id"
+        }
     }, createdAt: {
         type:Date,
         default: Date.now
