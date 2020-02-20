@@ -172,7 +172,7 @@ tripSchema.pre('save', function(callback) {
     var new_trip = this;
 
     // Break out if the cancelled hasn't changed
-    if (!new_trip.isModified('cancelled')) return callback();
+    if (new_trip.ticker) return callback();
 
     // Generación del Ticker
     var date=dateFormat(new Date(), "yymmdd");
