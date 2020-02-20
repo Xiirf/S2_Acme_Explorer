@@ -249,9 +249,7 @@ exports.delete_a_trip = function(req, res) {
  */
 exports.add_a_stage_in_trip = function(req, res) {
     // Voir si l'utilisateur connecté est un admin ou manager
-    console.log(req.body);
     var stage = new Stages(req.body)
-    console.log("ok")
     Trips.findOneAndUpdate({_id: req.params.tripId}, {$push: {stages: stage}}, {new:true, runValidators: true}, function(err, trip) {
         if (err){
             if(err.name=='ValidationError') {
@@ -268,4 +266,88 @@ exports.add_a_stage_in_trip = function(req, res) {
             res.json(trip);
         }
     })
+}
+
+/**
+ * @swagger
+ * path:
+ *  /trips/{tripId}/cancel:
+ *    patch:
+ *      summary: cancel the trip
+ *      tags: [Trips]
+ *      parameters:
+ *         - name: tripId
+ *           in: path
+ *           description: trip Id
+ *           required: true
+ *           schema:
+ *             type: string
+ *      requestBody:
+ *        required: true
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              required:
+ *                - reasonCancelling
+ *              properties:
+ *                reasonCancelling:
+ *                  type: string
+ *                  description: trip reason cancelling.
+ *              example:
+ *                reasonCancelling: reason1
+ *      responses:
+ *        "200":
+ *          description: Trip updated
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/Trip'
+ *        "400":
+ *          description: Bad request
+ *        "404":
+ *          description: Ressource not found
+ *        "422":
+ *          description: Validation Error
+ *        "500":
+ *          description: Internal error
+ */
+exports.cancel_a_trip = function(req, res) {
+    // Voir si l'utilisateur connecté est un admin ou manager
+    var reasonCancelling = req.body.reasonCancelling;
+    var id = req.params.tripId;
+    if (!reasonCancelling) {
+        res.status(400) // bad request
+            .json({ error: 'No se ha encontrado la razón de la cancelación.'});
+    } else {
+        Trips.findById(id, function(err, trip) {
+            if (err) {
+                res.status(500).send(err); // internal server error
+              } else {
+                if (trip) {
+                    if (trip.cancelled){
+                        res.status(400) // bad request beacause trip already cancelled
+                            .json({ error: 'Trip ya cancelado'});
+                    } else {
+                        trip.cancelled = true;
+                        trip.reasonCancelling = reasonCancelling;
+                        trip.save(function(err2, newTrip) {
+                            if (err2) {
+                                if(err.name=='ValidationError') {
+                                    res.status(422).send(err2);
+                                }
+                                else{
+                                    res.status(500).send(err2);
+                                }
+                            } else {
+                                res.send(newTrip); // return the updated actor
+                            }
+                        });
+                    }
+                } else {
+                  res.sendStatus(404); // not found
+                }
+            }
+        });
+    }
 }

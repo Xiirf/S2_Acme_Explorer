@@ -171,6 +171,9 @@ function dateValidator(value) {
 tripSchema.pre('save', function(callback) {
     var new_trip = this;
 
+    // Break out if the cancelled hasn't changed
+    if (!new_trip.isModified('cancelled')) return callback();
+
     // Generación del Ticker
     var date=dateFormat(new Date(), "yymmdd");
     var generated_ticker = [date, generate('ABCDEFGHIJKLMNOPQRSTUVWXYZ', 4)].join('-')
