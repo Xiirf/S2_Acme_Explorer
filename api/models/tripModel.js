@@ -4,7 +4,9 @@ var mongodb = require('mongodb');
 const generate = require('nanoid/generate');
 const dateFormat = require('dateformat');
 var mongoose = require('mongoose')
-Actors = mongoose.model('Actors');
+Actors = require('./actorModel');
+Sponsorships = require('./sponsorshipModel');
+Applications = require('./applicationModel');
 
 /**
  * @swagger
@@ -44,6 +46,8 @@ var stageSchema = new Schema({
         min: 0
     }
 }, {strict: false});
+module.exports = mongoose.model('Stages', stageSchema);
+Stages = mongoose.model('Stages');
 
 /**
  * @swagger
@@ -89,12 +93,6 @@ var stageSchema = new Schema({
  *              contentType:
  *                  type: string
  *            description: Array of Trip pictures.
- *          cancelled:
- *            type: boolean
- *            description: Trip cancel or no.
- *          reasonCancelling:
- *            type: string
- *            description: Trip calcel reason.
  *          stages:
  *            type: array
  *            items: object
@@ -184,7 +182,24 @@ tripSchema.pre('save', function(callback) {
     callback();
 });
 
-tripSchema.index( { title: "text", description: "text", ticker: "text" } );
+tripSchema.pre('deleteOne', async function(callback){
+    //Delete all object associated with this trip
+    var tripId = this._conditions._id;
+    await Sponsorships.deleteMany({trip_id: tripId} ,(err) => {
+        if(err) throw err;
+    });
+    await Applications.deleteMany({idTrip: tripId} ,(err) => {
+        if(err) throw err;
+    });
 
-module.exports = mongoose.model('Stages', stageSchema);
+    callback();
+});
+
+tripSchema.index( { title: "text", description: "text", ticker: "text" } );
+tripSchema.index( { ticker: "text", published: 1, cancelled: -1 } );
+tripSchema.index( { price: 1, published: 1, cancelled: -1 } );
+tripSchema.index( { start: 1, published: 1, cancelled: -1 } );
+tripSchema.index( { end: 1, published: 1, cancelled: -1 } );
+tripSchema.index( { ManagerId: 1} );
+
 module.exports = mongoose.model('Trips', tripSchema);
