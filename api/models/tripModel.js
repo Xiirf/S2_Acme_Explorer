@@ -133,7 +133,11 @@ var tripSchema = new Schema({
     }, pictures: [{
         data: Buffer,
         contentType: String
-    }], published: {
+    }], price: {
+        type: Number,
+        default: 0,
+        min: 0
+    }, published: {
         type: Boolean,
         default: false
     },cancelled: {
@@ -156,14 +160,6 @@ var tripSchema = new Schema({
     }
 }, {strict: true, toJSON: {virtuals: true}});
 
-tripSchema.virtual('price').get(function() {
-    var price = 0;
-    this.stages.forEach(stage => {
-        price += stage.price;
-    })
-    return price;
-});
-
 function dateValidator(value) {
     return this.start <= value;
 }
@@ -172,15 +168,23 @@ tripSchema.pre('save', function(callback) {
     var new_trip = this;
 
     // Break out if the cancelled hasn't changed
-    if (new_trip.ticker) return callback();
-
-    // Generación del Ticker
-    var date=dateFormat(new Date(), "yymmdd");
-    var generated_ticker = [date, generate('ABCDEFGHIJKLMNOPQRSTUVWXYZ', 4)].join('-')
-    new_trip.ticker = generated_ticker;
+    if (!new_trip.ticker) {
+        // Generación del Ticker
+        var date=dateFormat(new Date(), "yymmdd");
+        var generated_ticker = [date, generate('ABCDEFGHIJKLMNOPQRSTUVWXYZ', 4)].join('-')
+        new_trip.ticker = generated_ticker;
+    }
+    // Price
+    var price = 0;
+    new_trip.stages.forEach(stage => {
+        price += stage.price;
+    })
+    new_trip.price = price;
 
     callback();
 });
+
+tripSchema.index( { title: "text", description: "text", ticker: "text" } );
 
 module.exports = mongoose.model('Stages', stageSchema);
 module.exports = mongoose.model('Trips', tripSchema);

@@ -34,6 +34,91 @@ exports.list_all_trips = function(req, res) {
             res.status(200).json(trips);
         }
     });
+    
+}
+
+
+/**
+ * @swagger
+ * path:
+ *  /trips/search:
+ *    get:
+ *      summary: Get all trips
+ *      tags: [Trips]
+ *      parameters:
+ *         - name: keyword
+ *           in: query
+ *           description: keyword for research
+ *           required: false
+ *           schema:
+ *             type: string
+ *         - name: dateMin
+ *           in: query
+ *           description: Date min
+ *           required: false
+ *           schema:
+ *             type: date
+ *         - name: dateMax
+ *           in: query
+ *           description: Date max
+ *           required: false
+ *           schema:
+ *             type: date
+ *         - name: priceMin
+ *           in: query
+ *           description: Price min
+ *           required: false
+ *           schema:
+ *             type: number
+ *         - name: priceMax
+ *           in: query
+ *           description: Price max
+ *           required: false
+ *           schema:
+ *             type: number
+ *      responses:
+ *        "200":
+ *          description: Return all trips
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: array
+ *                $ref: '#/components/schemas/Trip'
+ *        "500":
+ *          description: Internal error
+ */
+exports.search_trips = function(req, res) {
+    var query = {};
+    
+    if(req.query.keyword){
+        query.$text = {$search: req.query.keyword};
+    }
+    if(req.query.dateMin){
+        query.start = {$gte: new Date(req.query.dateMin)};
+    }
+    if(req.query.dateMax){
+        query.end = {$lt: new Date(req.query.dateMax)};
+    }
+    if(req.query.priceMin){
+        query.price = [];
+        query.price = {$gte: req.query.priceMin};
+    }
+    if(req.query.priceMax){
+        query.price = {$lt: req.query.priceMax};
+    }
+    if (req.query.priceMin && req.query.priceMax){
+        query.price = { $gte: req.query.priceMin, $lt: req.query.priceMax };
+    }
+
+    Trips.find(query)
+        .lean()
+        .exec(function(err, trip){
+            if (err){
+                res.send(err);
+            } else {
+                res.json(trip);
+            }
+        });
 }
 
 /**
@@ -249,23 +334,36 @@ exports.delete_a_trip = function(req, res) {
  */
 exports.add_a_stage_in_trip = function(req, res) {
     // Voir si l'utilisateur connecté est un admin ou manager
+    var id = req.params.tripId;
     var stage = new Stages(req.body)
-    Trips.findOneAndUpdate({_id: req.params.tripId}, {$push: {stages: stage}}, {new:true, runValidators: true}, function(err, trip) {
-        if (err){
-            if(err.name=='ValidationError') {
-                res.status(422).send(err);
+    if (!stage) {
+        res.status(400) // bad request
+            .json({ error: 'No se ha encontrado el nuevo stage.'});
+    } else {
+        Trips.findById(id, function(err, trip) {
+            if (err) {
+                res.status(500).send(err); // internal server error
+              } else {
+                if (trip) {
+                    trip.stages.push(stage);
+                    trip.save(function(err2, newTrip) {
+                        if (err2) {
+                            if(err.name=='ValidationError') {
+                                res.status(422).send(err2);
+                            }
+                            else{
+                                res.status(500).send(err2);
+                            }
+                        } else {
+                            res.send(newTrip); // return the updated actor
+                        }
+                    });
+                } else {
+                  res.sendStatus(404); // not found
+                }
             }
-            else{
-                console.log(err);
-              res.status(500).send(err);
-            }
-        } else if (!trip) {
-            res.status(404)
-                .json({ error: 'No se ha encontrado la ID.'});
-        } else {
-            res.json(trip);
-        }
-    })
+        });
+    }
 }
 
 /**
