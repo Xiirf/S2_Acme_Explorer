@@ -68,4 +68,7 @@ var sponsorshipModel = new Schema({
     strict: false
 })
 
+sponsorshipModel.index( { sponsor_id: 1 } );
+sponsorshipModel.index( { payed: -1 } );
+
 module.exports = mongoose.model ('Sponsorships', sponsorshipModel);

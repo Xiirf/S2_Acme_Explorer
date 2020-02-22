@@ -47,11 +47,13 @@ const options = {
         "./api/models/sponsorshipModel.js",
         "./api/models/applicationModel.js",
         "./api/models/finderModel.js",
+        "./api/models/globalVarsModel.js",
+        "./api/controllers/globalVarsController.js",
         "./api/controllers/actorController.js",
         "./api/controllers/sponsorshipController.js",
         "./api/controllers/tripController.js",
         "./api/controllers/applicationController.js",
-        "./api/controllers/finderController.js",
+        "./api/controllers/finderController.js"
     ],        
   };
 

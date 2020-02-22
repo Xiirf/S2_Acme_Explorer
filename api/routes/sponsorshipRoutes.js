@@ -14,6 +14,8 @@ module.exports = function(app) {
         .delete(sponsorships.delete_a_sponsorship)
     router.route('/sponsorships/:sponsorshipId/pay')
         .patch(sponsorships.handle_sponsorship_payement)
+    router.route('/sponsorships/flatRate')
+        .patch(sponsorships.handle_flat_rate_change)
 
     app.use("/v1", router)        
 }
