@@ -1,10 +1,9 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var mongodb = require('mongodb');
-//Après merge
-//var mongoose = require('mongoose')
-//Actors = mongoose.model('Actors');
-//Trips = mongoose.model('Trips');
+var mongoose = require('mongoose');
+Actors = mongoose.model('Actors');
+Trips = mongoose.model('Trips');
 
 
 /**
@@ -47,28 +46,26 @@ var applicationSchema = new Schema({
     idExplorer: {
         type: mongodb.ObjectID,
         required: 'Kindly enter the idExplorer of the application',
-        //Ajouter une fois merge
-        /*validate: {
+        validate: {
             validator: async function(v) {
                 return Promise.resolve(Actors.findById(v, function(err, actor) {
                     return actor && actor.role == "Explorer";
                 }));
             },
             message: "There are no explorer with this id"
-        }*/
+        }
     },
     idTrip: {
         type: mongodb.ObjectID,
         required: 'Kindly enter the idTrip of the application',
-        //Ajouter une fois merge
-        /*validate: {
+        validate: {
             validator: async function(v) {
                 return Promise.resolve(Trips.findById(v, function(err, trip) {
                     return trip;
                 }));
             },
             message: "There are no trip with this id"
-        }*/
+        }
     },
     createdAt: {
         type: Date,
@@ -87,5 +84,8 @@ var applicationSchema = new Schema({
         default: null
     }
 }, {strict:false});
+
+applicationSchema.index( { idExplorer: 1} );
+applicationSchema.index( { idTrip: 1} );
 
 module.exports = mongoose.model('Applications', applicationSchema);
