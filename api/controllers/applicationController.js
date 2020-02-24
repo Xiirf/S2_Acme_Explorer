@@ -205,3 +205,66 @@ exports.delete_an_application = function(req, res) {
         }
     })
 }
+
+/**
+ * @swagger
+ * path:
+ *  '/applications/{applicationId}/status':
+ *    patch:
+ *      summary: Edit the status of an application
+ *      tags: [Applications]
+ *      parameters:
+ *         - name: applicationId
+ *           in: path
+ *           description: od of the application you want to modify
+ *           required: true
+ *           schema:
+ *             type: string
+ *      requestBody:
+ *        required: true
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              required:
+ *                - status
+ *              properties:
+ *                banned:
+ *                  type: string
+ *      responses:
+ *        '200':
+ *          description: Updated application
+ *          content:
+ *            application/json:
+ *              schema:
+ *                allOf:
+ *                - $ref: '#/components/schemas/Applications'
+ *        '404':
+ *           description: Application not found
+ *           content: Not Found
+ *        '422':
+ *           description: Incorrect body
+ *           content: {}
+ *        '500':
+ *           description: Internal server error
+ *           content: {}
+ */
+exports.edit_status_of_an_application = function(req, res) {
+    Actors.findOneAndUpdate({_id: req.params.applicationId}, req.body, {new:true, runValidators: true}, function(err, application) {
+        if (err) {
+            if (err.name=='ValidationError') {
+                res.status(422).send(err);
+            }
+            else{
+                res.status(500).send(err);
+            }
+        } 
+        else if (!application) {
+            res.status(404)
+                .json({ error: 'No applications with this Id were found.'});
+        } 
+        else {
+            res.status(200).json(application);
+        }
+    });
+}
