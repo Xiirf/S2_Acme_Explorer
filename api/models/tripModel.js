@@ -133,7 +133,10 @@ var tripSchema = new Schema({
     }, pictures: [{
         data: Buffer,
         contentType: String
-    }], cancelled: {
+    }], published: {
+        type: Boolean,
+        default: false
+    },cancelled: {
         type: Boolean,
         default: false
     }, reasonCancelling: {

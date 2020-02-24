@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "033e9052-c90e-4727-a054-b066d0142bd5",
+		"_postman_id": "109a480e-ff2a-4deb-8e8e-8b7f31021ca1",
 		"name": "trip",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -24,7 +24,7 @@
 							"        raw: JSON.stringify({\r",
 							"            \"name\": \"Antoño\",\r",
 							"            \"surname\": \"Banderas\",\r",
-							"            \"email\": \"f@f.com\",\r",
+							"            \"email\": \"f@test.com\",\r",
 							"            \"phone\": \"012459786\",\r",
 							"            \"password\": \"pwd\",\r",
 							"            \"adress\": \"algun lugar\",\r",
@@ -61,7 +61,7 @@
 							"});",
 							"",
 							"const echoDeleteRequestActor = {",
-							"  url: pm.variables.get('host') + '/actor/' + pm.environment.get('lastActorSubmittedId'),",
+							"  url: pm.variables.get('host') + '/actors/' + pm.environment.get('lastActorSubmittedId'),",
 							"  method: 'DELETE',",
 							"};",
 							"",
@@ -198,40 +198,6 @@
 			"response": []
 		},
 		{
-			"name": "trips/:tripID",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"id": "22e2f555-08f0-421b-b48b-1da4b221fa88",
-						"exec": [
-							"var path = pm.variables.get(\"host\") + \"/trips\";",
-							"pm.sendRequest(path, function (err, response) {",
-							"    pm.environment.set(\"tripID\", response.json()[0]._id);",
-							"});",
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "DELETE",
-				"header": [],
-				"url": {
-					"raw": "{{host}}/trips/{{tripID}}",
-					"host": [
-						"{{host}}"
-					],
-					"path": [
-						"trips",
-						"{{tripID}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
 			"name": "trips/:tripID/stage",
 			"event": [
 				{
@@ -277,6 +243,40 @@
 						"trips",
 						"{{tripID}}",
 						"stage"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "trips/:tripID",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "22e2f555-08f0-421b-b48b-1da4b221fa88",
+						"exec": [
+							"var path = pm.variables.get(\"host\") + \"/trips\";",
+							"pm.sendRequest(path, function (err, response) {",
+							"    pm.environment.set(\"tripID\", response.json()[0]._id);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/trips/{{tripID}}",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"trips",
+						"{{tripID}}"
 					]
 				}
 			},
