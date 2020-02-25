@@ -10,6 +10,7 @@ Trip = require('./api/models/tripModel'),
 Sponsorship = require('./api/models/sponsorshipModel'),
 Application = require('./api/models/applicationModel'),
 Finder = require('./api/models/finderModel'),
+DataWareHouse = require('./api/models/dataWareHouseModel'),
 bodyParser = require('body-parser');
 require('dotenv').config();
 // MongoDB URI building
@@ -48,6 +49,7 @@ routesActors = require('./api/routes/actorRoutes'),
 routesApplications = require('./api/routes/applicationRoutes'),
 routesFinders = require('./api/routes/finderRoutes')
 routesGlobalVars = require('./api/routes/globalVarsRoutes');
+routesDataWareHouse = require('./api/routes/dataWareHouseRoutes'),
 routesStorage = require('./api/routes/storageRoutes'),
  
 routesActors(app);
@@ -56,6 +58,7 @@ routesSponsorships(app);
 routesApplications(app);
 routesFinders(app);
 routesGlobalVars(app);
+routesDataWareHouse(app);
 routesStorage(app);
  
 console.log("Connecting DB to: " + mongoDBURI);
