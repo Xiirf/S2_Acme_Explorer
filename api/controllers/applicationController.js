@@ -250,21 +250,41 @@ exports.delete_an_application = function(req, res) {
  *           content: {}
  */
 exports.edit_status_of_an_application = function(req, res) {
-    Actors.findOneAndUpdate({_id: req.params.applicationId}, req.body, {new:true, runValidators: true}, function(err, application) {
+    Applications.findById({_id: req.params.applicationId}, function(err, application) {
         if (err) {
-            if (err.name=='ValidationError') {
-                res.status(422).send(err);
-            }
-            else{
-                res.status(500).send(err);
-            }
-        } 
+            res.status(500).send(err);
+        }
         else if (!application) {
             res.status(404)
                 .json({ error: 'No applications with this Id were found.'});
+        }
+        else if ((req.body.status == "REJECTED" || req.body.status == "DUE") && application.status != "PENDING") {
+            res.status(422).json({error: "This value of status is not accepted."});
+        }
+        else if ((req.body.status == "ACCEPTED") && application.status != "DUE") {
+            res.status(422).json({error: "This value of status is not accepted."});
+        }
+        else if ((req.body.status == "CANCELLED") && application.status != "ACCEPTED") {
+            res.status(422).json({error: "This value of status is not accepted."});
         } 
         else {
-            res.status(200).json(application);
+            Actors.findOneAndUpdate({_id: req.params.applicationId}, req.body, {new:true, runValidators: true}, function(err, application) {
+                if (err) {
+                    if (err.name=='ValidationError') {
+                        res.status(422).send(err);
+                    }
+                    else{
+                        res.status(500).send(err);
+                    }
+                } 
+                else if (!application) {
+                    res.status(404)
+                        .json({ error: 'No applications with this Id were found.'});
+                } 
+                else {
+                    res.status(200).json(application);
+                }
+            });
         }
     });
 }
