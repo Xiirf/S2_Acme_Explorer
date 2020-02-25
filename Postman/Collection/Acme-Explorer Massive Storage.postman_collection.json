@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "26bd96af-3e5d-4183-a9ef-99ec178a8a9f",
+		"_postman_id": "b44c6503-4f96-439a-a06d-5f346a0c137b",
 		"name": "Acme-Explorer Massive Storage",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -11,7 +11,7 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "{{host}}/{{ressource}}?dbURL={{MongoDBURL}}&collection=actors&batchSize={{batchSize}}&parseString=*&sourceFile={{folderLocation}}/dataActors.json",
+					"raw": "{{host}}/{{ressource}}?dbURL={{MongoDBURL}}&mongooseModel=Actors&sourceFile={{folderLocation}}/dataActors.json",
 					"host": [
 						"{{host}}"
 					],
@@ -24,16 +24,8 @@
 							"value": "{{MongoDBURL}}"
 						},
 						{
-							"key": "collection",
-							"value": "actors"
-						},
-						{
-							"key": "batchSize",
-							"value": "{{batchSize}}"
-						},
-						{
-							"key": "parseString",
-							"value": "*"
+							"key": "mongooseModel",
+							"value": "Actors"
 						},
 						{
 							"key": "sourceFile",
@@ -50,7 +42,7 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "{{host}}/{{ressource}}?dbURL={{MongoDBURL}}&collection=sponsorships&batchSize={{batchSize}}&parseString=*&sourceFile={{folderLocation}}/dataSponsorships.json",
+					"raw": "{{host}}/{{ressource}}?dbURL={{MongoDBURL}}&mongooseModel=Sponsorships&sourceFile={{folderLocation}}/dataSponsorships.json",
 					"host": [
 						"{{host}}"
 					],
@@ -63,16 +55,8 @@
 							"value": "{{MongoDBURL}}"
 						},
 						{
-							"key": "collection",
-							"value": "sponsorships"
-						},
-						{
-							"key": "batchSize",
-							"value": "{{batchSize}}"
-						},
-						{
-							"key": "parseString",
-							"value": "*"
+							"key": "mongooseModel",
+							"value": "Sponsorships"
 						},
 						{
 							"key": "sourceFile",
@@ -89,7 +73,7 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "{{host}}/{{ressource}}?dbURL={{MongoDBURL}}&collection=trips&batchSize={{batchSize}}&parseString=*&sourceFile={{folderLocation}}/dataTrips.json",
+					"raw": "{{host}}/{{ressource}}?dbURL={{MongoDBURL}}&mongooseModel=Trips&sourceFile={{folderLocation}}/dataTrips.json",
 					"host": [
 						"{{host}}"
 					],
@@ -102,16 +86,8 @@
 							"value": "{{MongoDBURL}}"
 						},
 						{
-							"key": "collection",
-							"value": "trips"
-						},
-						{
-							"key": "batchSize",
-							"value": "{{batchSize}}"
-						},
-						{
-							"key": "parseString",
-							"value": "*"
+							"key": "mongooseModel",
+							"value": "Trips"
 						},
 						{
 							"key": "sourceFile",

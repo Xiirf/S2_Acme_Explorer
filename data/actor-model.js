@@ -1,8 +1,15 @@
 var bcrypt = require('bcrypt');
+const mongoose = require('mongoose');
 
 module.exports = {
     _id: {
-        chance: 'guid'
+        function: function() {
+            var id = new mongoose.Types.ObjectId();
+            while(this.db.actors.find(actor => actor._id === id)){
+                id = new mongoose.Types.ObjectId();
+            }
+            return id;
+        }
     },
     name: {
         function: function() {

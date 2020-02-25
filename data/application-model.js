@@ -1,6 +1,13 @@
+const mongoose = require('mongoose');
 module.exports = {
     _id: {
-        chance: 'guid'
+        function: function() {
+            var id = new mongoose.Types.ObjectId();
+            while(this.db.applications.find(app => app._id === id)){
+                id = new mongoose.Types.ObjectId();
+            }
+            return id;
+        }
     },
     idExplorer: {
         function: function() {
