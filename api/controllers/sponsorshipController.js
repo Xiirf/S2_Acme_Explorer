@@ -65,7 +65,6 @@ exports.list_all_sponsorships = function(req, res) {
  *              required:
  *                - banner
  *                - link
- *                - price
  *                - sponsor_id
  *                - trip_id
  *              properties:

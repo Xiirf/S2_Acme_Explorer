@@ -69,7 +69,7 @@ function createDataWareHouseJob(){
             new_dataWareHouse.ratioApplicationsByStatus = results[3];
             new_dataWareHouse.rebuildPeriod = rebuildPeriod;
 
-            console.log("Resultados obtenidos por las agregaciones: "+JSON.stringify(new_dataWareHouse));
+            //console.log("Resultados obtenidos por las agregaciones: "+JSON.stringify(new_dataWareHouse));
             
             new_dataWareHouse.save(function(err, datawarehouse) {
                 if (err){
