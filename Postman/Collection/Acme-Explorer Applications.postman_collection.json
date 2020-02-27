@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "8d97fcc8-2b3e-413c-b9ea-c1dc9a282798",
+		"_postman_id": "4dc6b238-d720-4895-96d6-8f92be4f1228",
 		"name": "Acme-Explorer Applications",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -72,8 +72,9 @@
 							"            \"title\": \"testTitle\",",
 							"        \t\"description\": \"testDescription\",",
 							"        \t\"requirements\": [\"testRequirement\"],",
-							"        \t\"start\": \"2020-02-12\",",
-							"        \t\"end\": \"2020-02-28\",",
+							"        \t\"start\": \"2021-02-12\",",
+							"        \t\"end\": \"2021-02-28\",",
+							"        \t\"published\": true,",
 							"        \t\"stages\": [",
 							"        \t\t{",
 							"        \t\t\t\"title\": \"Paris\",",
@@ -263,7 +264,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"idExplorer\": \"{{explorer}}\",\r\n  \"idTrip\": \"{{trip}}\",\r\n  \"status\": \"CANCELLED\",\r\n  \"comments\": [\r\n    \"A comment\",\r\n    \"Another comment\"\r\n  ],\r\n  \"reasonCancelling\": \"A reason\"\r\n}",
+					"raw": "{\r\n  \"idExplorer\": \"{{explorer}}\",\r\n  \"idTrip\": \"{{trip}}\",\r\n  \"status\": \"DUE\",\r\n  \"comments\": [\r\n    \"A comment\",\r\n    \"Another comment\"\r\n  ],\r\n  \"reasonCancelling\": \"A reason\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -278,6 +279,63 @@
 					"path": [
 						"applications",
 						"{{applicationId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PATCH applications/:applicationId",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "7633ff14-d157-4cf7-b066-0cb25b16c374",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "2f20e74d-29e6-48f8-86b8-30a756698acd",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200) });"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"status\": \"ACCEPTED\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/applications/{{applicationId}}/status",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"applications",
+						"{{applicationId}}",
+						"status"
 					]
 				}
 			},
@@ -373,33 +431,33 @@
 	],
 	"variable": [
 		{
-			"id": "a83256d6-581e-457c-9cbc-20c293a08f3f",
+			"id": "84cadef0-6c97-48fe-a958-a12092e78231",
 			"key": "host",
 			"value": "localhost:8080/v1",
 			"type": "string"
 		},
 		{
-			"id": "e181e36d-0469-45bc-af0e-58fd43b5f556",
+			"id": "98a5f065-cd93-4c99-8d9c-1e4149994809",
 			"key": "explorer",
-			"value": "5e4aadcbb178d15139f51210",
+			"value": "5e57b3fd3b2be526d62a5bbe",
 			"type": "string"
 		},
 		{
-			"id": "daa7f822-510a-4d64-a581-59c1392edbea",
+			"id": "d68a847e-2773-4d6c-83d5-a134570a09da",
 			"key": "manager",
-			"value": "5e4aadccb178d15139f51211",
+			"value": "5e57b3fd3b2be526d62a5bbf",
 			"type": "string"
 		},
 		{
-			"id": "a7239606-1a2f-4cb8-b7b8-eebc6eac4779",
+			"id": "335444f3-a5ea-4678-8914-accf933d01c0",
 			"key": "trip",
-			"value": "5e4aadccb178d15139f51212",
+			"value": "5e57b3fd3b2be526d62a5bc0",
 			"type": "string"
 		},
 		{
-			"id": "6cb022c7-d1f9-46ec-b8c5-73983f2480dc",
+			"id": "9fbaf1c4-d584-4ace-829a-6442ba3a4836",
 			"key": "applicationId",
-			"value": "5e4aadccb178d15139f51215",
+			"value": "5e57b3fd3b2be526d62a5bc3",
 			"type": "string"
 		}
 	],

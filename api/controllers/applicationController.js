@@ -7,7 +7,8 @@
  *   description: Applications organize
  */
 var mongoose = require('mongoose'),
-Applications = mongoose.model('Applications');
+Applications = mongoose.model('Applications'),
+Trips = mongoose.model('Trips');
 
 /**
  * @swagger
@@ -64,18 +65,31 @@ exports.list_all_applications = function(req, res) {
  *          description: Server error
  */
 exports.create_an_application = function(req, res) {
-    var new_application = new Applications(req.body);
-    new_application.save(function(err, application) {
+    Trips.findById({_id: req.body.idTrip}, function(err, trip) {
         if (err) {
-            if(err.name=='ValidationError') {
-                res.status(422).send(err);
-            }
-            else{
-                res.status(500).send(err);
-            }
+            res.status(500).send(err);
+        } 
+        else if (!trip) {
+            res.status(404).json({ error: 'No trips with the given Id were found.'});
+        }
+        else if (!trip.published || trip.cancelled || trip.start < Date.now) {
+            res.status(422).json({error: "This trip is not available."});
         }
         else {
-            res.status(201).json(application);
+            var new_application = new Applications(req.body);
+            new_application.save(function(err, application) {
+                if (err) {
+                    if(err.name=='ValidationError') {
+                        res.status(422).send(err);
+                    }
+                    else{
+                        res.status(500).send(err);
+                    }
+                }
+                else {
+                    res.status(201).json(application);
+                }
+            });
         }
     });
 }
@@ -268,7 +282,8 @@ exports.edit_status_of_an_application = function(req, res) {
             res.status(422).json({error: "This value of status is not accepted."});
         } 
         else {
-            Actors.findOneAndUpdate({_id: req.params.applicationId}, req.body, {new:true, runValidators: true}, function(err, application) {
+            application.status = req.body.status;
+            application.save(function(err, application) {
                 if (err) {
                     if (err.name=='ValidationError') {
                         res.status(422).send(err);
@@ -278,13 +293,12 @@ exports.edit_status_of_an_application = function(req, res) {
                     }
                 } 
                 else if (!application) {
-                    res.status(404)
-                        .json({ error: 'No applications with this Id were found.'});
-                } 
+                    res.status(404).json({ error: 'No applications with this Id were found.'});
+                }
                 else {
                     res.status(200).json(application);
                 }
-            });
+            })
         }
     });
 }
