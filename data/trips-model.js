@@ -1,3 +1,7 @@
+const generate = require('nanoid/generate');
+const dateFormat = require('dateformat');
+const mongoose = require('mongoose');
+
 String.prototype.hexEncode = function(){
     var hex, i;
 
@@ -12,7 +16,19 @@ String.prototype.hexEncode = function(){
 
 module.exports = {
     _id: {
-        chance: 'guid'
+        function: function() {
+            var id = new mongoose.Types.ObjectId();
+            while(this.db.trips.find(trip => trip._id === id)){
+                id = new mongoose.Types.ObjectId();
+            }
+            return id;
+        }
+    },
+    ticker: {
+        function: function() {
+            var date=dateFormat(new Date(), "yymmdd");
+            return [date, generate('ABCDEFGHIJKLMNOPQRSTUVWXYZ', 4)].join('-');
+        }
     },
     name: {
         function: function() {
@@ -43,13 +59,9 @@ module.exports = {
         fixedLength: false     
     }], stages: [{
         function: function() {
-            return {
-                title: {faker: 'lorem.sentence'},
-                description: { faker: 'lorem.paragraph'},
-                price: { function: function() {
-                    return this.chance.integer({"min": 0, "max": 1500});
-                }}
-            };
+            return {title: this.faker.lorem.sentences(1),
+            description: this.faker.lorem.paragraphs(1),
+            price: this.chance.integer({"min": 1, "max": 1500}) };
         },
         length: 4,
         fixedLength: false

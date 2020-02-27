@@ -4,6 +4,30 @@ var mongoose = require('mongoose'),
   Applications = mongoose.model('Applications'),
   Trips = mongoose.model('Trips');
 
+ /**
+ * @swagger
+ * path:
+ *  '/dataWarehouse':
+ *    get:
+ *      tags:
+ *        - DataWareHouse
+ *      description: >-
+ *        Retrieve the records of the all the sets of the global statistics ever computed
+ *      operationId: getStatsDataWarehouse
+ *      responses:
+ *        '200':
+ *          description: OK
+ *          content:
+ *            application/json:
+ *              schema:
+ *                allOf:
+ *                - type: array
+ *                  items:
+ *                    $ref: '#/components/schemas/statsDataWareHouse'
+ *        '500':
+ *           description: Internal server error
+ *           content: {}
+ */
 exports.list_all_indicators = function(req, res) {
   console.log('Requesting indicators');
   
@@ -17,6 +41,27 @@ exports.list_all_indicators = function(req, res) {
   });
 };
 
+ /**
+ * @swagger
+ * path:
+ *  '/dataWarehouse/latest':
+ *    get:
+ *      tags:
+ *        - DataWareHouse
+ *      description: >-
+ *        Retrieve the last set of global statistics computed
+ *      operationId: getLatestStatsDataWarehouse
+ *      responses:
+ *        '200':
+ *          description: OK
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/statsDataWareHouse'
+ *        '500':
+ *           description: Internal server error
+ *           content: {}
+ */
 exports.last_indicator = function(req, res) {
   
   DataWareHouse.find().sort("-computationMoment").limit(1).exec(function(err, indicators) {
@@ -115,7 +160,7 @@ function computeStatsNumberApplicationByTrips (callback) {
     Applications.aggregate([
         {
             $group: {
-                _id: "$tripId",
+                _id: "$idTrip",
                 nbApplications: { $sum: 1 }
             }
         }, {

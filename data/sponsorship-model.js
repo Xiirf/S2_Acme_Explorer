@@ -1,4 +1,5 @@
 var bcrypt = require('bcrypt');
+const mongoose = require('mongoose');
 
 String.prototype.hexEncode = function(){
     var hex, i;
@@ -14,7 +15,13 @@ String.prototype.hexEncode = function(){
 
 module.exports = {
     _id: {
-        chance: 'guid'
+        function: function() {
+            var id = new mongoose.Types.ObjectId();
+            while(this.db.sponsorships.find(s => s._id === id)){
+                id = new mongoose.Types.ObjectId();
+            }
+            return id;
+        }
     },
     banner: {
         function: function() {
@@ -46,8 +53,7 @@ module.exports = {
     },
     trip_id: {
         function: function() {
-            return this.faker.random.arrayElement(this.db.actors)._id;
-            //return this.faker.random.arrayElement(this.db.trips)._id;
+            return this.faker.random.arrayElement(this.db.trips)._id;
         }
     },
     createdAt: {

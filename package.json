@@ -31,6 +31,7 @@
     "mongoose": "^5.8.11",
     "nanoid": "^2.1.11",
     "newman": "^4.5.7",
+    "randexp": "^0.5.3",
     "stream-to-mongo-db": "^1.6.0",
     "swagger-jsdoc": "^3.5.0",
     "swagger-ui-express": "^4.1.3"

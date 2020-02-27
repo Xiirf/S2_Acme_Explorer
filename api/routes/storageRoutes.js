@@ -5,18 +5,14 @@ module.exports = function(app) {
   // Data Storage routes
 
   /**
-	 * Put a large json with documents from a file into a collection of mongoDB
+	 * Bad option: Put a large json with documents from a file into a collection of mongoDB
 	 *
 	 * @section storage
 	 * @type post
-	 * @url /v1/storage/fs
-	 * @param {string} dbURL       //mandatory
-     * @param {string} collection  //mandatory
-	 * @param {string} sourceURL   //mandatory
-	 * @param {string} batchSize   //optional
-	 * @param {string} parseString //optional
-	 * Sample 1: http://localhost:8080/v1/storage/fs?dbURL=mongodb://simpleUser:123456@localhost:27017/ACME-Explorer&collection=actors&batchSize=100&parseString=*&sourceFile=./dataActors.json
-  */
-  app.route('/v1/storage/fs')
-		.post(storage.store_json_fs);
+	 * @url /v1/storage/insertMany
+     * @param {string} mongooseModel  //mandatory
+	 * @param {string} sourceFile   //mandatory
+	 */
+ app.route('/v1/storage/insertMany')
+ .post(storage.store_json_insertMany);
 };
