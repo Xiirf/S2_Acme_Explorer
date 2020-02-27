@@ -213,6 +213,10 @@ exports.create_a_trip = function(req, res) {
  *          description: Internal error
  */
 exports.read_a_trip = function(req, res) {
+    unique_find(req, res);
+}
+
+unique_find = function(req, res) {
     Trips.findById(req.params.tripId, function(err, trip) {
         if(err) {
             res.status(500).send(err);
@@ -290,7 +294,7 @@ exports.edit_a_trip = function(req, res) {
                             res.status(404)
                                 .json({ error: 'No se ha encontrado la ID.'});
                         } else {
-                            res.status(200).json({message: 'Trip updated'});
+                            unique_find(req, res);
                         }
                     })
                 } else {
@@ -339,7 +343,7 @@ exports.delete_a_trip = function(req, res) {
                         if(err) {
                             res.status(500).send(err);
                         } else {
-                            res.json({message: 'Trip successfully deleted'});
+                            res.status(200).json({message: 'Trip successfully deleted'});
                         }
                     });
                 } else {
@@ -403,6 +407,7 @@ exports.add_a_stage_in_trip = function(req, res) {
                         trip.stages.push(stage);
                         trip.save(function(err2, newTrip) {
                             if (err2) {
+                                console.log(err2);
                                 if(err.name=='ValidationError') {
                                     res.status(422).send(err2);
                                 }
@@ -484,9 +489,9 @@ exports.cancel_a_trip = function(req, res) {
               } else {
                 if (trip) {
                     if (trip.cancelled){
-                        res.status(400) // bad request beacause trip already cancelled
+                        res.status(400) // bad request because trip already cancelled
                             .json({ error: 'Trip ya cancelado'});
-                    } else if (trip.start <= Date.now()){
+                    } else if (new Date(trip.start) <= Date()){
                         res.status(403)
                             .json({ error: 'Trip started'})
                     } else {
@@ -495,11 +500,12 @@ exports.cancel_a_trip = function(req, res) {
                                 res.status(500).send(err);
                             } 
                             else if (!app) {
+                                console.log(JSON.stringify(trip));
                                 trip.cancelled = true;
                                 trip.reasonCancelling = reasonCancelling;
                                 trip.save(function(err2, newTrip) {
                                     if (err2) {
-                                        if(err.name=='ValidationError') {
+                                        if(err2.name=='ValidationError') {
                                             res.status(422).send(err2);
                                         }
                                         else{
