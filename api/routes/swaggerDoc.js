@@ -52,6 +52,7 @@ const options = {
         "./api/controllers/tripController.js",
         "./api/controllers/applicationController.js",
         "./api/controllers/finderController.js",
+        "./api/controllers/storageController.js",
     ],        
   };
 
