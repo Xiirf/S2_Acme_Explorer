@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "b44c6503-4f96-439a-a06d-5f346a0c137b",
+		"_postman_id": "c8261957-6942-4ce2-b8da-eec142a9ac1d",
 		"name": "Acme-Explorer Massive Storage",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -30,6 +30,37 @@
 						{
 							"key": "sourceFile",
 							"value": "{{folderLocation}}/dataActors.json"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST trips",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/{{ressource}}?dbURL={{MongoDBURL}}&mongooseModel=Trips&sourceFile={{folderLocation}}/dataTrips.json",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"{{ressource}}"
+					],
+					"query": [
+						{
+							"key": "dbURL",
+							"value": "{{MongoDBURL}}"
+						},
+						{
+							"key": "mongooseModel",
+							"value": "Trips"
+						},
+						{
+							"key": "sourceFile",
+							"value": "{{folderLocation}}/dataTrips.json"
 						}
 					]
 				}
@@ -68,12 +99,12 @@
 			"response": []
 		},
 		{
-			"name": "POST trips",
+			"name": "POST applications",
 			"request": {
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "{{host}}/{{ressource}}?dbURL={{MongoDBURL}}&mongooseModel=Trips&sourceFile={{folderLocation}}/dataTrips.json",
+					"raw": "{{host}}/{{ressource}}?dbURL={{MongoDBURL}}&mongooseModel=Applications&sourceFile={{folderLocation}}/dataApplications.json",
 					"host": [
 						"{{host}}"
 					],
@@ -87,11 +118,42 @@
 						},
 						{
 							"key": "mongooseModel",
-							"value": "Trips"
+							"value": "Applications"
 						},
 						{
 							"key": "sourceFile",
-							"value": "{{folderLocation}}/dataTrips.json"
+							"value": "{{folderLocation}}/dataApplications.json"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST finders",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/{{ressource}}?dbURL={{MongoDBURL}}&mongooseModel=Finders&sourceFile={{folderLocation}}/dataFinders.json",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"{{ressource}}"
+					],
+					"query": [
+						{
+							"key": "dbURL",
+							"value": "{{MongoDBURL}}"
+						},
+						{
+							"key": "mongooseModel",
+							"value": "Finders"
+						},
+						{
+							"key": "sourceFile",
+							"value": "{{folderLocation}}/dataFinders.json"
 						}
 					]
 				}
