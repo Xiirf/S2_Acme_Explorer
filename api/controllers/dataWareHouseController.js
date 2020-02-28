@@ -129,10 +129,18 @@ exports.compute_cube = function(req, res) {
             } 
         }, {
             $lookup: {
-                from: "Trips",
+                from: "trips",
                 localField: "idTrip",
                 foreignField: "_id",
                 as: "trip"
+            }
+        }, {
+            $project: {
+                idExplorer: 1,
+                payedAt: 1,
+                trip: {
+                    $arrayElemAt: ["$trip", 0]
+                }
             }
         }, {
             $group: {
@@ -155,14 +163,14 @@ exports.compute_cube = function(req, res) {
                         }
                     },
                 },
-                moneySpent: { $sum: "$trip[0].price" }
+                moneySpent: { $sum: "$trip.price" }
             }
         }, {
             $project: {
                 idExplorer: "$_id.idExplorer",
                 month:  "$_id.month",
                 year:  "$_id.year",
-                moneySpent: "$moneySpent"
+                moneySpent: 1
             }
         }, {
             $sort: { year: 1, month: 1, idExplorer: 1 }
@@ -173,7 +181,7 @@ exports.compute_cube = function(req, res) {
         } else {
             cube = cubeMoneySpent.addRows({
                 header: ['month', 'year', 'explorer', 'moneySpent'],
-                rows: res2.map(row => [parseInt(row.month) - 1, parseInt(row.year) - 1970, row.idExplorer, row.moneySpent])
+                rows: res2.map(row => [parseInt(row.month) - 1, parseInt(row.year) - 1970, row.idExplorer.toString(), row.moneySpent])
             });
             res.sendStatus(201);
         }
@@ -249,7 +257,8 @@ exports.read_cube_data = function(req, res) {
     month = period.slice(0, 1) == 'M' ? numberPeriod - 1 % 12 : null;
     if(idExplorer) {
         cubeTemp = cube.slice('explorer', idExplorer);
-        cubeTemp = cube.slice('year', year);
+        console.log(cubeTemp.rows)
+        cubeTemp = cubeTemp.slice('year', year);
         if(month) {
             moneySpent = cubeTemp.slice('month', month).data;
         } else {
@@ -274,6 +283,7 @@ exports.read_cube_data = function(req, res) {
                 .filter(row => operation(row[3]))
                 .map(row => row[2]);
         } else {
+
             cubeTemp = cubeTemp.rollup('explorer', ['moneySpent'], summation, [0]);
             explorers = cubeTemp.rows
                 .filter(row => operation(row[1]))
@@ -291,7 +301,7 @@ var CronTime = require('cron').CronTime;
 //'*/30 * * * * *' cada 30 segundos
 //'*/10 * * * * *' cada 10 segundos
 //'* * * * * *' cada segundo
-var rebuildPeriod = '*/60 * * * * *';  //El que se usará por defecto
+var rebuildPeriod = '*/10 * * * * *';  //El que se usará por defecto
 var computeDataWareHouseJob;
 
 exports.rebuildPeriod = function(req, res) {
@@ -365,7 +375,7 @@ function computeStatsNumberTripsByManager (callback) {
             }
         }
     ], function(err, res){
-        callback(err, res[0])
+        callback(err, res.length != 0 ? res[0] : res)
     });
 };
 
@@ -390,7 +400,7 @@ function computeStatsNumberApplicationByTrips (callback) {
             }
         }
     ], function(err, res){
-        callback(err, res[0])
+        callback(err, res.length != 0? res[0] : res)
     });
 };
 
@@ -410,7 +420,7 @@ function computeStatsPriceByTrips (callback) {
             }
         }
     ], function(err, res){
-        callback(err, res[0])
+        callback(err, res.length != 0 ? res[0] : res)
     });
 };
 
@@ -422,6 +432,10 @@ function computeRatioApplicationsByStatus (callback) {
             }
         }
     ], function(err, res) {
+        if(res.length == 0) {
+            callback(err, res)
+            return;
+        }
         Applications.aggregate([
             {
                 $group: {
@@ -436,7 +450,7 @@ function computeRatioApplicationsByStatus (callback) {
                 }
             }
         ], function(err, res){
-            callback(err, res)
+            callback(err, res.length != 0 ? res[0] : res)
         });
     });
 };
