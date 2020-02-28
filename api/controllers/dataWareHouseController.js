@@ -1,8 +1,21 @@
 var async = require("async");
 var mongoose = require('mongoose'),
-  DataWareHouse = mongoose.model('DataWareHouse'),
-  Applications = mongoose.model('Applications'),
-  Trips = mongoose.model('Trips');
+DataWareHouse = mongoose.model('DataWareHouse'),
+Applications = mongoose.model('Applications'),
+Trips = mongoose.model('Trips');
+const Table = require('olap-cube').model.Table
+const COMPARISON_OPERATIONS = new Map([
+    ['EQ', (b) => (a)  => a == b],
+    ['NE', (b) => (a) => a != b],
+    ['GT', (b) => (a) => a > b],
+    ['GTE', (b) => (a) => a >= b],
+    ['LT', (b) => (a) => a < b],
+    ['LTE', (b) => (a) => a <= b]
+]);
+const summation = (sum, value) => {
+    return [sum[0] + value[0]]
+};
+var cube;
 
  /**
  * @swagger
@@ -73,6 +86,202 @@ exports.last_indicator = function(req, res) {
     }
   });
 };
+
+ /**
+ * @swagger
+ * path:
+ *  '/dataWarehouse/cube':
+ *    post:
+ *      tags:
+ *        - DataWareHouse
+ *      description: >-
+ *        Compute a new version of the cube M[e, p]that returns the amount of money that explorer e has spent on trips during period p, which can be M01-M36 to denote any of the last 1-36 months or Y01-Y03 to denote any of the last three years
+ *      operationId: computeNewCube
+ *      responses:
+ *        '201':
+ *          description: Created
+ *        '500':
+ *           description: Internal server error
+ */
+exports.compute_cube = function(req, res) {
+    var cubeMoneySpent = new Table({
+        dimensions: ['month', 'year', 'explorer'],
+        fields: ['moneySpent']
+    })
+
+    dateMax = new Date();
+    dateMin = new Date();
+    dateMin.setFullYear(dateMin.getFullYear() - 3);
+
+    Applications.aggregate([
+        {
+            $match: {
+                payedAt: { $gt: dateMin }
+            }
+        }, {
+            $project: {
+                idTrip: "$idTrip",
+                idExplorer: "$idExplorer",
+                payedAt: {
+                    $subtract: [dateMax, "$payedAt"]
+                }
+            } 
+        }, {
+            $lookup: {
+                from: "Trips",
+                localField: "idTrip",
+                foreignField: "_id",
+                as: "trip"
+            }
+        }, {
+            $group: {
+                _id: {
+                    "idExplorer": "$idExplorer",
+                    "month": {
+                        $dateToString: {
+                            format: "%m",
+                            date: {
+                                $add: [new Date(0), "$payedAt"]
+                            }
+                        }
+                    },
+                    "year": {
+                        $dateToString: {
+                            format: "%Y",
+                            date: {
+                                $add: [new Date(0), "$payedAt"]
+                            }
+                        }
+                    },
+                },
+                moneySpent: { $sum: "$trip[0].price" }
+            }
+        }, {
+            $project: {
+                idExplorer: "$_id.idExplorer",
+                month:  "$_id.month",
+                year:  "$_id.year",
+                moneySpent: "$moneySpent"
+            }
+        }, {
+            $sort: { year: 1, month: 1, idExplorer: 1 }
+        },
+    ], function(err, res2){
+        if(err) {
+            res.status(500).send(err);
+        } else {
+            cube = cubeMoneySpent.addRows({
+                header: ['month', 'year', 'explorer', 'moneySpent'],
+                rows: res2.map(row => [parseInt(row.month) - 1, parseInt(row.year) - 1970, row.idExplorer, row.moneySpent])
+            });
+            res.sendStatus(201);
+        }
+    })
+}
+
+ /**
+ * @swagger
+ * path:
+ *  '/dataWarehouse/cube':
+ *    get:
+ *      tags:
+ *        - DataWareHouse
+ *      description: >-
+ *        Retrieve the result of a query on the cube (only if he's already computed)
+ *      operationId: queryCube
+ *      parameters:
+ *        - name: period
+ *          in: query
+ *          description: period that you wanna retrieve the money spent on by explorers
+ *          required: true
+ *          schema:
+ *            type: string
+ *        - name: explorer
+ *          in: query
+ *          description: Id of the explorer that you wanna retrieve the money spent on the period
+ *          required: false
+ *          schema:
+ *            type: string
+ *        - name: value
+ *          in: query
+ *          description: Value of the money spent by each explorer on the period to compare with
+ *          required: false
+ *          schema:
+ *            type: number
+ *        - name: operator
+ *          in: query
+ *          description: Operator to use to compare the value to the money spent by each explorer on the period
+ *          required: false
+ *          schema:
+ *            type: string
+ *            enum: ['EQ','NE', 'GT', 'GTE', 'LT', 'LTE']
+ *      responses:
+ *        '200':
+ *          description: OK
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                required:
+ *                  - result
+ *                properties:
+ *                  result:
+ *                    type: array
+ *                    items:
+ *                      type:
+ *                        oneOf:
+ *                          - string
+ *                          - float
+ *        '500':
+ *           description: Internal server error
+ *           content: {}
+ */
+exports.read_cube_data = function(req, res) {
+    idExplorer = req.query.explorer;
+    period = req.query.period; // M01-36 || Y01-03
+    if(!(typeof(period) == 'string' && period.match(/(M0[1-9])|(M[1-2][0-9])|(M3[0-6])|(Y0[0-3])/g))) {
+        res.status(422).send({ error: "Incorrect query"});
+        return;
+    }
+    numberPeriod = parseInt(period.slice(1));
+    year = period.slice(0, 1) == 'Y' ? numberPeriod - 1 : Math.floor(numberPeriod / 12);
+    month = period.slice(0, 1) == 'M' ? numberPeriod - 1 % 12 : null;
+    if(idExplorer) {
+        cubeTemp = cube.slice('explorer', idExplorer);
+        cubeTemp = cube.slice('year', year);
+        if(month) {
+            moneySpent = cubeTemp.slice('month', month).data;
+        } else {
+            moneySpent = cubeTemp.rollup('year', ['moneySpent'], summation, [0]).data;
+        }
+        res.send({ result: moneySpent.length > 0 ? moneySpent[0] : 0 });
+    } else {
+        var explorers;
+        value = parseInt(req.query.value);
+        operator = req.query.operator;
+        if(typeof(value) != 'number' || !COMPARISON_OPERATIONS.has(operator)) {
+            res.status(422).send({ error: "Incorrect query"});
+            return;
+        }
+        year = period.slice(0, 1) == 'Y' ? numberPeriod - 1 : Math.floor(numberPeriod / 12);
+        month = period.slice(0, 1) == 'M' ? numberPeriod - 1 % 12 : null;
+        operation = COMPARISON_OPERATIONS.get(operator)(value);
+        cubeTemp = cube.slice('year', year);
+        if(month) {
+            cubeTemp = cubeTemp.slice('month', month);
+            explorers = cubeTemp.rows
+                .filter(row => operation(row[3]))
+                .map(row => row[2]);
+        } else {
+            cubeTemp = cubeTemp.rollup('explorer', ['moneySpent'], summation, [0]);
+            explorers = cubeTemp.rows
+                .filter(row => operation(row[1]))
+                .map(row => row[0]);
+        }
+        
+        res.send({ result: explorers.flat() });
+    }
+}
 
 var CronJob = require('cron').CronJob;
 var CronTime = require('cron').CronTime;

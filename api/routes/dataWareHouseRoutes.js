@@ -30,7 +30,28 @@ module.exports = function(app) {
 	 * 
 	*/
 	router.route('/dataWareHouse/latest')
-    .get(dataWareHouse.last_indicator);
+	.get(dataWareHouse.last_indicator);
+	
+		/**
+	 * Get a list of last computed cube
+	 * RequiredRole: Administrator
+	 * @section dataWareHouse
+	 * @type get
+	 * @url /dataWareHouse/cube
+	 * 
+	*/
+	router.route('/dataWareHouse/cube')
+	.get(dataWareHouse.read_cube_data)
+	
+		/**
+	 * Generated a new cube
+	 * RequiredRole: Administrator
+	 * @section dataWareHouse
+	 * @type post
+	 * @url /dataWareHouse/cube
+	 * 
+	*/
+    .post(dataWareHouse.compute_cube);
     
     app.use("/v1/", router);
 };

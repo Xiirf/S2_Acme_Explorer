@@ -20,6 +20,9 @@ module.exports = {
             return this.faker.random.arrayElement(this.db.trips)._id;
         }
     },
+    payedAt: {
+        faker: 'date.past'
+    },
     createdAt: {
         faker: 'date.past'
     },
