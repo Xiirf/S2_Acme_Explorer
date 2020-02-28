@@ -18,8 +18,8 @@ module.exports = function(app) {
 	 * 
 	*/
 	router.route('/dataWareHouse')
-	.get(dataWareHouse.list_all_indicators)
-	.post(dataWareHouse.rebuildPeriod);
+		.get(dataWareHouse.list_all_indicators)
+		.post(dataWareHouse.rebuildPeriod);
 
 	/**
 	 * Get a list of last computed indicator

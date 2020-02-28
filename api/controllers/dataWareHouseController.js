@@ -3,6 +3,7 @@ var mongoose = require('mongoose'),
 DataWareHouse = mongoose.model('DataWareHouse'),
 Applications = mongoose.model('Applications'),
 Trips = mongoose.model('Trips');
+Finders = mongoose.model('Finders');
 const Table = require('olap-cube').model.Table
 const COMPARISON_OPERATIONS = new Map([
     ['EQ', (b) => (a)  => a == b],
@@ -290,7 +291,7 @@ var CronTime = require('cron').CronTime;
 //'*/30 * * * * *' cada 30 segundos
 //'*/10 * * * * *' cada 10 segundos
 //'* * * * * *' cada segundo
-var rebuildPeriod = '*/30 * * * * *';  //El que se usará por defecto
+var rebuildPeriod = '*/60 * * * * *';  //El que se usará por defecto
 var computeDataWareHouseJob;
 
 exports.rebuildPeriod = function(req, res) {
@@ -311,19 +312,22 @@ function createDataWareHouseJob(){
         computeStatsNumberTripsByManager,
         computeStatsNumberApplicationByTrips,
         computeStatsPriceByTrips,
-        computeRatioApplicationsByStatus
+        computeRatioApplicationsByStatus,
+        computeStatsAveragePriceInFinders,
+        computeStatsTopKeyWords
       ], function (err, results) {
         if (err) {
           console.log("Error computing datawarehouse: "+err);
         }
         else {
+            console.log(results)
             new_dataWareHouse.statsNumberTripsByManager = results[0];
             new_dataWareHouse.statsNumberApplicationByTrips = results[1];
             new_dataWareHouse.statsPriceByTrips = results[2];
             new_dataWareHouse.ratioApplicationsByStatus = results[3];
+            new_dataWareHouse.statsAveragePriceInFinders = results[4];
+            new_dataWareHouse.statsTopKeyWords = results[5];
             new_dataWareHouse.rebuildPeriod = rebuildPeriod;
-
-            //console.log("Resultados obtenidos por las agregaciones: "+JSON.stringify(new_dataWareHouse));
             
             new_dataWareHouse.save(function(err, datawarehouse) {
                 if (err){
@@ -422,7 +426,7 @@ function computeRatioApplicationsByStatus (callback) {
             {
                 $group: {
                     _id: "$status",
-                    ratio: { $sum: 1 / res.n }
+                    ratio: { $sum: 1 / res[0].n }
                 }
             }, {
                 $project: {
@@ -434,5 +438,47 @@ function computeRatioApplicationsByStatus (callback) {
         ], function(err, res){
             callback(err, res)
         });
+    });
+};
+
+function computeStatsAveragePriceInFinders (callback) {
+    Finders.aggregate([
+        {
+            $group: {
+                _id: null,
+                minAvg: { $avg: "$priceMin" },
+                maxAvg: { $avg: "$priceMax" }
+            }
+        }, {
+            $project: {
+                _id: 0
+            }
+        }
+    ], function(err, res){
+        callback(err, res[0])
+    });
+};
+
+function computeStatsTopKeyWords (callback) {
+    Finders.aggregate([
+        {
+            $group: {
+                _id: "$keyWord",
+                numFinder: { $sum: 1 }
+            }
+        }, {
+            $sort: {
+                numFinder: -1
+            }
+        }, {
+            $limit: 10
+        }, {
+            $project: {
+                _id: 0,
+                keyWord: "$_id"
+            }
+        }
+    ], function(err, res){
+        callback(err, res)
     });
 };
