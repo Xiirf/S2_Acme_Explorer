@@ -43,19 +43,19 @@ app.use(enable_cors());
 app.use("/v1", swaggerDoc);
 
 var routesActors = require('./api/routes/actorRoutes'),
-routesTrips = require('./api/routes/tripRoutes'),
 routesSponsorships = require('./api/routes/sponsorshipRoutes'),
 routesActors = require('./api/routes/actorRoutes'),
 routesApplications = require('./api/routes/applicationRoutes'),
+routesTrips = require('./api/routes/tripRoutes'),
 routesFinders = require('./api/routes/finderRoutes')
 routesGlobalVars = require('./api/routes/globalVarsRoutes');
 routesDataWareHouse = require('./api/routes/dataWareHouseRoutes'),
 routesStorage = require('./api/routes/storageRoutes'),
  
 routesActors(app);
-routesTrips(app);
 routesSponsorships(app);
 routesApplications(app);
+routesTrips(app);
 routesFinders(app);
 routesGlobalVars(app);
 routesDataWareHouse(app);

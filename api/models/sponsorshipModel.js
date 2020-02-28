@@ -1,9 +1,9 @@
 var mongodb = require('mongodb')
 var mongoose = require('mongoose')
 var Schema = mongoose.Schema;
-var Actors = mongoose.model('Actors');
-var Trips = mongoose.model('Trips');
-var GlobalVars = mongoose.model('GlobalVars');
+var Actors = require('./actorModel');
+var Trips = require('./tripModel');
+var GlobalVars = require('./globalVarsModel');
 
 /**
  * @swagger

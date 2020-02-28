@@ -1,7 +1,7 @@
 {
 	"info": {
 		"_postman_id": "109a480e-ff2a-4deb-8e8e-8b7f31021ca1",
-		"name": "trip",
+		"name": "Acme-Explorer Trips",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -22,9 +22,9 @@
 							"    body: {\r",
 							"        mode: 'raw',\r",
 							"        raw: JSON.stringify({\r",
-							"            \"name\": \"Antoño\",\r",
-							"            \"surname\": \"Banderas\",\r",
-							"            \"email\": \"f@test.com\",\r",
+							"            \"name\": \"TestTRIP\",\r",
+							"            \"surname\": \"tripTest\",\r",
+							"            \"email\": \"f@testTripTest.com\",\r",
 							"            \"phone\": \"012459786\",\r",
 							"            \"password\": \"pwd\",\r",
 							"            \"adress\": \"algun lugar\",\r",
@@ -40,7 +40,7 @@
 							"        }\r",
 							"    });\r",
 							"\r",
-							"let t = Date.now()\r",
+							"let t = Date.now() + Date.now();\r",
 							"pm.environment.set('start', t);\r",
 							"pm.environment.set('end', t);"
 						],
@@ -60,12 +60,7 @@
 							"    pm.expect(jsonData.price).to.eql(1000);",
 							"});",
 							"",
-							"const echoDeleteRequestActor = {",
-							"  url: pm.variables.get('host') + '/actors/' + pm.environment.get('lastActorSubmittedId'),",
-							"  method: 'DELETE',",
-							"};",
-							"",
-							"pm.sendRequest(echoDeleteRequestActor)"
+							"pm.environment.set('lastTripId', pm.response.json()._id)"
 						],
 						"type": "text/javascript"
 					}
@@ -98,6 +93,20 @@
 		},
 		{
 			"name": "trips",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "ec793acd-0c27-4196-994b-6fa75448265f",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "GET",
 				"header": [],
@@ -121,11 +130,19 @@
 					"script": {
 						"id": "f901ab41-ed39-4543-9859-5dcc899ae42f",
 						"exec": [
-							"var path = pm.variables.get(\"host\") + \"/trips\";",
-							"pm.sendRequest(path, function (err, response) {",
-							"    pm.environment.set(\"tripID\", response.json()[0]._id);",
-							"});",
 							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "a053d4d4-d70c-44f5-a07f-2d66b29f2ca2",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
 						],
 						"type": "text/javascript"
 					}
@@ -135,13 +152,13 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{host}}/trips/{{tripID}}",
+					"raw": "{{host}}/trips/{{lastTripId}}",
 					"host": [
 						"{{host}}"
 					],
 					"path": [
 						"trips",
-						"{{tripID}}"
+						"{{lastTripId}}"
 					]
 				}
 			},
@@ -155,11 +172,23 @@
 					"script": {
 						"id": "a820ef6b-cf99-4ca9-81e5-f07c34b4e51e",
 						"exec": [
-							"var path = pm.variables.get(\"host\") + \"/trips\";",
-							"pm.sendRequest(path, function (err, response) {",
-							"    pm.environment.set(\"tripID\", response.json()[0]._id);",
-							"});",
 							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "171f8cb4-41ca-43d3-b92e-7b7b222043b7",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Title updated\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.title).to.eql(\"testTitle Updated\");",
+							"});"
 						],
 						"type": "text/javascript"
 					}
@@ -185,13 +214,13 @@
 					}
 				},
 				"url": {
-					"raw": "{{host}}/trips/{{tripID}}",
+					"raw": "{{host}}/trips/{{lastTripId}}",
 					"host": [
 						"{{host}}"
 					],
 					"path": [
 						"trips",
-						"{{tripID}}"
+						"{{lastTripId}}"
 					]
 				}
 			},
@@ -205,10 +234,6 @@
 					"script": {
 						"id": "df46a465-e4b9-4e87-9817-d80495e0be8d",
 						"exec": [
-							"var path = pm.variables.get(\"host\") + \"/trips\";",
-							"pm.sendRequest(path, function (err, response) {",
-							"    pm.environment.set(\"tripID\", response.json()[0]._id);",
-							"});",
 							""
 						],
 						"type": "text/javascript"
@@ -235,14 +260,61 @@
 					}
 				},
 				"url": {
-					"raw": "{{host}}/trips/{{tripID}}/stage",
+					"raw": "{{host}}/trips/{{lastTripId}}/stage",
 					"host": [
 						"{{host}}"
 					],
 					"path": [
 						"trips",
-						"{{tripID}}",
+						"{{lastTripId}}",
 						"stage"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "trips/:tripID/cancel",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "df46a465-e4b9-4e87-9817-d80495e0be8d",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"reasonCancelling\": \"test\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/trips/{{lastTripId}}/cancel",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"trips",
+						"{{lastTripId}}",
+						"cancel"
 					]
 				}
 			},
@@ -264,19 +336,38 @@
 						],
 						"type": "text/javascript"
 					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "9b36b22e-f064-43de-8367-a47ee31bafca",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"const echoDeleteRequestActor = {",
+							"  url: pm.variables.get('host') + '/actors/' + pm.environment.get('lastActorSubmittedId'),",
+							"  method: 'DELETE',",
+							"};",
+							"",
+							"pm.sendRequest(echoDeleteRequestActor)"
+						],
+						"type": "text/javascript"
+					}
 				}
 			],
 			"request": {
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "{{host}}/trips/{{tripID}}",
+					"raw": "{{host}}/trips/{{lastTripId}}",
 					"host": [
 						"{{host}}"
 					],
 					"path": [
 						"trips",
-						"{{tripID}}"
+						"{{lastTripId}}"
 					]
 				}
 			},
