@@ -213,7 +213,7 @@ function computeRatioApplicationsByStatus (callback) {
             {
                 $group: {
                     _id: "$status",
-                    ratio: { $sum: 1 / res[0].n }
+                    ratio: { $sum: 1 / res.n }
                 }
             }, {
                 $project: {

@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "d5a98f1c-e7bb-4907-96a0-3b8a63c6e6f1",
+		"_postman_id": "7e5b9cd2-bf2f-4f94-b99f-e255b5152bfb",
 		"name": "Acme-Explorer Actors",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -173,12 +173,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"Medor\",\n    \"surname\": \"pekino\",\n    \"email\": \"f@f.com\",\n    \"phone\": \"012459786\",\n    \"password\": \"s\",\n    \"adress\": \"d\",\n    \"role\": \"Administrator\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							"raw": "{\n    \"name\": \"Medor\",\n    \"surname\": \"pekino\",\n    \"email\": \"f@f.com\",\n    \"phone\": \"012459786\",\n    \"password\": \"s\",\n    \"adress\": \"d\",\n    \"role\": \"Administrator\"\n}"
 						},
 						"url": {
 							"raw": "{{host}}/actors",
@@ -403,12 +398,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"Antoño\",\n    \"surname\": \"Banderas\",\n    \"email\": \"f@f.com\",\n    \"phone\": \"987654321\",\n    \"password\": \"mdp\",\n    \"adress\": \"algun lugar\",\n    \"role\": \"Sponsor\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							"raw": "{\n    \"name\": \"Antoño\",\n    \"surname\": \"Banderas\",\n    \"email\": \"f@f.com\",\n    \"phone\": \"987654321\",\n    \"password\": \"mdp\",\n    \"adress\": \"algun lugar\",\n    \"role\": \"Sponsor\"\n}"
 						},
 						"url": {
 							"raw": "{{host}}/actors/{{lastActorSubmittedId}}",
@@ -523,12 +513,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"banned\": true\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							"raw": "{\n    \"banned\": true\n}"
 						},
 						"url": {
 							"raw": "{{host}}/actors/{{lastActorSubmittedId}}/ban",
@@ -643,19 +628,19 @@
 	],
 	"variable": [
 		{
-			"id": "b49e15f4-04a0-4850-b3fb-ca90477b1511",
+			"id": "c7ef12a8-5d91-4f29-bc63-57b8466e7bd6",
 			"key": "host",
 			"value": "localhost:8080/v1",
 			"type": "string"
 		},
 		{
-			"id": "b9f1ff55-8528-40fc-8f58-4faf694a0fe1",
+			"id": "48da05c6-df4a-4d18-9d31-be81313b2ad2",
 			"key": "lastActorSubmittedId",
-			"value": "5e471a95a3c3951536a79752",
+			"value": "5e5908eb3e14234c71ab889a",
 			"type": "string"
 		},
 		{
-			"id": "a26e6339-dc64-4a84-bc7d-25c6409ce67d",
+			"id": "0c587450-8427-4c1c-93a0-cb9654c4ae76",
 			"key": "lastSponsorshipSubmittedId",
 			"value": "5e432489f5bce7664b79e0b4",
 			"type": "string"
