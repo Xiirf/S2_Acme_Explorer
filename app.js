@@ -6,8 +6,8 @@ mongoose = require('mongoose'),
 swaggerDoc = require('./api/routes/swaggerDoc'),
 Actor = require('./api/models/actorModel'),
 Sponsorship = require('./api/models/sponsorshipModel'),
-Trip = require('./api/models/tripModel'),
 Application = require('./api/models/applicationModel'),
+Trip = require('./api/models/tripModel'),
 Finder = require('./api/models/finderModel'),
 bodyParser = require('body-parser');
 require('dotenv').config();
@@ -41,17 +41,17 @@ app.use(enable_cors());
 app.use("/v1", swaggerDoc);
 
 var routesActors = require('./api/routes/actorRoutes'),
-routesTrips = require('./api/routes/tripRoutes'),
 routesSponsorships = require('./api/routes/sponsorshipRoutes'),
 routesActors = require('./api/routes/actorRoutes'),
 routesApplications = require('./api/routes/applicationRoutes'),
-routesFinders = require('./api/routes/finderRoutes')
+routesTrips = require('./api/routes/tripRoutes'),
+routesFinders = require('./api/routes/finderRoutes');
 routesStorage = require('./api/routes/storageRoutes');
  
 routesActors(app);
-routesTrips(app);
 routesSponsorships(app);
 routesApplications(app);
+routesTrips(app);
 routesFinders(app);
 routesStorage(app);
  
