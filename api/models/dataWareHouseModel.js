@@ -13,6 +13,8 @@ var Applications = mongoose.model('Applications');
  *          - statsNumberApplicationByTrips
  *          - statsPriceByTrips
  *          - ratioApplicationsByStatus
+ *          - statsAveragePriceInFinders
+ *          - statsTopKeyWords
  *        properties:
  *          statsNumberTripsByManager:
  *            type: object
@@ -92,52 +94,88 @@ var Applications = mongoose.model('Applications');
  *                ratio: 
  *                  type: number
  *                  example: 0.25
+ *          statsAveragePriceInFinders:
+ *            type: object
+ *            description: global statistics on the average price range in the finders
+ *            required:
+ *              - minAvg
+ *              - maxAvg
+ *            properties:
+ *              minAvg:
+ *                type: number
+ *                example: 1
+ *              maxAvg: 
+ *                type: integer
+ *                example: 1
+ *          statsTopKeyWords:
+ *            type: object
+ *            description: top 10 keywords indicated in the finders
+ *            required:
+ *              - keyWord
+ *            properties:
+ *              keyWord:
+ *                type: string
+ *                example: "keyword"
  */
 var DataWareHouseSchema = new mongoose.Schema({
-  statsNumberTripsByManager: {
-    avg: {
-        type: Number,
-        min: 0
-    }, min: {
-        type: Number,
-        min: 0
-    }, max: {
-        type: Number,
-        min: 0
-    }, stdDeviation: {
-        type: Number
-    }
-  },
-  statsNumberApplicationByTrips: {
-    avg: {
-        type: Number,
-        min: 0
-    }, min: {
-        type: Number,
-        min: 0
-    }, max: {
-        type: Number,
-        min: 0
-    }, stdDeviation: {
-        type: Number,
-        min: 0
-    }
-  },
-  statsPriceByTrips: {
-    avg: {
-        type: Number,
-        min: 0
-    }, min: {
-        type: Number,
-        min: 0
-    }, max: {
-        type: Number,
-        min: 0
-    }, stdDeviation: {
-        type: Number,
-        min: 0
-    }
-  },
+    statsNumberTripsByManager: {
+        avg: {
+            type: Number,
+            min: 0
+        }, min: {
+            type: Number,
+            min: 0
+        }, max: {
+            type: Number,
+            min: 0
+        }, stdDeviation: {
+            type: Number
+        }
+    },
+    statsNumberApplicationByTrips: {
+        avg: {
+            type: Number,
+            min: 0
+        }, min: {
+            type: Number,
+            min: 0
+        }, max: {
+            type: Number,
+            min: 0
+        }, stdDeviation: {
+            type: Number,
+            min: 0
+        }
+    },
+    statsPriceByTrips: {
+        avg: {
+            type: Number,
+            min: 0
+        }, min: {
+            type: Number,
+            min: 0
+        }, max: {
+            type: Number,
+            min: 0
+        }, stdDeviation: {
+            type: Number,
+            min: 0
+        }
+    },
+    statsAveragePriceInFinders: {
+        minAvg: {
+            type: Number,
+            min: 0
+        }, maxAvg: {
+            type: Number,
+            min: 0
+        }
+    },
+    statsTopKeyWords: {
+        keyWord: {
+            type: String
+        }
+    },
     ratioApplicationsByStatus: [{
         _id: false,
         status: {
@@ -149,13 +187,13 @@ var DataWareHouseSchema = new mongoose.Schema({
             min: 0
         }
     }],
-computationMoment: {
-    type: Date,
-    default: Date.now
-  },
-  rebuildPeriod: {
-    type: String
-  }
+    computationMoment: {
+        type: Date,
+        default: Date.now
+    },
+    rebuildPeriod: {
+        type: String
+    }
 }, { strict: false });
 
 DataWareHouseSchema.index({ computationMoment: -1 });
