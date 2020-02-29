@@ -46,7 +46,7 @@ var stageSchema = new Schema({
         min: 0
     }
 }, {strict: false});
-module.exports = mongoose.model('Stages', stageSchema);
+mongoose.model('Stages', stageSchema);
 Stages = mongoose.model('Stages');
 
 /**

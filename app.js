@@ -4,16 +4,18 @@ app = express(),
 port = process.env.PORT || 8080,
 mongoose = require('mongoose'),
 swaggerDoc = require('./api/routes/swaggerDoc'),
+GlobalVars = require('./api/models/globalVarsModel'),
 Actor = require('./api/models/actorModel'),
+Trip = require('./api/models/tripModel'),
 Sponsorship = require('./api/models/sponsorshipModel'),
 Application = require('./api/models/applicationModel'),
-Trip = require('./api/models/tripModel'),
 Finder = require('./api/models/finderModel'),
+DataWareHouse = require('./api/models/dataWareHouseModel'),
 bodyParser = require('body-parser');
 require('dotenv').config();
 // MongoDB URI building
-var mongoDBUser = process.env.MONGO_USER || "myUser";
-var mongoDBPass = process.env.MONGO_PASSWORD || "myUserPassword";
+var mongoDBUser = process.env.MONGO_USER || "admin";
+var mongoDBPass = process.env.MONGO_PASSWORD || "mdp";
 var mongoDBCredentials = (mongoDBUser && mongoDBPass) ? mongoDBUser + ":" + mongoDBPass + "@" : "";
 
 var mongoDBHostname = process.env.mongoDBHostname || "localhost";
@@ -45,14 +47,18 @@ routesSponsorships = require('./api/routes/sponsorshipRoutes'),
 routesActors = require('./api/routes/actorRoutes'),
 routesApplications = require('./api/routes/applicationRoutes'),
 routesTrips = require('./api/routes/tripRoutes'),
-routesFinders = require('./api/routes/finderRoutes');
-routesStorage = require('./api/routes/storageRoutes');
+routesFinders = require('./api/routes/finderRoutes')
+routesGlobalVars = require('./api/routes/globalVarsRoutes');
+routesDataWareHouse = require('./api/routes/dataWareHouseRoutes'),
+routesStorage = require('./api/routes/storageRoutes'),
  
 routesActors(app);
 routesSponsorships(app);
 routesApplications(app);
 routesTrips(app);
 routesFinders(app);
+routesGlobalVars(app);
+routesDataWareHouse(app);
 routesStorage(app);
  
 console.log("Connecting DB to: " + mongoDBURI);

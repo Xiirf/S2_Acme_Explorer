@@ -216,7 +216,7 @@ exports.edit_an_actor = function(req, res) {
     console.log(updatedActor)
     if (!updatedActor) {
         console.warn("New PUT request to /actors/ without actor, sending 400...");
-        res.sendStatus(400); // bad request
+        res.sendStatus(422); // bad request
     } else {
         console.info("New PUT request to /actors/" + id + " with data " + JSON.stringify(updatedActor, 2, null));
         Actors.findById(id, function(err, actor) {
