@@ -11,6 +11,8 @@ Sponsorship = require('./api/models/sponsorshipModel'),
 Application = require('./api/models/applicationModel'),
 Finder = require('./api/models/finderModel'),
 DataWareHouse = require('./api/models/dataWareHouseModel'),
+Cube = require('./api/models/cubeModel'),
+
 bodyParser = require('body-parser');
 require('dotenv').config();
 // MongoDB URI building
