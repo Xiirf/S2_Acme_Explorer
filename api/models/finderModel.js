@@ -1,9 +1,8 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var mongodb = require('mongodb');
-//Après merge
-//var mongoose = require('mongoose')
-//Actors = mongoose.model('Actors');
+var mongoose = require('mongoose');
+Actors = mongoose.model('Actors');
 
 /**
  * @swagger
@@ -43,15 +42,14 @@ var finderSchema = new Schema({
     idExplorer: {
         type: mongodb.ObjectID,
         required: 'Kindly enter the idExplorer of the finder',
-        //Ajouter une fois merge
-        /*validate: {
+        validate: {
             validator: async function(v) {
                 return Promise.resolve(Actors.findById(v, function(err, actor) {
                     return actor && actor.role == "Explorer";
                 }));
             },
             message: "There are no explorer with this id"
-        }*/
+        }
     },
     keyWord: {
         type: String
@@ -69,4 +67,7 @@ var finderSchema = new Schema({
         type: Date
     }
 }, {strict:false});
+
+finderSchema.index( { idExplorer: 1} );
+
 module.exports = mongoose.model('Finders', finderSchema);

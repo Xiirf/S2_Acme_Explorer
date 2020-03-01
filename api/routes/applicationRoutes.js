@@ -12,8 +12,9 @@ module.exports = function(app) {
     router.route('/applications/:applicationId')
         .get(applications.read_an_application)
         .put(applications.edit_an_application)
-        .patch(applications.pay_an_application)
         .delete(applications.delete_an_application);
+    router.route('/applications/:applicationId/status')
+        .patch(applications.edit_status_of_an_application)
     
     app.use("/v1/", router);
 }

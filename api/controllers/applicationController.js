@@ -7,7 +7,8 @@
  *   description: Applications organize
  */
 var mongoose = require('mongoose'),
-Applications = mongoose.model('Applications');
+Applications = mongoose.model('Applications'),
+Trips = mongoose.model('Trips');
 
 /**
  * @swagger
@@ -64,18 +65,31 @@ exports.list_all_applications = function(req, res) {
  *          description: Server error
  */
 exports.create_an_application = function(req, res) {
-    var new_application = new Applications(req.body);
-    new_application.save(function(err, application) {
+    Trips.findById({_id: req.body.idTrip}, function(err, trip) {
         if (err) {
-            if(err.name=='ValidationError') {
-                res.status(422).send(err);
-            }
-            else{
-                res.status(500).send(err);
-            }
+            res.status(500).send(err);
+        } 
+        else if (!trip) {
+            res.status(404).json({ error: 'No trips with the given Id were found.'});
+        }
+        else if (!trip.published || trip.cancelled || trip.start < Date.now) {
+            res.status(422).json({error: "This trip is not available."});
         }
         else {
-            res.status(201).json(application);
+            var new_application = new Applications(req.body);
+            new_application.save(function(err, application) {
+                if (err) {
+                    if(err.name=='ValidationError') {
+                        res.status(422).send(err);
+                    }
+                    else{
+                        res.status(500).send(err);
+                    }
+                }
+                else {
+                    res.status(201).json(application);
+                }
+            });
         }
     });
 }
@@ -175,49 +189,6 @@ exports.edit_an_application = function(req, res) {
     })
 }
 
-
-/**
- * @swagger
- * path:
- *  /applications/{applicationId}/pay:
- *    patch:
- *      summary: Set an application payment to true
- *      tags: [Applications]
- *      parameters:
- *         - name: applicationId
- *           in: path
- *           description: application Id
- *           required: true
- *           schema:
- *             type: string
- *      responses:
- *        "200":
- *          description: Application updated
- *          content:
- *            application/json:
- *              schema:
- *                type: array
- *                $ref: '#/components/schemas/Applications'
- *        "404":
- *          description: Ressource not found (or impossible to pay)
- *        "500":
- *          description: Internal error
- */
-exports.pay_an_application = function(req, res) {
-    Applications.findOneAndUpdate({_id: req.params.applicationId, status: 'DUE'}, { status: 'ACCEPTED', payedAt: Date.now }, { new:true, runValidators: true }, function(err, application) {
-        if (err) {
-            res.status(500).send(err);
-        } 
-        else if (!application) {
-            res.status(404)
-                .json({ error: 'No applications that are payable with this id were found.'});
-        } 
-        else {
-            res.status(200).json(application);
-        }
-    })
-}
-
 /**
  * @swagger
  * path:
@@ -247,4 +218,90 @@ exports.delete_an_application = function(req, res) {
             res.json({message: 'Application successfully deleted', application});
         }
     })
+}
+
+/**
+ * @swagger
+ * path:
+ *  '/applications/{applicationId}/status':
+ *    patch:
+ *      summary: Edit the status of an application
+ *      tags: [Applications]
+ *      parameters:
+ *         - name: applicationId
+ *           in: path
+ *           description: od of the application you want to modify
+ *           required: true
+ *           schema:
+ *             type: string
+ *      requestBody:
+ *        required: true
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              required:
+ *                - status
+ *              properties:
+ *                banned:
+ *                  type: string
+ *      responses:
+ *        '200':
+ *          description: Updated application
+ *          content:
+ *            application/json:
+ *              schema:
+ *                allOf:
+ *                - $ref: '#/components/schemas/Applications'
+ *        '404':
+ *           description: Application not found
+ *           content: Not Found
+ *        '422':
+ *           description: Incorrect body
+ *           content: {}
+ *        '500':
+ *           description: Internal server error
+ *           content: {}
+ */
+exports.edit_status_of_an_application = function(req, res) {
+    Applications.findById({_id: req.params.applicationId}, function(err, application) {
+        if (err) {
+            res.status(500).send(err);
+        }
+        else if (!application) {
+            res.status(404)
+                .json({ error: 'No applications with this Id were found.'});
+        }
+        else if ((req.body.status == "REJECTED" || req.body.status == "DUE") && application.status != "PENDING") {
+            res.status(422).json({error: "This value of status is not accepted."});
+        }
+        else if ((req.body.status == "ACCEPTED") && application.status != "DUE") {
+            res.status(422).json({error: "This value of status is not accepted."});
+        }
+        else if ((req.body.status == "CANCELLED") && application.status != "ACCEPTED") {
+            res.status(422).json({error: "This value of status is not accepted."});
+        } 
+        else {
+            if (req.body.status == "ACCEPTED") {
+                application.payedAt = Date.now;
+            }
+            application.status = req.body.status;
+            application.save(function(err, application) {
+                if (err) {
+                    if (err.name=='ValidationError') {
+                        res.status(422).send(err);
+                    }
+                    else{
+                        res.status(500).send(err);
+                    }
+                } 
+                else if (!application) {
+                    res.status(404).json({ error: 'No applications with this Id were found.'});
+                }
+                else {
+                    res.status(200).json(application);
+                }
+            })
+        }
+    });
 }
