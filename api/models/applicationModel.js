@@ -32,6 +32,8 @@ Trips = mongoose.model('Trips');
  *            type: String
  *            description: Status of the application.
  *            example: 'PENDING'
+ *          payedAt:
+ *              type: Date
  *          comments:
  *            type: array
  *            items: String
@@ -66,6 +68,9 @@ var applicationSchema = new Schema({
             },
             message: "There are no trip with this id"
         }
+    },
+    payedAt: {
+        type: Date
     },
     createdAt: {
         type: Date,

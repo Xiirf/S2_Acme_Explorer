@@ -4,7 +4,9 @@ var mongodb = require('mongodb');
 const generate = require('nanoid/generate');
 const dateFormat = require('dateformat');
 var mongoose = require('mongoose')
-Actors = mongoose.model('Actors');
+Actors = require('./actorModel');
+Sponsorships = require('./sponsorshipModel');
+Applications = require('./applicationModel');
 
 /**
  * @swagger
@@ -44,6 +46,8 @@ var stageSchema = new Schema({
         min: 0
     }
 }, {strict: false});
+mongoose.model('Stages', stageSchema);
+Stages = mongoose.model('Stages');
 
 /**
  * @swagger
@@ -89,12 +93,6 @@ var stageSchema = new Schema({
  *              contentType:
  *                  type: string
  *            description: Array of Trip pictures.
- *          cancelled:
- *            type: boolean
- *            description: Trip cancel or no.
- *          reasonCancelling:
- *            type: string
- *            description: Trip calcel reason.
  *          stages:
  *            type: array
  *            items: object
@@ -133,7 +131,11 @@ var tripSchema = new Schema({
     }, pictures: [{
         data: Buffer,
         contentType: String
-    }], published: {
+    }], price: {
+        type: Number,
+        default: 0,
+        min: 0
+    }, published: {
         type: Boolean,
         default: false
     },cancelled: {
@@ -156,14 +158,6 @@ var tripSchema = new Schema({
     }
 }, {strict: true, toJSON: {virtuals: true}});
 
-tripSchema.virtual('price').get(function() {
-    var price = 0;
-    this.stages.forEach(stage => {
-        price += stage.price;
-    })
-    return price;
-});
-
 function dateValidator(value) {
     return this.start <= value;
 }
@@ -171,13 +165,41 @@ function dateValidator(value) {
 tripSchema.pre('save', function(callback) {
     var new_trip = this;
 
-    // Generación del Ticker
-    var date=dateFormat(new Date(), "yymmdd");
-    var generated_ticker = [date, generate('ABCDEFGHIJKLMNOPQRSTUVWXYZ', 4)].join('-')
-    new_trip.ticker = generated_ticker;
+    // Break out if the cancelled hasn't changed
+    if (!new_trip.ticker) {
+        // Generación del Ticker
+        var date=dateFormat(new Date(), "yymmdd");
+        var generated_ticker = [date, generate('ABCDEFGHIJKLMNOPQRSTUVWXYZ', 4)].join('-')
+        new_trip.ticker = generated_ticker;
+    }
+    // Price
+    var price = 0;
+    new_trip.stages.forEach(stage => {
+        price += stage.price;
+    })
+    new_trip.price = price;
 
     callback();
 });
 
-module.exports = mongoose.model('Stages', stageSchema);
+tripSchema.pre('deleteOne', async function(callback){
+    //Delete all object associated with this trip
+    var tripId = this._conditions._id;
+    await Sponsorships.deleteMany({trip_id: tripId} ,(err) => {
+        if(err) throw err;
+    });
+    await Applications.deleteMany({idTrip: tripId} ,(err) => {
+        if(err) throw err;
+    });
+
+    callback();
+});
+
+tripSchema.index( { title: "text", description: "text", ticker: "text" } );
+tripSchema.index( { ticker: "text", published: 1, cancelled: -1 } );
+tripSchema.index( { price: 1, published: 1, cancelled: -1 } );
+tripSchema.index( { start: 1, published: 1, cancelled: -1 } );
+tripSchema.index( { end: 1, published: 1, cancelled: -1 } );
+tripSchema.index( { ManagerId: 1} );
+
 module.exports = mongoose.model('Trips', tripSchema);

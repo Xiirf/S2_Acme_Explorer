@@ -1,5 +1,6 @@
 var mongoose = require('mongoose')
 Sponsorships = mongoose.model('Sponsorships');
+GlobalVars = mongoose.model('GlobalVars');
 
  /**
  * @swagger
@@ -11,6 +12,13 @@ Sponsorships = mongoose.model('Sponsorships');
  *      description: >-
  *        Retrieve all the sponsorships
  *      operationId: getSponsorships
+ *      parameters:
+ *        - name: tripId
+ *          in: query
+ *          description: Id of the trip that you wanna retrieve the sponsorships from
+ *          required: false
+ *          schema:
+ *            type: string
  *      responses:
  *        '200':
  *          description: OK
@@ -27,7 +35,9 @@ Sponsorships = mongoose.model('Sponsorships');
  */
 
 exports.list_all_sponsorships = function(req, res) {
-    Sponsorships.find({}, function(err, sponsorships) {
+    var filters = {}
+    if(req.query.tripId) filters.trip_id = req.query.tripId;
+    Sponsorships.find(filters, function(err, sponsorships) {
         if(err) {
             res.status(500).send(err);
         } else {
@@ -55,7 +65,6 @@ exports.list_all_sponsorships = function(req, res) {
  *              required:
  *                - banner
  *                - link
- *                - price
  *                - sponsor_id
  *                - trip_id
  *              properties:
@@ -280,14 +289,14 @@ exports.edit_a_sponsorship = function(req, res) {
  *           content: {}
  */
 exports.handle_sponsorship_payement = function(req, res) {
-    var payedObject = req.body;
+    var payed = req.body ? req.body.payed : undefined;
     var id = req.params.sponsorshipId;
-    if (!payedObject || typeof(payedObject.payed) != "boolean") {
+    if (!payed || typeof(payed) != "boolean") {
         console.warn("New PATCH request to /sponsorships/id/pay without correct attribute payed, sending 400...");
-        res.sendStatus(400);
+        res.sendStatus(422);
     } else {
-        console.info("New PATCH request to /sponsorships/" + id + "/pay with value " + JSON.stringify(payedObject.payed, 2, null));
-        Sponsorships.findOneAndUpdate({"_id": id}, payedObject, { new: true }, function(err, sponsorship) {
+        console.info("New PATCH request to /sponsorships/" + id + "/pay with value " + JSON.stringify(payed, 2, null));
+        Sponsorships.findOneAndUpdate({"_id": id}, { "payed": payed }, { new: true }, function(err, sponsorship) {
             if (err) {
                 if(err.name=='ValidationError') {
                     res.status(422).send(err);
@@ -303,6 +312,67 @@ exports.handle_sponsorship_payement = function(req, res) {
                     console.warn("There are not any sponsorship with id " + id);
                     res.sendStatus(404); // not found
                 }
+            }
+        });
+    }
+}
+
+/**
+ * @swagger
+ * path:
+ *  '/sponsorships/flatRate':
+ *    patch:
+ *      tags:
+ *        - Sponsorship
+ *        - GlobalVars
+ *      description: >-
+ *       fix flat rate for all sponsorships
+ *      operationId: patchSponsorshipsFlatRate
+ *      requestBody:
+ *        required: true
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              required:
+ *                - flatRateSponsorships
+ *              properties:
+ *                flatRateSponsorships:
+ *                  type: number
+ *                  format: float
+ *      responses:
+ *        '204':
+ *          description: Flat rate successfully changed
+ *          content:
+ *            application/json:
+ *              schema:
+ *                allOf:
+ *                - $ref: '#/components/schemas/GlobalVars'
+ *        '422':
+ *           description: Incorrect body
+ *           content: {}
+ *        '500':
+ *           description: Internal server error
+ *           content: {}
+ */
+exports.handle_flat_rate_change = function(req, res) {
+    var flatRateSponsorships = req.body ? req.body.flatRateSponsorships : undefined;
+    if ((flatRateSponsorships !== 0 && !flatRateSponsorships) || typeof(flatRateSponsorships) != "number") {
+        console.warn("New PATCH request to /sponsorships/flatRate without correct attribute flatRateSponsorships, sending 400...");
+        res.sendStatus(422);
+    } else {
+        console.info("New PATCH request to /sponsorships/flatRate with value " + JSON.stringify(flatRateSponsorships, 2, null));
+        GlobalVars.findOneAndUpdate({}, { "flatRateSponsorships": flatRateSponsorships }, { upsert: true, new: true, setDefaultsOnInsert: true, runValidators: true }, function(err, globalVars) {
+            if (err) {
+                if(err.name=='ValidationError') {
+                    res.status(422).send(err);
+                }
+                else{
+                    console.error('Error getting data from DB');
+                    res.status(500).send(err);
+                }
+            } else {
+                res.status(200).send(globalVars);
             }
         });
     }
