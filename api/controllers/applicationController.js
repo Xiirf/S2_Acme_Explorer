@@ -189,49 +189,6 @@ exports.edit_an_application = function(req, res) {
     })
 }
 
-
-/**
- * @swagger
- * path:
- *  /applications/{applicationId}/pay:
- *    patch:
- *      summary: Set an application payment to true
- *      tags: [Applications]
- *      parameters:
- *         - name: applicationId
- *           in: path
- *           description: application Id
- *           required: true
- *           schema:
- *             type: string
- *      responses:
- *        "200":
- *          description: Application updated
- *          content:
- *            application/json:
- *              schema:
- *                type: array
- *                $ref: '#/components/schemas/Applications'
- *        "404":
- *          description: Ressource not found (or impossible to pay)
- *        "500":
- *          description: Internal error
- */
-exports.pay_an_application = function(req, res) {
-    Applications.findOneAndUpdate({_id: req.params.applicationId, status: 'DUE'}, { status: 'ACCEPTED', payedAt: Date.now }, { new:true, runValidators: true }, function(err, application) {
-        if (err) {
-            res.status(500).send(err);
-        } 
-        else if (!application) {
-            res.status(404)
-                .json({ error: 'No applications that are payable with this id were found.'});
-        } 
-        else {
-            res.status(200).json(application);
-        }
-    })
-}
-
 /**
  * @swagger
  * path:
@@ -325,6 +282,9 @@ exports.edit_status_of_an_application = function(req, res) {
             res.status(422).json({error: "This value of status is not accepted."});
         } 
         else {
+            if (req.body.status == "ACCEPTED") {
+                application.payedAt = Date.now;
+            }
             application.status = req.body.status;
             application.save(function(err, application) {
                 if (err) {

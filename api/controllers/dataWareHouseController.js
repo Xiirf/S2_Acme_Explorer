@@ -469,7 +469,7 @@ function computeStatsAveragePriceInFinders (callback) {
             }
         }
     ], function(err, res){
-        callback(err, res[0])
+        callback(err, res.length != 0 ? res[0] : res)
     });
 };
 
