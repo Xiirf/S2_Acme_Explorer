@@ -65,6 +65,10 @@ routesStorage(app);
  
 console.log("Connecting DB to: " + mongoDBURI);
 mongoose.connection.on("open", function (err, conn) {
+    GlobalVars.findOneAndUpdate({}, {}, { upsert: true, new: true, setDefaultsOnInsert: true, runValidators: true }, (err, glob) => {
+        console.log(glob);
+    });
+        
     app.listen(port, function () {
         console.log('ACME-Explorer RESTful API server started on: ' + port);
     });

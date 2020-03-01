@@ -1,0 +1,3089 @@
+{
+	"info": {
+		"_postman_id": "7f817d01-8c21-41ce-9cc5-a1fe799fb3af",
+		"name": "ACME-Explorer",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Massive_Storage",
+			"item": [
+				{
+					"name": "POST actors",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/{{ressource}}?dbURL={{MongoDBURL}}&mongooseModel=Actors&sourceFile={{folderLocation}}/dataActors.json",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"{{ressource}}"
+							],
+							"query": [
+								{
+									"key": "dbURL",
+									"value": "{{MongoDBURL}}"
+								},
+								{
+									"key": "mongooseModel",
+									"value": "Actors"
+								},
+								{
+									"key": "sourceFile",
+									"value": "{{folderLocation}}/dataActors.json"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST trips",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/{{ressource}}?dbURL={{MongoDBURL}}&mongooseModel=Trips&sourceFile={{folderLocation}}/dataTrips.json",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"{{ressource}}"
+							],
+							"query": [
+								{
+									"key": "dbURL",
+									"value": "{{MongoDBURL}}"
+								},
+								{
+									"key": "mongooseModel",
+									"value": "Trips"
+								},
+								{
+									"key": "sourceFile",
+									"value": "{{folderLocation}}/dataTrips.json"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST sponsorships",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/{{ressource}}?dbURL={{MongoDBURL}}&mongooseModel=Sponsorships&sourceFile={{folderLocation}}/dataSponsorships.json",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"{{ressource}}"
+							],
+							"query": [
+								{
+									"key": "dbURL",
+									"value": "{{MongoDBURL}}"
+								},
+								{
+									"key": "mongooseModel",
+									"value": "Sponsorships"
+								},
+								{
+									"key": "sourceFile",
+									"value": "{{folderLocation}}/dataSponsorships.json"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST applications",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/{{ressource}}?dbURL={{MongoDBURL}}&mongooseModel=Applications&sourceFile={{folderLocation}}/dataApplications.json",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"{{ressource}}"
+							],
+							"query": [
+								{
+									"key": "dbURL",
+									"value": "{{MongoDBURL}}"
+								},
+								{
+									"key": "mongooseModel",
+									"value": "Applications"
+								},
+								{
+									"key": "sourceFile",
+									"value": "{{folderLocation}}/dataApplications.json"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST finders",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/{{ressource}}?dbURL={{MongoDBURL}}&mongooseModel=Finders&sourceFile={{folderLocation}}/dataFinders.json",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"{{ressource}}"
+							],
+							"query": [
+								{
+									"key": "dbURL",
+									"value": "{{MongoDBURL}}"
+								},
+								{
+									"key": "mongooseModel",
+									"value": "Finders"
+								},
+								{
+									"key": "sourceFile",
+									"value": "{{folderLocation}}/dataFinders.json"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Actors",
+			"item": [
+				{
+					"name": "GET  actors",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "818be24f-0793-4470-a53d-abc5743aac0b",
+								"exec": [
+									"const echoPostRequest = {",
+									"    url: pm.variables.get('host') + '/actors',",
+									"    method: 'POST',",
+									"    header: {",
+									"        'content-type': 'application/json',",
+									"    },",
+									"    body: {",
+									"        mode: 'raw',",
+									"        raw: JSON.stringify({",
+									"            \"name\": \"Antoño\",",
+									"            \"surname\": \"Banderas\",",
+									"            \"email\": \"f@f.com\",",
+									"            \"phone\": \"012459786\",",
+									"            \"password\": \"pwd\",",
+									"            \"adress\": \"algun lugar\",",
+									"            \"role\": \"Manager\"",
+									"        })",
+									"    }",
+									"};",
+									"pm.sendRequest(echoPostRequest)"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "e720dc66-9945-433b-8107-7aedab303f2c",
+								"exec": [
+									"var Ajv = require('ajv'),",
+									"    ajv = new Ajv({logger: console, allErrors: true}), schema = {",
+									"    \"type\": \"object\",",
+									"    \"required\": [\"_id\", \"name\", \"email\", \"surname\", \"password\", \"role\", \"createdAt\"],",
+									"    \"properties\": {",
+									"        \"properties\": {",
+									"            \"_id\" : {",
+									"                \"type\" : \"string\"",
+									"            }, \"name\" : {",
+									"                 \"type\" : \"string\"",
+									"            }, \"email\" : {",
+									"                 \"type\" : \"string\"",
+									"            }, \"surname\" : {",
+									"                 \"type\" : \"string\"",
+									"            }, \"password\" : {",
+									"                 \"type\" : \"string\"",
+									"            }, \"phone\" : {",
+									"                 \"type\" : \"string\"",
+									"            }, \"adress\" : {",
+									"                 \"type\" : \"string\"",
+									"            }, \"role\" : {",
+									"                 \"enum\" : ['Administrator', 'Manager', 'Explorer', 'Sponsor']",
+									"            }, \"createdAt\" : {",
+									"                 \"type\": \"string\"",
+									"            }, \"__v\" : {",
+									"                 \"type\" : \"integer\"",
+									"            }",
+									"        }",
+									"    }",
+									"}",
+									"",
+									"pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200) });",
+									"/*pm.test(\"Return 1 item\", function () { pm.expect(pm.response.json().length).to.eql(1)});",
+									"pm.test(\"Return the right item\", function () { pm.expect(pm.response.json()[0].name).to.eql(\"Antoño\") && pm.expect(pm.response.json()[0].surname).to.eql(\"Banderas\")});",
+									"*/pm.test('Schema is valid', function() {",
+									"  pm.expect(ajv.validate(pm.response.json()[0], schema), JSON.stringify(ajv.errors)).to.be.true;",
+									"});",
+									"const echoDeleteRequest = {",
+									"  url: pm.variables.get('host') + '/actors/' + pm.response.json()[0]._id,",
+									"  method: 'DELETE',",
+									"};",
+									"pm.sendRequest(echoDeleteRequest)"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/actors",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"actors"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST actors",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "0c2aad26-b05f-4324-9213-8bc40b65f5db",
+								"exec": [
+									"var Ajv = require('ajv'),",
+									"    ajv = new Ajv({logger: console, allErrors: true}), schema = {",
+									"    \"type\": \"object\",",
+									"    \"required\": [\"_id\", \"name\", \"email\", \"surname\", \"password\", \"role\", \"createdAt\"],",
+									"    \"properties\": {",
+									"        \"properties\": {",
+									"            \"_id\" : {",
+									"                \"type\" : \"string\"",
+									"            }, \"name\" : {",
+									"                 \"type\" : \"string\"",
+									"            }, \"email\" : {",
+									"                 \"type\" : \"string\"",
+									"            }, \"surname\" : {",
+									"                 \"type\" : \"string\"",
+									"            }, \"password\" : {",
+									"                 \"type\" : \"string\"",
+									"            }, \"phone\" : {",
+									"                 \"type\" : \"string\"",
+									"            }, \"adress\" : {",
+									"                 \"type\" : \"string\"",
+									"            }, \"role\" : {",
+									"                 \"enum\" : ['Administrator', 'Manager', 'Explorer', 'Sponsor']",
+									"            }, \"createdAt\" : {",
+									"                 \"type\": \"string\"",
+									"            }, \"__v\" : {",
+									"                 \"type\" : \"integer\"",
+									"            }",
+									"        }",
+									"    }",
+									"}",
+									"pm.test(\"Status code is 201\", function () { pm.expect(pm.response.code).to.be.oneOf([201]) });",
+									"pm.test(\"Return the created item\", function () { pm.expect(pm.response.json().name).to.eql(\"Medor\") && pm.expect(pm.response.json().surname).to.eql(\"pekino\")});",
+									"pm.test('Schema is valid', function() {",
+									"  pm.expect(ajv.validate(pm.response.json(), schema), JSON.stringify(ajv.errors)).to.be.true;",
+									"});",
+									"",
+									"const echoDeleteRequest = {",
+									"    url: pm.variables.get('host') + '/actors/' + pm.response.json()._id,",
+									"    method: 'DELETE',",
+									"};",
+									"pm.sendRequest(echoDeleteRequest)"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Medor\",\n    \"surname\": \"pekino\",\n    \"email\": \"f@f.com\",\n    \"phone\": \"012459786\",\n    \"password\": \"s\",\n    \"adress\": \"d\",\n    \"role\": \"Administrator\"\n}"
+						},
+						"url": {
+							"raw": "{{host}}/actors",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"actors"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET actors id",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "186208b9-4dcc-4e25-83de-13e9a6e6bb0a",
+								"exec": [
+									"const echoPostRequest = {",
+									"    url: pm.variables.get('host') + '/actors',",
+									"    method: 'POST',",
+									"    header: {",
+									"        'content-type': 'application/json',",
+									"    },",
+									"    body: {",
+									"        mode: 'raw',",
+									"        raw: JSON.stringify({",
+									"            \"name\": \"Antoño\",",
+									"            \"surname\": \"Banderas\",",
+									"            \"email\": \"f@f.com\",",
+									"            \"phone\": \"012459786\",",
+									"            \"password\": \"pwd\",",
+									"            \"adress\": \"algun lugar\",",
+									"            \"role\": \"Manager\"",
+									"        })",
+									"    }",
+									"};",
+									"pm.sendRequest(echoPostRequest, function (err, res) {",
+									"    console.log(err ? err : res.json());",
+									"        if (err === null) {",
+									"            pm.environment.set('lastActorSubmittedId', res.json()._id)",
+									"        }",
+									"    });"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "2e611c61-ca75-49b8-9de3-507761e7ae9a",
+								"exec": [
+									"var Ajv = require('ajv'),",
+									"    ajv = new Ajv({logger: console, allErrors: true}), schema = {",
+									"    \"type\": \"object\",",
+									"    \"required\": [\"_id\", \"name\", \"email\", \"surname\", \"password\", \"role\", \"createdAt\"],",
+									"    \"properties\": {",
+									"        \"properties\": {",
+									"            \"_id\" : {",
+									"                \"type\" : \"string\"",
+									"            }, \"name\" : {",
+									"                 \"type\" : \"string\"",
+									"            }, \"email\" : {",
+									"                 \"type\" : \"string\"",
+									"            }, \"surname\" : {",
+									"                 \"type\" : \"string\"",
+									"            }, \"password\" : {",
+									"                 \"type\" : \"string\"",
+									"            }, \"phone\" : {",
+									"                 \"type\" : \"string\"",
+									"            }, \"adress\" : {",
+									"                 \"type\" : \"string\"",
+									"            }, \"role\" : {",
+									"                 \"enum\" : ['Administrator', 'Manager', 'Explorer', 'Sponsor']",
+									"            }, \"createdAt\" : {",
+									"                 \"type\": \"string\"",
+									"            }, \"__v\" : {",
+									"                 \"type\" : \"integer\"",
+									"            }",
+									"        }",
+									"    }",
+									"}",
+									"",
+									"pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200) });",
+									"pm.test(\"Return the right item\", function () { pm.expect(pm.response.json().name).to.eql(\"Antoño\") && pm.expect(pm.response.json().surname).to.eql(\"Banderas\")});",
+									"pm.test('Schema is valid', function() {",
+									"  pm.expect(ajv.validate(pm.response.json(), schema), JSON.stringify(ajv.errors)).to.be.true;",
+									"});",
+									"const echoDeleteRequest = {",
+									"  url: pm.variables.get('host') + '/actors/' + pm.response.json()._id,",
+									"  method: 'DELETE',",
+									"};",
+									"pm.sendRequest(echoDeleteRequest)"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "text/plain",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{host}}/actors/{{lastActorSubmittedId}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"actors",
+								"{{lastActorSubmittedId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PUT actors",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "8978b6a8-0064-425d-a4c5-ac5c584c9a2f",
+								"exec": [
+									"const echoPostRequest = {",
+									"    url: pm.variables.get('host') + '/actors',",
+									"    method: 'POST',",
+									"    header: {",
+									"        'content-type': 'application/json',",
+									"    },",
+									"    body: {",
+									"        mode: 'raw',",
+									"        raw: JSON.stringify({",
+									"            \"name\": \"Antoño\",",
+									"            \"surname\": \"Banderas\",",
+									"            \"email\": \"f@f.com\",",
+									"            \"phone\": \"012459786\",",
+									"            \"password\": \"pwd\",",
+									"            \"adress\": \"algun lugar\",",
+									"            \"role\": \"Manager\"",
+									"        })",
+									"    }",
+									"};",
+									"pm.sendRequest(echoPostRequest, function (err, res) {",
+									"    console.log(err ? err : res.json());",
+									"        if (err === null) {",
+									"            pm.environment.set('lastActorSubmittedId', res.json()._id)",
+									"        }",
+									"    });"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "95a0f3bb-a146-47e1-8cf6-ec34acdf0adc",
+								"exec": [
+									"var Ajv = require('ajv'),",
+									"    ajv = new Ajv({logger: console, allErrors: true}), schema = {",
+									"    \"type\": \"object\",",
+									"    \"required\": [\"_id\", \"name\", \"email\", \"surname\", \"password\", \"role\", \"createdAt\"],",
+									"    \"properties\": {",
+									"        \"properties\": {",
+									"            \"_id\" : {",
+									"                \"type\" : \"string\"",
+									"            }, \"name\" : {",
+									"                 \"type\" : \"string\"",
+									"            }, \"email\" : {",
+									"                 \"type\" : \"string\"",
+									"            }, \"surname\" : {",
+									"                 \"type\" : \"string\"",
+									"            }, \"password\" : {",
+									"                 \"type\" : \"string\"",
+									"            }, \"phone\" : {",
+									"                 \"type\" : \"string\"",
+									"            }, \"adress\" : {",
+									"                 \"type\" : \"string\"",
+									"            }, \"role\" : {",
+									"                 \"enum\" : ['Administrator', 'Manager', 'Explorer', 'Sponsor']",
+									"            }, \"createdAt\" : {",
+									"                 \"type\": \"string\"",
+									"            }, \"__v\" : {",
+									"                 \"type\" : \"integer\"",
+									"            }",
+									"        }",
+									"    }",
+									"}",
+									"",
+									"pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200) });",
+									"pm.test(\"Return the right updated item\", function () { pm.expect(pm.response.json().phone).to.eql(\"987654321\") && pm.expect(pm.response.json().role).to.eql(\"Sponsor\")});",
+									"pm.test('Schema is valid', function() {",
+									"  pm.expect(ajv.validate(pm.response.json(), schema), JSON.stringify(ajv.errors)).to.be.true;",
+									"});",
+									"const echoDeleteRequest = {",
+									"  url: pm.variables.get('host') + '/actors/' + pm.response.json()._id,",
+									"  method: 'DELETE',",
+									"};",
+									"pm.sendRequest(echoDeleteRequest)"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Antoño\",\n    \"surname\": \"Banderas\",\n    \"email\": \"f@f.com\",\n    \"phone\": \"987654321\",\n    \"password\": \"mdp\",\n    \"adress\": \"algun lugar\",\n    \"role\": \"Sponsor\"\n}"
+						},
+						"url": {
+							"raw": "{{host}}/actors/{{lastActorSubmittedId}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"actors",
+								"{{lastActorSubmittedId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PATCH actors ban",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "8978b6a8-0064-425d-a4c5-ac5c584c9a2f",
+								"exec": [
+									"const echoPostRequest = {",
+									"    url: pm.variables.get('host') + '/actors',",
+									"    method: 'POST',",
+									"    header: {",
+									"        'content-type': 'application/json',",
+									"    },",
+									"    body: {",
+									"        mode: 'raw',",
+									"        raw: JSON.stringify({",
+									"            \"name\": \"Antoño\",",
+									"            \"surname\": \"Banderas\",",
+									"            \"email\": \"f@f.com\",",
+									"            \"phone\": \"012459786\",",
+									"            \"password\": \"pwd\",",
+									"            \"adress\": \"algun lugar\",",
+									"            \"role\": \"Manager\"",
+									"        })",
+									"    }",
+									"};",
+									"pm.sendRequest(echoPostRequest, function (err, res) {",
+									"    console.log(err ? err : res.json());",
+									"        if (err === null) {",
+									"            pm.environment.set('lastActorSubmittedId', res.json()._id)",
+									"        }",
+									"    });"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "95a0f3bb-a146-47e1-8cf6-ec34acdf0adc",
+								"exec": [
+									"var Ajv = require('ajv'),",
+									"    ajv = new Ajv({logger: console, allErrors: true}), schema = {",
+									"    \"type\": \"object\",",
+									"    \"required\": [\"_id\", \"name\", \"email\", \"surname\", \"password\", \"role\", \"createdAt\"],",
+									"    \"properties\": {",
+									"        \"properties\": {",
+									"            \"_id\" : {",
+									"                \"type\" : \"string\"",
+									"            }, \"name\" : {",
+									"                 \"type\" : \"string\"",
+									"            }, \"email\" : {",
+									"                 \"type\" : \"string\"",
+									"            }, \"surname\" : {",
+									"                 \"type\" : \"string\"",
+									"            }, \"password\" : {",
+									"                 \"type\" : \"string\"",
+									"            }, \"phone\" : {",
+									"                 \"type\" : \"string\"",
+									"            }, \"adress\" : {",
+									"                 \"type\" : \"string\"",
+									"            }, \"role\" : {",
+									"                 \"enum\" : ['Administrator', 'Manager', 'Explorer', 'Sponsor']",
+									"            }, \"createdAt\" : {",
+									"                 \"type\": \"string\"",
+									"            }, \"__v\" : {",
+									"                 \"type\" : \"integer\"",
+									"            }",
+									"        }",
+									"    }",
+									"}",
+									"",
+									"pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200) });",
+									"pm.test(\"Return the right updated item\", function () { pm.expect(pm.response.json().name).to.eql(\"Antoño\") && pm.expect(pm.response.json().banned).to.eql(true)});",
+									"pm.test('Schema is valid', function() {",
+									"  pm.expect(ajv.validate(pm.response.json(), schema), JSON.stringify(ajv.errors)).to.be.true;",
+									"});",
+									"const echoDeleteRequest = {",
+									"  url: pm.variables.get('host') + '/actors/' + pm.response.json()._id,",
+									"  method: 'DELETE',",
+									"};",
+									"pm.sendRequest(echoDeleteRequest)"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"banned\": true\n}"
+						},
+						"url": {
+							"raw": "{{host}}/actors/{{lastActorSubmittedId}}/ban",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"actors",
+								"{{lastActorSubmittedId}}",
+								"ban"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE actors",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "78292d61-a821-4a70-aafa-77ebe7aeb364",
+								"exec": [
+									"const echoPostRequest = {",
+									"    url: pm.variables.get('host') + '/actors',",
+									"    method: 'POST',",
+									"    header: {",
+									"        'content-type': 'application/json',",
+									"    },",
+									"    body: {",
+									"        mode: 'raw',",
+									"        raw: JSON.stringify({",
+									"            \"name\": \"Antoño\",",
+									"            \"surname\": \"Banderas\",",
+									"            \"email\": \"f@f.com\",",
+									"            \"phone\": \"012459786\",",
+									"            \"password\": \"pwd\",",
+									"            \"adress\": \"algun lugar\",",
+									"            \"role\": \"Manager\"",
+									"        })",
+									"    }",
+									"};",
+									"pm.sendRequest(echoPostRequest, function (err, res) {",
+									"    console.log(err ? err : res.json());",
+									"        if (err === null) {",
+									"            pm.environment.set('lastActorSubmittedId', res.json()._id)",
+									"        }",
+									"    })"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "d4ad2f93-dbe0-4db6-bcfb-56790f8452c6",
+								"exec": [
+									"pm.test(\"Status code is 204\", function () { pm.response.to.have.status(204) });",
+									"const echoGetRequest = {",
+									"  url: pm.variables.get('host') + '/actors/' + pm.environment.get('lastActorSubmittedId'),",
+									"  method: 'GET',",
+									"};",
+									"pm.sendRequest(echoGetRequest, function (err, res) {",
+									"    pm.test(\"Item has been deleted\", function () { pm.expect(res.code).to.be.oneOf([404]) });",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/actors/{{lastActorSubmittedId}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"actors",
+								"{{lastActorSubmittedId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Sponsorships",
+			"item": [
+				{
+					"name": "GET  sponsorships",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "3a111f6c-e4ee-4838-802c-1b8f6ed4f0fb",
+								"exec": [
+									"const echoPostRequestManager = {",
+									"    url: pm.environment.get('host') + '/actors',",
+									"    method: 'POST',",
+									"    header: {",
+									"        'content-type': 'application/json',",
+									"    },",
+									"    body: {",
+									"        mode: 'raw',",
+									"        raw: JSON.stringify({",
+									"            \"name\": \"Pedro\",",
+									"            \"surname\": \"Borita\",",
+									"            \"email\": \"t@t.com\",",
+									"            \"phone\": \"0123456789\",",
+									"            \"password\": \"pwd\",",
+									"            \"adress\": \"algun lugar\",",
+									"            \"role\": \"Manager\"",
+									"        })",
+									"    }",
+									"};",
+									"pm.sendRequest(echoPostRequestManager, function (err, res) {",
+									"    console.log(err ? err : res.json());",
+									"    if (err === null) {",
+									"        pm.environment.set('lastManagerSubmittedId', res.json()._id)",
+									"        const echoPostRequestTrip = {",
+									"            url: pm.environment.get('host') + '/trips',",
+									"            method: 'POST',",
+									"            header: {",
+									"                'content-type': 'application/json',",
+									"            },",
+									"            body: {",
+									"                mode: 'raw',",
+									"                raw: JSON.stringify({",
+									"                    \"title\": \"testTitle\",",
+									"                \t\"description\": \"testDescription\",",
+									"                \t\"requirements\": [\"testRequirement\"],",
+									"                \t\"start\": \"2020-02-12\",",
+									"                \t\"end\": \"2020-02-28\",",
+									"                \t\"stages\": [",
+									"                \t\t{",
+									"                \t\t\t\"title\": \"Paris\",",
+									"                \t\t\t\"description\": \"Paris step\",",
+									"                \t\t\t\"price\": 620",
+									"                \t\t},",
+									"                \t\t{",
+									"                \t\t\t\"title\": \"Rouen\",",
+									"                \t\t\t\"description\": \"Rouen step\",",
+									"                \t\t\t\"price\": 380",
+									"                \t\t}",
+									"                \t],",
+									"                \t\"managerId\": pm.environment.get('lastManagerSubmittedId')",
+									"                })",
+									"            }",
+									"        };",
+									"        pm.sendRequest(echoPostRequestTrip, function (err, res2) {",
+									"            console.log(err ? err : res2.json());",
+									"            if (err === null) {",
+									"                pm.environment.set('lastTripSubmittedId', res2.json()._id)",
+									"                const echoPostRequestActor = {",
+									"                    url: pm.variables.get('host') + '/actors',",
+									"                    method: 'POST',",
+									"                    header: {",
+									"                        'content-type': 'application/json',",
+									"                    },",
+									"                    body: {",
+									"                        mode: 'raw',",
+									"                        raw: JSON.stringify({",
+									"                            \"name\": \"Antoño\",",
+									"                            \"surname\": \"Banderas\",",
+									"                            \"email\": \"f@f.com\",",
+									"                            \"phone\": \"012459786\",",
+									"                            \"password\": \"pwd\",",
+									"                            \"adress\": \"algun lugar\",",
+									"                            \"role\": \"Sponsor\"",
+									"                        })",
+									"                    }",
+									"                };",
+									"                pm.sendRequest(echoPostRequestActor, function (err, res3) {",
+									"                    console.log(err ? err : res3.json());",
+									"                        if (err === null) {",
+									"                            pm.environment.set('lastActorSubmittedId', res3.json()._id)",
+									"                        }",
+									"                    const echoPostRequestSponsorship = {",
+									"                        url: pm.variables.get('host') + '/sponsorships',",
+									"                        method: 'POST',",
+									"                        header: {",
+									"                            'content-type': 'application/json',",
+									"                        },",
+									"                        body: {",
+									"                            mode: 'raw',",
+									"                            raw: JSON.stringify({",
+									"                                \"banner\": [\"img\"],",
+									"                                \"link\": \"github.com/\",",
+									"                                \"trip_id\": pm.environment.get('lastTripSubmittedId'),",
+									"                                \"sponsor_id\": res3.json()._id",
+									"                            })",
+									"                        }",
+									"                    };",
+									"                    pm.sendRequest(echoPostRequestSponsorship)",
+									"                })",
+									"            }",
+									"        });",
+									"    }",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "9dc77a59-8e21-4734-9480-8cd14c900bf8",
+								"exec": [
+									"var Ajv = require('ajv'),",
+									"    ajv = new Ajv({logger: console, allErrors: true}), schema = {",
+									"    \"type\": \"object\",",
+									"    \"required\": [\"_id\", \"banner\", \"email\", \"link\", \"trip_id\", \"sponsor_id\", \"payed\", \"createdAt\"],",
+									"    \"properties\": {",
+									"        \"properties\": {",
+									"            \"_id\" : {",
+									"                \"type\" : \"string\"",
+									"            }, \"banner\" : {",
+									"                 \"type\" : \"object\"",
+									"            }, \"link\" : {",
+									"                 \"type\" : \"string\"",
+									"            }, \"price\" : {",
+									"                 \"type\" : \"float\"",
+									"            }, \"trip_id\" : {",
+									"                 \"type\" : \"string\"",
+									"            }, \"sponsor_id\" : {",
+									"                 \"type\" : \"string\"",
+									"            }, \"payed\" : {",
+									"                 \"type\" : \"boolean\"",
+									"            }, \"createdAt\" : {",
+									"                 \"format\": \"date\"",
+									"            }, \"__v\" : {",
+									"                 \"type\" : \"integer\"",
+									"            }",
+									"        }",
+									"    }",
+									"}",
+									"",
+									"pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200) });",
+									"/*pm.test(\"Return 1 item\", function () { pm.expect(pm.response.json().length).to.eql(1)});",
+									"pm.test(\"Return the right item\", function () { pm.expect(pm.response.json()[0].link).to.eql(\"github.com/\") && pm.expect(pm.response.json()[0].sponsor_id).to.eql(pm.environment.get('lastActorSubmittedId'))});",
+									"*/pm.test('Schema is valid', function() {",
+									"  pm.expect(ajv.validate(pm.response.json()[0], schema), JSON.stringify(ajv.errors)).to.be.true;",
+									"});",
+									"const echoDeleteRequestActor = {",
+									"  url: pm.variables.get('host') + '/actors/' + pm.environment.get('lastActorSubmittedId'),",
+									"  method: 'DELETE',",
+									"};",
+									"const echoDeleteRequestManager = {",
+									"  url: pm.variables.get('host') + '/actors/' + pm.environment.get('lastManagerSubmittedId'),",
+									"  method: 'DELETE',",
+									"};",
+									"const echoDeleteRequestTrip= {",
+									"  url: pm.variables.get('host') + '/trips/' + pm.environment.get('lastTripSubmittedId'),",
+									"  method: 'DELETE',",
+									"};",
+									"const echoDeleteRequestSponsorship = {",
+									"  url: pm.variables.get('host') + '/sponsorships/' + pm.response.json()[0]._id,",
+									"  method: 'DELETE',",
+									"};",
+									"pm.sendRequest(echoDeleteRequestSponsorship);",
+									"pm.sendRequest(echoDeleteRequestActor);",
+									"pm.sendRequest(echoDeleteRequestTrip);",
+									"pm.sendRequest(echoDeleteRequestManager);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/sponsorships",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"sponsorships"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST sponsorships",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "38ac690d-f62f-442a-86d2-b70b36a3da32",
+								"exec": [
+									"const echoPostRequestManager = {",
+									"    url: pm.environment.get('host') + '/actors',",
+									"    method: 'POST',",
+									"    header: {",
+									"        'content-type': 'application/json',",
+									"    },",
+									"    body: {",
+									"        mode: 'raw',",
+									"        raw: JSON.stringify({",
+									"            \"name\": \"Pedro\",",
+									"            \"surname\": \"Borita\",",
+									"            \"email\": \"t@t.com\",",
+									"            \"phone\": \"0123456789\",",
+									"            \"password\": \"pwd\",",
+									"            \"adress\": \"algun lugar\",",
+									"            \"role\": \"Manager\"",
+									"        })",
+									"    }",
+									"};",
+									"pm.sendRequest(echoPostRequestManager, function (err, res) {",
+									"    console.log(err ? err : res.json());",
+									"    if (err === null) {",
+									"        pm.environment.set('lastManagerSubmittedId', res.json()._id);",
+									"        const echoPostRequestTrip = {",
+									"            url: pm.environment.get('host') + '/trips',",
+									"            method: 'POST',",
+									"            header: {",
+									"                'content-type': 'application/json',",
+									"            },",
+									"            body: {",
+									"                mode: 'raw',",
+									"                raw: JSON.stringify({",
+									"                    \"title\": \"testTitle\",",
+									"                \t\"description\": \"testDescription\",",
+									"                \t\"requirements\": [\"testRequirement\"],",
+									"                \t\"start\": \"2020-02-12\",",
+									"                \t\"end\": \"2020-02-28\",",
+									"                \t\"stages\": [",
+									"                \t\t{",
+									"                \t\t\t\"title\": \"Paris\",",
+									"                \t\t\t\"description\": \"Paris step\",",
+									"                \t\t\t\"price\": 620",
+									"                \t\t},",
+									"                \t\t{",
+									"                \t\t\t\"title\": \"Rouen\",",
+									"                \t\t\t\"description\": \"Rouen step\",",
+									"                \t\t\t\"price\": 380",
+									"                \t\t}",
+									"                \t],",
+									"                \t\"managerId\": pm.environment.get('lastManagerSubmittedId')",
+									"                })",
+									"            }",
+									"        };",
+									"        pm.sendRequest(echoPostRequestTrip, function (err, res2) {",
+									"            console.log(err ? err : res2.json());",
+									"            if (err === null) {",
+									"                pm.environment.set('lastTripSubmittedId', res2.json()._id);",
+									"                const echoPostRequestActor = {",
+									"                    url: pm.variables.get('host') + '/actors',",
+									"                    method: 'POST',",
+									"                    header: {",
+									"                        'content-type': 'application/json',",
+									"                    },",
+									"                    body: {",
+									"                        mode: 'raw',",
+									"                        raw: JSON.stringify({",
+									"                            \"name\": \"Antoño\",",
+									"                            \"surname\": \"Banderas\",",
+									"                            \"email\": \"f@f.com\",",
+									"                            \"phone\": \"012459786\",",
+									"                            \"password\": \"pwd\",",
+									"                            \"adress\": \"algun lugar\",",
+									"                            \"role\": \"Sponsor\"",
+									"                        })",
+									"                    }",
+									"                };",
+									"                pm.sendRequest(echoPostRequestActor, function (err, res3) {",
+									"                    console.log(err ? err : res3.json());",
+									"                        if (err === null) {",
+									"                            pm.environment.set('lastActorSubmittedId', res3.json()._id);",
+									"                        }",
+									"                });",
+									"            }",
+									"        });",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "b78c3567-b7de-4071-b4f2-1f317f35b35b",
+								"exec": [
+									"var Ajv = require('ajv'),",
+									"    ajv = new Ajv({logger: console, allErrors: true}), schema = {",
+									"    \"type\": \"object\",",
+									"    \"required\": [\"_id\", \"banner\", \"email\", \"link\", \"trip_id\", \"sponsor_id\", \"payed\", \"createdAt\"],",
+									"    \"properties\": {",
+									"        \"properties\": {",
+									"            \"_id\" : {",
+									"                \"type\" : \"string\"",
+									"            }, \"banner\" : {",
+									"                 \"type\" : \"object\"",
+									"            }, \"link\" : {",
+									"                 \"type\" : \"string\"",
+									"            }, \"price\" : {",
+									"                 \"type\" : \"float\"",
+									"            }, \"trip_id\" : {",
+									"                 \"type\" : \"string\"",
+									"            }, \"sponsor_id\" : {",
+									"                 \"type\" : \"string\"",
+									"            }, \"payed\" : {",
+									"                 \"type\" : \"boolean\"",
+									"            }, \"createdAt\" : {",
+									"                 \"format\": \"date\"",
+									"            }, \"__v\" : {",
+									"                 \"type\" : \"integer\"",
+									"            }",
+									"        }",
+									"    }",
+									"}",
+									"",
+									"pm.test(\"Status code is 201\", function () { pm.expect(pm.response.code).to.be.oneOf([201]) });",
+									"pm.test(\"Return the created item\", function () { pm.expect(pm.response.json().link).to.eql(\"github.com/\") && pm.expect(pm.response.json().sponsor_id).to.eql(pm.environment.get('lastActorSubmittedId'))});",
+									"pm.test('Schema is valid', function() {",
+									"  pm.expect(ajv.validate(pm.response.json(), schema), JSON.stringify(ajv.errors)).to.be.true;",
+									"});",
+									"const echoDeleteRequestActor = {",
+									"  url: pm.variables.get('host') + '/actors/' + pm.environment.get('lastActorSubmittedId'),",
+									"  method: 'DELETE',",
+									"};",
+									"const echoDeleteRequestManager = {",
+									"  url: pm.variables.get('host') + '/actors/' + pm.environment.get('lastManagerSubmittedId'),",
+									"  method: 'DELETE',",
+									"};",
+									"const echoDeleteRequestTrip= {",
+									"  url: pm.variables.get('host') + '/trips/' + pm.environment.get('lastTripSubmittedId'),",
+									"  method: 'DELETE',",
+									"};",
+									"const echoDeleteRequestSponsorship = {",
+									"  url: pm.variables.get('host') + '/sponsorships/' + pm.response.json()._id,",
+									"  method: 'DELETE',",
+									"};",
+									"pm.sendRequest(echoDeleteRequestSponsorship);",
+									"pm.sendRequest(echoDeleteRequestActor);",
+									"pm.sendRequest(echoDeleteRequestTrip);",
+									"pm.sendRequest(echoDeleteRequestManager);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"banner\": [\"img\"],\n    \"link\": \"github.com/\",\n    \"trip_id\": \"{{lastTripSubmittedId}}\",\n    \"sponsor_id\": \"{{lastActorSubmittedId}}\"\n}"
+						},
+						"url": {
+							"raw": "{{host}}/sponsorships",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"sponsorships"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET sponsorships id",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "2bae875c-574e-4ab1-a7b1-1e75817f438f",
+								"exec": [
+									"const echoPostRequestManager = {",
+									"    url: pm.environment.get('host') + '/actors',",
+									"    method: 'POST',",
+									"    header: {",
+									"        'content-type': 'application/json',",
+									"    },",
+									"    body: {",
+									"        mode: 'raw',",
+									"        raw: JSON.stringify({",
+									"            \"name\": \"Pedro\",",
+									"            \"surname\": \"Borita\",",
+									"            \"email\": \"t@t.com\",",
+									"            \"phone\": \"0123456789\",",
+									"            \"password\": \"pwd\",",
+									"            \"adress\": \"algun lugar\",",
+									"            \"role\": \"Manager\"",
+									"        })",
+									"    }",
+									"};",
+									"pm.sendRequest(echoPostRequestManager, function (err, res) {",
+									"    console.log(err ? err : res.json());",
+									"    if (err === null) {",
+									"        pm.environment.set('lastManagerSubmittedId', res.json()._id);",
+									"        const echoPostRequestTrip = {",
+									"            url: pm.environment.get('host') + '/trips',",
+									"            method: 'POST',",
+									"            header: {",
+									"                'content-type': 'application/json',",
+									"            },",
+									"            body: {",
+									"                mode: 'raw',",
+									"                raw: JSON.stringify({",
+									"                    \"title\": \"testTitle\",",
+									"                \t\"description\": \"testDescription\",",
+									"                \t\"requirements\": [\"testRequirement\"],",
+									"                \t\"start\": \"2020-02-12\",",
+									"                \t\"end\": \"2020-02-28\",",
+									"                \t\"stages\": [",
+									"                \t\t{",
+									"                \t\t\t\"title\": \"Paris\",",
+									"                \t\t\t\"description\": \"Paris step\",",
+									"                \t\t\t\"price\": 620",
+									"                \t\t},",
+									"                \t\t{",
+									"                \t\t\t\"title\": \"Rouen\",",
+									"                \t\t\t\"description\": \"Rouen step\",",
+									"                \t\t\t\"price\": 380",
+									"                \t\t}",
+									"                \t],",
+									"                \t\"managerId\": pm.environment.get('lastManagerSubmittedId')",
+									"                })",
+									"            }",
+									"        };",
+									"        pm.sendRequest(echoPostRequestTrip, function (err, res2) {",
+									"            console.log(err ? err : res2.json());",
+									"            if (err === null) {",
+									"                pm.environment.set('lastTripSubmittedId', res2.json()._id);",
+									"                const echoPostRequestActor = {",
+									"                    url: pm.variables.get('host') + '/actors',",
+									"                    method: 'POST',",
+									"                    header: {",
+									"                        'content-type': 'application/json',",
+									"                    },",
+									"                    body: {",
+									"                        mode: 'raw',",
+									"                        raw: JSON.stringify({",
+									"                            \"name\": \"Antoño\",",
+									"                            \"surname\": \"Banderas\",",
+									"                            \"email\": \"f@f.com\",",
+									"                            \"phone\": \"012459786\",",
+									"                            \"password\": \"pwd\",",
+									"                            \"adress\": \"algun lugar\",",
+									"                            \"role\": \"Sponsor\"",
+									"                        })",
+									"                    }",
+									"                };",
+									"                pm.sendRequest(echoPostRequestActor, function (err, res3) {",
+									"                    console.log(err ? err : res3.json());",
+									"                        if (err === null) {",
+									"                            pm.environment.set('lastActorSubmittedId', res3.json()._id);",
+									"                        }",
+									"                    const echoPostRequestSponsorship = {",
+									"                        url: pm.variables.get('host') + '/sponsorships',",
+									"                        method: 'POST',",
+									"                        header: {",
+									"                            'content-type': 'application/json',",
+									"                        },",
+									"                        body: {",
+									"                            mode: 'raw',",
+									"                            raw: JSON.stringify({",
+									"                                \"banner\": [\"img\"],",
+									"                                \"link\": \"github.com/\",",
+									"                                \"trip_id\": pm.environment.get('lastTripSubmittedId'),",
+									"                                \"sponsor_id\": res3.json()._id",
+									"                            })",
+									"                        }",
+									"                    };",
+									"                    pm.sendRequest(echoPostRequestSponsorship, function (err, res4) {",
+									"                        console.log(err ? err : res4.json());",
+									"                        if (err === null) {",
+									"                            pm.environment.set('lastSponsorshipSubmittedId', res4.json()._id);",
+									"                        }",
+									"                    });",
+									"                });",
+									"            }",
+									"        });",
+									"    }",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "7d5db873-a168-4c03-af4c-68fcade1a139",
+								"exec": [
+									"var Ajv = require('ajv'),",
+									"    ajv = new Ajv({logger: console, allErrors: true}), schema = {",
+									"    \"type\": \"object\",",
+									"    \"required\": [\"_id\", \"banner\", \"email\", \"link\", \"trip_id\", \"sponsor_id\", \"payed\", \"createdAt\"],",
+									"    \"properties\": {",
+									"        \"properties\": {",
+									"            \"_id\" : {",
+									"                \"type\" : \"string\"",
+									"            }, \"banner\" : {",
+									"                 \"type\" : \"object\"",
+									"            }, \"link\" : {",
+									"                 \"type\" : \"string\"",
+									"            }, \"price\" : {",
+									"                 \"type\" : \"float\"",
+									"            }, \"trip_id\" : {",
+									"                 \"type\" : \"string\"",
+									"            }, \"sponsor_id\" : {",
+									"                 \"type\" : \"string\"",
+									"            }, \"payed\" : {",
+									"                 \"type\" : \"boolean\"",
+									"            }, \"createdAt\" : {",
+									"                 \"format\": \"date\"",
+									"            }, \"__v\" : {",
+									"                 \"type\" : \"integer\"",
+									"            }",
+									"        }",
+									"    }",
+									"}",
+									"",
+									"pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200) });",
+									"pm.test(\"Return the right item\", function () { pm.expect(pm.response.json().link).to.eql(\"github.com/\") && pm.expect(pm.response.json().sponsor_id).to.eql(pm.environment.get('lastActorSubmittedId'))});",
+									"pm.test('Schema is valid', function() {",
+									"  pm.expect(ajv.validate(pm.response.json(), schema), JSON.stringify(ajv.errors)).to.be.true;",
+									"});",
+									"const echoDeleteRequestActor = {",
+									"  url: pm.variables.get('host') + '/actors/' + pm.environment.get('lastActorSubmittedId'),",
+									"  method: 'DELETE',",
+									"};",
+									"const echoDeleteRequestManager = {",
+									"  url: pm.variables.get('host') + '/actors/' + pm.environment.get('lastManagerSubmittedId'),",
+									"  method: 'DELETE',",
+									"};",
+									"const echoDeleteRequestTrip= {",
+									"  url: pm.variables.get('host') + '/trips/' + pm.environment.get('lastTripSubmittedId'),",
+									"  method: 'DELETE',",
+									"};",
+									"const echoDeleteRequestSponsorship = {",
+									"  url: pm.variables.get('host') + '/sponsorships/' + pm.response.json()._id,",
+									"  method: 'DELETE',",
+									"};",
+									"pm.sendRequest(echoDeleteRequestSponsorship);",
+									"pm.sendRequest(echoDeleteRequestActor);",
+									"pm.sendRequest(echoDeleteRequestTrip);",
+									"pm.sendRequest(echoDeleteRequestManager);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "text/plain",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{host}}/sponsorships/{{lastSponsorshipSubmittedId}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"sponsorships",
+								"{{lastSponsorshipSubmittedId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PUT sponsorships",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "f0e6bddd-18f0-475a-a406-fa3a3e537a3a",
+								"exec": [
+									"const echoPostRequestManager = {",
+									"    url: pm.environment.get('host') + '/actors',",
+									"    method: 'POST',",
+									"    header: {",
+									"        'content-type': 'application/json',",
+									"    },",
+									"    body: {",
+									"        mode: 'raw',",
+									"        raw: JSON.stringify({",
+									"            \"name\": \"Pedro\",",
+									"            \"surname\": \"Borita\",",
+									"            \"email\": \"t@t.com\",",
+									"            \"phone\": \"0123456789\",",
+									"            \"password\": \"pwd\",",
+									"            \"adress\": \"algun lugar\",",
+									"            \"role\": \"Manager\"",
+									"        })",
+									"    }",
+									"};",
+									"pm.sendRequest(echoPostRequestManager, function (err, res) {",
+									"    console.log(err ? err : res.json());",
+									"    if (err === null) {",
+									"        pm.environment.set('lastManagerSubmittedId', res.json()._id);",
+									"        const echoPostRequestTrip = {",
+									"            url: pm.environment.get('host') + '/trips',",
+									"            method: 'POST',",
+									"            header: {",
+									"                'content-type': 'application/json',",
+									"            },",
+									"            body: {",
+									"                mode: 'raw',",
+									"                raw: JSON.stringify({",
+									"                    \"title\": \"testTitle\",",
+									"                \t\"description\": \"testDescription\",",
+									"                \t\"requirements\": [\"testRequirement\"],",
+									"                \t\"start\": \"2020-02-12\",",
+									"                \t\"end\": \"2020-02-28\",",
+									"                \t\"stages\": [",
+									"                \t\t{",
+									"                \t\t\t\"title\": \"Paris\",",
+									"                \t\t\t\"description\": \"Paris step\",",
+									"                \t\t\t\"price\": 620",
+									"                \t\t},",
+									"                \t\t{",
+									"                \t\t\t\"title\": \"Rouen\",",
+									"                \t\t\t\"description\": \"Rouen step\",",
+									"                \t\t\t\"price\": 380",
+									"                \t\t}",
+									"                \t],",
+									"                \t\"managerId\": pm.environment.get('lastManagerSubmittedId')",
+									"                })",
+									"            }",
+									"        };",
+									"        pm.sendRequest(echoPostRequestTrip, function (err, res2) {",
+									"            console.log(err ? err : res2.json());",
+									"            if (err === null) {",
+									"                pm.environment.set('lastTripSubmittedId', res2.json()._id);",
+									"                const echoPostRequestActor = {",
+									"                    url: pm.variables.get('host') + '/actors',",
+									"                    method: 'POST',",
+									"                    header: {",
+									"                        'content-type': 'application/json',",
+									"                    },",
+									"                    body: {",
+									"                        mode: 'raw',",
+									"                        raw: JSON.stringify({",
+									"                            \"name\": \"Antoño\",",
+									"                            \"surname\": \"Banderas\",",
+									"                            \"email\": \"f@f.com\",",
+									"                            \"phone\": \"012459786\",",
+									"                            \"password\": \"pwd\",",
+									"                            \"adress\": \"algun lugar\",",
+									"                            \"role\": \"Sponsor\"",
+									"                        })",
+									"                    }",
+									"                };",
+									"                pm.sendRequest(echoPostRequestActor, function (err, res3) {",
+									"                    console.log(err ? err : res3.json());",
+									"                        if (err === null) {",
+									"                            pm.environment.set('lastActorSubmittedId', res3.json()._id);",
+									"                        }",
+									"                    const echoPostRequestSponsorship = {",
+									"                        url: pm.variables.get('host') + '/sponsorships',",
+									"                        method: 'POST',",
+									"                        header: {",
+									"                            'content-type': 'application/json',",
+									"                        },",
+									"                        body: {",
+									"                            mode: 'raw',",
+									"                            raw: JSON.stringify({",
+									"                                \"banner\": [\"img\"],",
+									"                                \"link\": \"github.com/\",",
+									"                                \"trip_id\": pm.environment.get('lastTripSubmittedId'),",
+									"                                \"sponsor_id\": res3.json()._id",
+									"                            })",
+									"                        }",
+									"                    };",
+									"                    pm.sendRequest(echoPostRequestSponsorship, function (err, res4) {",
+									"                        console.log(err ? err : res4.json());",
+									"                        if (err === null) {",
+									"                            pm.environment.set('lastSponsorshipSubmittedId', res4.json()._id);",
+									"                        }",
+									"                    });",
+									"                });",
+									"            }",
+									"        });",
+									"    }",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "8c040501-c35e-4ee4-9f6d-a658574028d2",
+								"exec": [
+									"var Ajv = require('ajv'),",
+									"    ajv = new Ajv({logger: console, allErrors: true}), schema = {",
+									"    \"type\": \"object\",",
+									"    \"required\": [\"_id\", \"banner\", \"email\", \"link\", \"trip_id\", \"sponsor_id\", \"payed\", \"createdAt\"],",
+									"    \"properties\": {",
+									"        \"properties\": {",
+									"            \"_id\" : {",
+									"                \"type\" : \"string\"",
+									"            }, \"banner\" : {",
+									"                 \"type\" : \"object\"",
+									"            }, \"link\" : {",
+									"                 \"type\" : \"string\"",
+									"            }, \"price\" : {",
+									"                 \"type\" : \"float\"",
+									"            }, \"trip_id\" : {",
+									"                 \"type\" : \"string\"",
+									"            }, \"sponsor_id\" : {",
+									"                 \"type\" : \"string\"",
+									"            }, \"payed\" : {",
+									"                 \"type\" : \"boolean\"",
+									"            }, \"createdAt\" : {",
+									"                 \"format\": \"date\"",
+									"            }, \"__v\" : {",
+									"                 \"type\" : \"integer\"",
+									"            }",
+									"        }",
+									"    }",
+									"}",
+									"",
+									"pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200) });",
+									"pm.test(\"Return the right updated item\", function () { pm.expect(pm.response.json().price).to.eql(200) && pm.expect(pm.response.json().link).to.eql(\"google.com/\")});",
+									"pm.test('Schema is valid', function() {",
+									"  pm.expect(ajv.validate(pm.response.json(), schema), JSON.stringify(ajv.errors)).to.be.true;",
+									"});",
+									"const echoDeleteRequestActor = {",
+									"  url: pm.variables.get('host') + '/actors/' + pm.environment.get('lastActorSubmittedId'),",
+									"  method: 'DELETE',",
+									"};",
+									"const echoDeleteRequestManager = {",
+									"  url: pm.variables.get('host') + '/actors/' + pm.environment.get('lastManagerSubmittedId'),",
+									"  method: 'DELETE',",
+									"};",
+									"const echoDeleteRequestTrip= {",
+									"  url: pm.variables.get('host') + '/trips/' + pm.environment.get('lastTripSubmittedId'),",
+									"  method: 'DELETE',",
+									"};",
+									"const echoDeleteRequestSponsorship = {",
+									"  url: pm.variables.get('host') + '/sponsorships/' + pm.response.json()._id,",
+									"  method: 'DELETE',",
+									"};",
+									"pm.sendRequest(echoDeleteRequestSponsorship);",
+									"pm.sendRequest(echoDeleteRequestActor);",
+									"pm.sendRequest(echoDeleteRequestTrip);",
+									"pm.sendRequest(echoDeleteRequestManager);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"banner\": {\n        \"0\": \"img\"\n    },\n    \"_id\": \"{{lastSponsorshipSubmittedId}}\",\n    \"payed\": false,\n    \"link\": \"google.com/\",\n    \"price\": 200,\n    \"trip_id\": \"{{lastTripSubmittedId}}\",\n    \"sponsor_id\": \"{{lastActorSubmittedId}}\",\n    \"createdAt\": \"2020-02-11T21:41:25.321Z\",\n    \"__v\": 0\n}"
+						},
+						"url": {
+							"raw": "{{host}}/sponsorships/{{lastSponsorshipSubmittedId}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"sponsorships",
+								"{{lastSponsorshipSubmittedId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PATCH sponsorships pay",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "f0e6bddd-18f0-475a-a406-fa3a3e537a3a",
+								"exec": [
+									"const echoPostRequestManager = {",
+									"    url: pm.environment.get('host') + '/actors',",
+									"    method: 'POST',",
+									"    header: {",
+									"        'content-type': 'application/json',",
+									"    },",
+									"    body: {",
+									"        mode: 'raw',",
+									"        raw: JSON.stringify({",
+									"            \"name\": \"Pedro\",",
+									"            \"surname\": \"Borita\",",
+									"            \"email\": \"t@t.com\",",
+									"            \"phone\": \"0123456789\",",
+									"            \"password\": \"pwd\",",
+									"            \"adress\": \"algun lugar\",",
+									"            \"role\": \"Manager\"",
+									"        })",
+									"    }",
+									"};",
+									"pm.sendRequest(echoPostRequestManager, function (err, res) {",
+									"    console.log(err ? err : res.json());",
+									"    if (err === null) {",
+									"        pm.environment.set('lastManagerSubmittedId', res.json()._id);",
+									"        const echoPostRequestTrip = {",
+									"            url: pm.environment.get('host') + '/trips',",
+									"            method: 'POST',",
+									"            header: {",
+									"                'content-type': 'application/json',",
+									"            },",
+									"            body: {",
+									"                mode: 'raw',",
+									"                raw: JSON.stringify({",
+									"                    \"title\": \"testTitle\",",
+									"                \t\"description\": \"testDescription\",",
+									"                \t\"requirements\": [\"testRequirement\"],",
+									"                \t\"start\": \"2020-02-12\",",
+									"                \t\"end\": \"2020-02-28\",",
+									"                \t\"stages\": [",
+									"                \t\t{",
+									"                \t\t\t\"title\": \"Paris\",",
+									"                \t\t\t\"description\": \"Paris step\",",
+									"                \t\t\t\"price\": 620",
+									"                \t\t},",
+									"                \t\t{",
+									"                \t\t\t\"title\": \"Rouen\",",
+									"                \t\t\t\"description\": \"Rouen step\",",
+									"                \t\t\t\"price\": 380",
+									"                \t\t}",
+									"                \t],",
+									"                \t\"managerId\": pm.environment.get('lastManagerSubmittedId')",
+									"                })",
+									"            }",
+									"        };",
+									"        pm.sendRequest(echoPostRequestTrip, function (err, res2) {",
+									"            console.log(err ? err : res2.json());",
+									"            if (err === null) {",
+									"                pm.environment.set('lastTripSubmittedId', res2.json()._id);",
+									"                const echoPostRequestActor = {",
+									"                    url: pm.variables.get('host') + '/actors',",
+									"                    method: 'POST',",
+									"                    header: {",
+									"                        'content-type': 'application/json',",
+									"                    },",
+									"                    body: {",
+									"                        mode: 'raw',",
+									"                        raw: JSON.stringify({",
+									"                            \"name\": \"Antoño\",",
+									"                            \"surname\": \"Banderas\",",
+									"                            \"email\": \"f@f.com\",",
+									"                            \"phone\": \"012459786\",",
+									"                            \"password\": \"pwd\",",
+									"                            \"adress\": \"algun lugar\",",
+									"                            \"role\": \"Sponsor\"",
+									"                        })",
+									"                    }",
+									"                };",
+									"                pm.sendRequest(echoPostRequestActor, function (err, res3) {",
+									"                    console.log(err ? err : res3.json());",
+									"                        if (err === null) {",
+									"                            pm.environment.set('lastActorSubmittedId', res3.json()._id);",
+									"                        }",
+									"                    const echoPostRequestSponsorship = {",
+									"                        url: pm.variables.get('host') + '/sponsorships',",
+									"                        method: 'POST',",
+									"                        header: {",
+									"                            'content-type': 'application/json',",
+									"                        },",
+									"                        body: {",
+									"                            mode: 'raw',",
+									"                            raw: JSON.stringify({",
+									"                                \"banner\": [\"img\"],",
+									"                                \"link\": \"github.com/\",",
+									"                                \"trip_id\": pm.environment.get('lastTripSubmittedId'),",
+									"                                \"sponsor_id\": res3.json()._id",
+									"                            })",
+									"                        }",
+									"                    };",
+									"                    pm.sendRequest(echoPostRequestSponsorship, function (err, res4) {",
+									"                        console.log(err ? err : res4.json());",
+									"                        if (err === null) {",
+									"                            pm.environment.set('lastSponsorshipSubmittedId', res4.json()._id);",
+									"                        }",
+									"                    });",
+									"                });",
+									"            }",
+									"        });",
+									"    }",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "8c040501-c35e-4ee4-9f6d-a658574028d2",
+								"exec": [
+									"var Ajv = require('ajv'),",
+									"    ajv = new Ajv({logger: console, allErrors: true}), schema = {",
+									"    \"type\": \"object\",",
+									"    \"required\": [\"_id\", \"banner\", \"email\", \"link\", \"trip_id\", \"sponsor_id\", \"payed\", \"createdAt\"],",
+									"    \"properties\": {",
+									"        \"properties\": {",
+									"            \"_id\" : {",
+									"                \"type\" : \"string\"",
+									"            }, \"banner\" : {",
+									"                 \"type\" : \"object\"",
+									"            }, \"link\" : {",
+									"                 \"type\" : \"string\"",
+									"            }, \"price\" : {",
+									"                 \"type\" : \"float\"",
+									"            }, \"trip_id\" : {",
+									"                 \"type\" : \"string\"",
+									"            }, \"sponsor_id\" : {",
+									"                 \"type\" : \"string\"",
+									"            }, \"payed\" : {",
+									"                 \"type\" : \"boolean\"",
+									"            }, \"createdAt\" : {",
+									"                 \"format\": \"date\"",
+									"            }, \"__v\" : {",
+									"                 \"type\" : \"integer\"",
+									"            }",
+									"        }",
+									"    }",
+									"}",
+									"",
+									"pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200) });",
+									"pm.test(\"Return the right updated item\", function () { pm.expect(pm.response.json().link).to.eql(\"github.com/\") && pm.expect(pm.response.json().payed).to.be.true});",
+									"pm.test('Schema is valid', function() {",
+									"  pm.expect(ajv.validate(pm.response.json(), schema), JSON.stringify(ajv.errors)).to.be.true;",
+									"});",
+									"const echoDeleteRequestActor = {",
+									"  url: pm.variables.get('host') + '/actors/' + pm.environment.get('lastActorSubmittedId'),",
+									"  method: 'DELETE',",
+									"};",
+									"const echoDeleteRequestManager = {",
+									"  url: pm.variables.get('host') + '/actors/' + pm.environment.get('lastManagerSubmittedId'),",
+									"  method: 'DELETE',",
+									"};",
+									"const echoDeleteRequestTrip= {",
+									"  url: pm.variables.get('host') + '/trips/' + pm.environment.get('lastTripSubmittedId'),",
+									"  method: 'DELETE',",
+									"};",
+									"const echoDeleteRequestSponsorship = {",
+									"  url: pm.variables.get('host') + '/sponsorships/' + pm.response.json()._id,",
+									"  method: 'DELETE',",
+									"};",
+									"pm.sendRequest(echoDeleteRequestSponsorship);",
+									"pm.sendRequest(echoDeleteRequestActor);",
+									"pm.sendRequest(echoDeleteRequestTrip);",
+									"pm.sendRequest(echoDeleteRequestManager);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"payed\": true\n}"
+						},
+						"url": {
+							"raw": "{{host}}/sponsorships/{{lastSponsorshipSubmittedId}}/pay",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"sponsorships",
+								"{{lastSponsorshipSubmittedId}}",
+								"pay"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PATCH sponsorships flat rate",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "f0e6bddd-18f0-475a-a406-fa3a3e537a3a",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "8c040501-c35e-4ee4-9f6d-a658574028d2",
+								"exec": [
+									"var Ajv = require('ajv'),",
+									"    ajv = new Ajv({logger: console, allErrors: true}), schema = {",
+									"    \"type\": \"object\",",
+									"    \"required\": [\"flatRateSponsorships\", \"cacheTimeOutFinderResults\", \"maxNumberFinderResults\", \"__v\"],",
+									"    \"properties\": {",
+									"        \"properties\": {",
+									"            \"_id\" : {",
+									"                \"type\" : \"string\"",
+									"            },\"flatRateSponsorships\" : {",
+									"                \"type\" : \"float\"",
+									"            }, \"cacheTimeOutFinderResults\" : {",
+									"                 \"type\" : \"integer\"",
+									"            }, \"maxNumberFinderResults\" : {",
+									"                 \"type\" : \"integer\"",
+									"            }, \"__v\" : {",
+									"                 \"type\" : \"integer\"",
+									"            }",
+									"        }",
+									"    }",
+									"}",
+									"",
+									"pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200) });",
+									"pm.test(\"Return the right updated item\", function () { pm.expect(pm.response.json().flatRateSponsorships).to.eql(10)});",
+									"pm.test('Schema is valid', function() {",
+									"  pm.expect(ajv.validate(pm.response.json(), schema), JSON.stringify(ajv.errors)).to.be.true;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"flatRateSponsorships\": 10\n}"
+						},
+						"url": {
+							"raw": "{{host}}/sponsorships/flatRate",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"sponsorships",
+								"flatRate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE sponsorships",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "260dd1a3-0457-4dbd-8fb6-b8dcfccef826",
+								"exec": [
+									"const echoPostRequestManager = {",
+									"    url: pm.environment.get('host') + '/actors',",
+									"    method: 'POST',",
+									"    header: {",
+									"        'content-type': 'application/json',",
+									"    },",
+									"    body: {",
+									"        mode: 'raw',",
+									"        raw: JSON.stringify({",
+									"            \"name\": \"Pedro\",",
+									"            \"surname\": \"Borita\",",
+									"            \"email\": \"t@t.com\",",
+									"            \"phone\": \"0123456789\",",
+									"            \"password\": \"pwd\",",
+									"            \"adress\": \"algun lugar\",",
+									"            \"role\": \"Manager\"",
+									"        })",
+									"    }",
+									"};",
+									"pm.sendRequest(echoPostRequestManager, function (err, res) {",
+									"    console.log(err ? err : res.json());",
+									"    if (err === null) {",
+									"        pm.environment.set('lastManagerSubmittedId', res.json()._id);",
+									"        const echoPostRequestTrip = {",
+									"            url: pm.environment.get('host') + '/trips',",
+									"            method: 'POST',",
+									"            header: {",
+									"                'content-type': 'application/json',",
+									"            },",
+									"            body: {",
+									"                mode: 'raw',",
+									"                raw: JSON.stringify({",
+									"                    \"title\": \"testTitle\",",
+									"                \t\"description\": \"testDescription\",",
+									"                \t\"requirements\": [\"testRequirement\"],",
+									"                \t\"start\": \"2020-02-12\",",
+									"                \t\"end\": \"2020-02-28\",",
+									"                \t\"stages\": [",
+									"                \t\t{",
+									"                \t\t\t\"title\": \"Paris\",",
+									"                \t\t\t\"description\": \"Paris step\",",
+									"                \t\t\t\"price\": 620",
+									"                \t\t},",
+									"                \t\t{",
+									"                \t\t\t\"title\": \"Rouen\",",
+									"                \t\t\t\"description\": \"Rouen step\",",
+									"                \t\t\t\"price\": 380",
+									"                \t\t}",
+									"                \t],",
+									"                \t\"managerId\": pm.environment.get('lastManagerSubmittedId')",
+									"                })",
+									"            }",
+									"        };",
+									"        pm.sendRequest(echoPostRequestTrip, function (err, res2) {",
+									"            console.log(err ? err : res2.json());",
+									"            if (err === null) {",
+									"                pm.environment.set('lastTripSubmittedId', res2.json()._id);",
+									"                const echoPostRequestActor = {",
+									"                    url: pm.variables.get('host') + '/actors',",
+									"                    method: 'POST',",
+									"                    header: {",
+									"                        'content-type': 'application/json',",
+									"                    },",
+									"                    body: {",
+									"                        mode: 'raw',",
+									"                        raw: JSON.stringify({",
+									"                            \"name\": \"Antoño\",",
+									"                            \"surname\": \"Banderas\",",
+									"                            \"email\": \"f@f.com\",",
+									"                            \"phone\": \"012459786\",",
+									"                            \"password\": \"pwd\",",
+									"                            \"adress\": \"algun lugar\",",
+									"                            \"role\": \"Sponsor\"",
+									"                        })",
+									"                    }",
+									"                };",
+									"                pm.sendRequest(echoPostRequestActor, function (err, res3) {",
+									"                    console.log(err ? err : res3.json());",
+									"                        if (err === null) {",
+									"                            pm.environment.set('lastActorSubmittedId', res3.json()._id);",
+									"                        }",
+									"                    const echoPostRequestSponsorship = {",
+									"                        url: pm.variables.get('host') + '/sponsorships',",
+									"                        method: 'POST',",
+									"                        header: {",
+									"                            'content-type': 'application/json',",
+									"                        },",
+									"                        body: {",
+									"                            mode: 'raw',",
+									"                            raw: JSON.stringify({",
+									"                                \"banner\": [\"img\"],",
+									"                                \"link\": \"github.com/\",",
+									"                                \"trip_id\": pm.environment.get('lastTripSubmittedId'),",
+									"                                \"sponsor_id\": res3.json()._id",
+									"                            })",
+									"                        }",
+									"                    };",
+									"                    pm.sendRequest(echoPostRequestSponsorship, function (err, res4) {",
+									"                        console.log(err ? err : res4.json());",
+									"                        if (err === null) {",
+									"                            pm.environment.set('lastSponsorshipSubmittedId', res4.json()._id);",
+									"                        }",
+									"                    });",
+									"                });",
+									"            }",
+									"        });",
+									"    }",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "98a85a61-a056-4c29-93ea-e070c0f582f4",
+								"exec": [
+									"pm.test(\"Status code is 204\", function () { pm.response.to.have.status(204) });",
+									"const echoDeleteRequestActor = {",
+									"  url: pm.variables.get('host') + '/actors/' + pm.environment.get('lastActorSubmittedId'),",
+									"  method: 'DELETE',",
+									"};",
+									"const echoDeleteRequestManager = {",
+									"  url: pm.variables.get('host') + '/actors/' + pm.environment.get('lastManagerSubmittedId'),",
+									"  method: 'DELETE',",
+									"};",
+									"const echoDeleteRequestTrip= {",
+									"  url: pm.variables.get('host') + '/trips/' + pm.environment.get('lastTripSubmittedId'),",
+									"  method: 'DELETE',",
+									"};",
+									"pm.sendRequest(echoDeleteRequestActor);",
+									"pm.sendRequest(echoDeleteRequestTrip);",
+									"pm.sendRequest(echoDeleteRequestManager);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/sponsorships/{{lastSponsorshipSubmittedId}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"sponsorships",
+								"{{lastSponsorshipSubmittedId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Trips",
+			"item": [
+				{
+					"name": "trips",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "3a625c7d-1bf2-4624-9175-6b2c647890ff",
+								"exec": [
+									"const echoPostRequest = {\r",
+									"    url: pm.variables.get('host') + '/actors',\r",
+									"    method: 'POST',\r",
+									"    header: {\r",
+									"        'content-type': 'application/json',\r",
+									"    },\r",
+									"    body: {\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify({\r",
+									"            \"name\": \"TestTRIP\",\r",
+									"            \"surname\": \"tripTest\",\r",
+									"            \"email\": \"f@testTripTest.com\",\r",
+									"            \"phone\": \"012459786\",\r",
+									"            \"password\": \"pwd\",\r",
+									"            \"adress\": \"algun lugar\",\r",
+									"            \"role\": \"Manager\"\r",
+									"        })\r",
+									"    }\r",
+									"};\r",
+									"pm.sendRequest(echoPostRequest, function (err, res) {\r",
+									"    console.log(err ? err : res.json());\r",
+									"        if (err === null) {\r",
+									"            console.log(res.json()._id)\r",
+									"            pm.environment.set('lastActorSubmittedId', res.json()._id)\r",
+									"        }\r",
+									"    });\r",
+									"\r",
+									"let t = Date.now() + Date.now();\r",
+									"pm.environment.set('start', t);\r",
+									"pm.environment.set('end', t);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "6cddfd82-9de3-4484-b3e9-c280239a14e6",
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"pm.test(\"Price sum\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.price).to.eql(1000);",
+									"});",
+									"",
+									"pm.environment.set('lastTripId', pm.response.json()._id)"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"title\": \"testTitle\",\n\t\"description\": \"testDescription\",\n\t\"requirements\": [\"testRequirement\"],\n\t\"start\": {{start}},\n\t\"end\": {{end}},\n\t\"stages\": [\n\t\t{\n\t\t\t\"title\": \"Paris\",\n\t\t\t\"description\": \"Paris step\",\n\t\t\t\"price\": 620\n\t\t},\n\t\t{\n\t\t\t\"title\": \"Rouen\",\n\t\t\t\"description\": \"Rouen step\",\n\t\t\t\"price\": 380\n\t\t}\n\t],\n\t\"managerId\": \"{{lastActorSubmittedId}}\"\n}"
+						},
+						"url": {
+							"raw": "{{host}}/trips",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"trips"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "trips",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "ec793acd-0c27-4196-994b-6fa75448265f",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/trips",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"trips"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "trips/:tripID",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "f901ab41-ed39-4543-9859-5dcc899ae42f",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "a053d4d4-d70c-44f5-a07f-2d66b29f2ca2",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/trips/{{lastTripId}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"trips",
+								"{{lastTripId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "trips/:tripID",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "a820ef6b-cf99-4ca9-81e5-f07c34b4e51e",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "171f8cb4-41ca-43d3-b92e-7b7b222043b7",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Title updated\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.title).to.eql(\"testTitle Updated\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"title\": \"testTitle Updated\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/trips/{{lastTripId}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"trips",
+								"{{lastTripId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "trips/:tripID/stage",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "df46a465-e4b9-4e87-9817-d80495e0be8d",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"title\": \"Le Havre\",\n\t\"description\": \"Le Havre step\",\n\t\"price\": 250.5\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/trips/{{lastTripId}}/stage",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"trips",
+								"{{lastTripId}}",
+								"stage"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "trips/:tripID/cancel",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "df46a465-e4b9-4e87-9817-d80495e0be8d",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"reasonCancelling\": \"test\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/trips/{{lastTripId}}/cancel",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"trips",
+								"{{lastTripId}}",
+								"cancel"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "trips/:tripID",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "22e2f555-08f0-421b-b48b-1da4b221fa88",
+								"exec": [
+									"var path = pm.variables.get(\"host\") + \"/trips\";",
+									"pm.sendRequest(path, function (err, response) {",
+									"    pm.environment.set(\"tripID\", response.json()[0]._id);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "9b36b22e-f064-43de-8367-a47ee31bafca",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"const echoDeleteRequestActor = {",
+									"  url: pm.variables.get('host') + '/actors/' + pm.environment.get('lastActorSubmittedId'),",
+									"  method: 'DELETE',",
+									"};",
+									"",
+									"pm.sendRequest(echoDeleteRequestActor)"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/trips/{{lastTripId}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"trips",
+								"{{lastTripId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Applications",
+			"item": [
+				{
+					"name": "POST applications",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "f6a5b166-802e-4cda-b9ec-ac76fd9a4dd6",
+								"exec": [
+									"const echoPostRequestExplorer = {",
+									"    url: pm.environment.get('host') + '/actors',",
+									"    method: 'POST',",
+									"    header: {",
+									"        'content-type': 'application/json',",
+									"    },",
+									"    body: {",
+									"        mode: 'raw',",
+									"        raw: JSON.stringify({",
+									"            \"name\": \"Antoño\",",
+									"            \"surname\": \"Banderas\",",
+									"            \"email\": \"f@f.com\",",
+									"            \"phone\": \"012459786\",",
+									"            \"password\": \"pwd\",",
+									"            \"adress\": \"algun lugar\",",
+									"            \"role\": \"Explorer\"",
+									"        })",
+									"    }",
+									"};",
+									"pm.sendRequest(echoPostRequestExplorer, function (err, res) {",
+									"    console.log(err ? err : res.json());",
+									"    if (err === null) {",
+									"        pm.environment.set('explorer', res.json()._id)",
+									"",
+									"const echoPostRequestManager = {",
+									"    url: pm.environment.get('host') + '/actors',",
+									"    method: 'POST',",
+									"    header: {",
+									"        'content-type': 'application/json',",
+									"    },",
+									"    body: {",
+									"        mode: 'raw',",
+									"        raw: JSON.stringify({",
+									"            \"name\": \"Pedro\",",
+									"            \"surname\": \"Borita\",",
+									"            \"email\": \"t@t.com\",",
+									"            \"phone\": \"0123456789\",",
+									"            \"password\": \"pwd\",",
+									"            \"adress\": \"algun lugar\",",
+									"            \"role\": \"Manager\"",
+									"        })",
+									"    }",
+									"};",
+									"pm.sendRequest(echoPostRequestManager, function (err, res) {",
+									"    console.log(err ? err : res.json());",
+									"    if (err === null) {",
+									"        pm.environment.set('manager', res.json()._id)",
+									"        const echoPostRequestTrip = {",
+									"    url: pm.environment.get('host') + '/trips',",
+									"    method: 'POST',",
+									"    header: {",
+									"        'content-type': 'application/json',",
+									"    },",
+									"    body: {",
+									"        mode: 'raw',",
+									"        raw: JSON.stringify({",
+									"            \"title\": \"testTitle\",",
+									"        \t\"description\": \"testDescription\",",
+									"        \t\"requirements\": [\"testRequirement\"],",
+									"        \t\"start\": \"2021-02-12\",",
+									"        \t\"end\": \"2021-02-28\",",
+									"        \t\"published\": true,",
+									"        \t\"stages\": [",
+									"        \t\t{",
+									"        \t\t\t\"title\": \"Paris\",",
+									"        \t\t\t\"description\": \"Paris step\",",
+									"        \t\t\t\"price\": 620",
+									"        \t\t},",
+									"        \t\t{",
+									"        \t\t\t\"title\": \"Rouen\",",
+									"        \t\t\t\"description\": \"Rouen step\",",
+									"        \t\t\t\"price\": 380",
+									"        \t\t}",
+									"        \t],",
+									"        \t\"managerId\": pm.environment.get('manager')",
+									"        })",
+									"    }",
+									"};",
+									"pm.sendRequest(echoPostRequestTrip, function (err, res) {",
+									"    console.log(err ? err : res.json());",
+									"    if (err === null) {",
+									"        pm.environment.set('trip', res.json()._id)",
+									"    }",
+									"});",
+									"    }",
+									"});",
+									"    }",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "fc4a519d-22e5-4135-bb62-07ea3b531408",
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"idExplorer\": \"{{explorer}}\",\r\n  \"idTrip\": \"{{trip}}\",\r\n  \"status\": \"PENDING\",\r\n  \"comments\": [\r\n    \"A comment\",\r\n    \"Another comment\"\r\n  ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/applications",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"applications"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET applications",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "e108e96b-3178-42a6-85d0-876de855cba3",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/applications",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"applications"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET applications/:applicationId",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "25334014-44ee-4583-905a-ffa8b1c9cdd5",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "08ccfa7f-ce80-4f38-9f9c-eadcf3686968",
+								"exec": [
+									"var path = pm.variables.get(\"host\") + \"/applications\";",
+									"pm.sendRequest(path, function (err, response) {",
+									"    pm.environment.set(\"applicationId\", response.json()[0]._id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/applications/{{applicationId}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"applications",
+								"{{applicationId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PUT applications/:applicationId",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "7633ff14-d157-4cf7-b066-0cb25b16c374",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "2f20e74d-29e6-48f8-86b8-30a756698acd",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200) });"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"idExplorer\": \"{{explorer}}\",\r\n  \"idTrip\": \"{{trip}}\",\r\n  \"status\": \"DUE\",\r\n  \"comments\": [\r\n    \"A comment\",\r\n    \"Another comment\"\r\n  ],\r\n  \"reasonCancelling\": \"A reason\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/applications/{{applicationId}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"applications",
+								"{{applicationId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PATCH applications/:applicationId",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "7633ff14-d157-4cf7-b066-0cb25b16c374",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "2f20e74d-29e6-48f8-86b8-30a756698acd",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200) });"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"status\": \"ACCEPTED\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/applications/{{applicationId}}/status",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"applications",
+								"{{applicationId}}",
+								"status"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE applications/:applicationId",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "5eab9e51-e676-492c-a31f-72a2d131b1f2",
+								"exec": [
+									"var path = pm.variables.get(\"host\") + \"/applications\";",
+									"pm.sendRequest(path, function (err, response) {",
+									"    pm.environment.set(\"applicationId\", response.json()[0]._id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "212cd597-a9ce-4857-988b-b04ba34f84df",
+								"exec": [
+									"pm.test(\"Status code is 204\", function () { pm.response.to.have.status(204) });",
+									"const echoGetRequest = {",
+									"  url: pm.variables.get('host') + '/applications/' + pm.environment.get('applicationId'),",
+									"  method: 'GET',",
+									"};",
+									"pm.sendRequest(echoGetRequest, function (err, res) {",
+									"    pm.test(\"Item has been deleted\", function () { pm.expect(res.code).to.be.oneOf([404]) });",
+									"});",
+									"const echoDeleteRequest1 = {",
+									"  url: pm.variables.get('host') + '/trips/' + pm.environment.get('trip'),",
+									"  method: 'DELETE',",
+									"};",
+									"pm.sendRequest(echoDeleteRequest1)",
+									"const echoDeleteRequest2 = {",
+									"  url: pm.variables.get('host') + '/actors/' + pm.environment.get('explorer'),",
+									"  method: 'DELETE',",
+									"};",
+									"pm.sendRequest(echoDeleteRequest2)",
+									"const echoDeleteRequest3 = {",
+									"  url: pm.variables.get('host') + '/actors/' + pm.environment.get('manager'),",
+									"  method: 'DELETE',",
+									"};",
+									"pm.sendRequest(echoDeleteRequest3)"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/applications/{{applicationId}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"applications",
+								"{{applicationId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Finders",
+			"item": [
+				{
+					"name": "POST finders",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "6f4ed969-18e7-4c0b-a578-1478b0d711dd",
+								"exec": [
+									"const echoPostRequest = {",
+									"    url: pm.variables.get('host') + '/actors',",
+									"    method: 'POST',",
+									"    header: {",
+									"        'content-type': 'application/json',",
+									"    },",
+									"    body: {",
+									"        mode: 'raw',",
+									"        raw: JSON.stringify({",
+									"            \"name\": \"Antoño\",",
+									"            \"surname\": \"Banderas\",",
+									"            \"email\": \"f@f.com\",",
+									"            \"phone\": \"012459786\",",
+									"            \"password\": \"pwd\",",
+									"            \"adress\": \"algun lugar\",",
+									"            \"role\": \"Explorer\"",
+									"        })",
+									"    }",
+									"};",
+									"pm.sendRequest(echoPostRequest, function (err, res) {",
+									"    console.log(err ? err : res.json());",
+									"    if (err === null) {",
+									"        pm.environment.set('explorer', res.json()._id)",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "3c9425c5-6329-406a-87e8-b41f5a098764",
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"idExplorer\": \"{{explorer}}\",\r\n  \"keyWord\": \"Rouen\",\r\n  \"priceMin\": 200,\r\n  \"priceMax\": 500,\r\n  \"dateMin\": \"2020-02-12\",\r\n  \"dateMax\": \"2020-02-28\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/finders",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"finders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET finders",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "dce4b05b-0925-4ecb-911a-98ba1a63c176",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/finders",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"finders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET finders/:finderId",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "d1000ce8-b5f8-4ed1-9c7b-866db579201b",
+								"exec": [
+									"var path = pm.variables.get(\"host\") + \"/finders\";",
+									"pm.sendRequest(path, function (err, response) {",
+									"    pm.environment.set(\"findersId\", response.json()[0]._id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "b3c83f03-ea2b-4b4c-a965-f850784359a6",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/finders/{{findersId}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"finders",
+								"{{findersId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PUT finders/:finderId",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "35a888d6-daac-416f-b55e-1f30220ca4e4",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200) });"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"idExplorer\": \"{{explorer}}\",\r\n  \"keyWord\": \"Paris\",\r\n  \"priceMin\": 250,\r\n  \"priceMax\": 650,\r\n  \"dateMin\": \"2020-02-12\",\r\n  \"dateMax\": \"2020-02-28\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/finders/{{findersId}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"finders",
+								"{{findersId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE finders/:finderId",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "d768f78c-81e3-45ff-b80c-ba3050c499c8",
+								"exec": [
+									"pm.test(\"Status code is 204\", function () { pm.response.to.have.status(204) });",
+									"const echoGetRequest = {",
+									"  url: pm.variables.get('host') + '/finders/' + pm.environment.get('findersId'),",
+									"  method: 'GET',",
+									"};",
+									"pm.sendRequest(echoGetRequest, function (err, res) {",
+									"    pm.test(\"Item has been deleted\", function () { pm.expect(res.code).to.be.oneOf([404]) });",
+									"});",
+									"const echoDeleteRequest = {",
+									"  url: pm.variables.get('host') + '/actors/' + pm.environment.get('explorer'),",
+									"  method: 'DELETE',",
+									"};",
+									"pm.sendRequest(echoDeleteRequest)"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/finders/{{findersId}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"finders",
+								"{{findersId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"variable": [
+		{
+			"id": "40f03a35-f033-41fc-b388-262b205a723f",
+			"key": "lastActorSubmittedId",
+			"value": "5e5bf1a847f1a03b4875b53a",
+			"type": "string"
+		},
+		{
+			"id": "f53853b5-a232-426b-b163-76d82bd8c70d",
+			"key": "applicationId",
+			"value": "5e5be691cf9075229cd1472b",
+			"type": "string"
+		},
+		{
+			"id": "6b7d748e-9bd0-4cba-ab27-b29fa43abc11",
+			"key": "explorer",
+			"value": "5e5bf34ffc713a232888e49e",
+			"type": "string"
+		},
+		{
+			"id": "b3e7620e-d877-4f44-b14b-8160dd58d14f",
+			"key": "findersId",
+			"value": "5e5be691cf9075229cd1478f",
+			"type": "string"
+		}
+	],
+	"protocolProfileBehavior": {}
+}
