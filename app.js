@@ -12,7 +12,8 @@ Application = require('./api/models/applicationModel'),
 Finder = require('./api/models/finderModel'),
 DataWareHouse = require('./api/models/dataWareHouseModel'),
 Cube = require('./api/models/cubeModel'),
-
+admin = require('firebase-admin'),
+serviceAccount = require("./acme-explorer-6415d-firebase-adminsdk-ea57g-024809d2fe"),
 bodyParser = require('body-parser');
 require('dotenv').config();
 // MongoDB URI building
@@ -43,6 +44,11 @@ app.use(bodyParser.json());
 app.use(enable_cors());
 
 app.use("/v1", swaggerDoc);
+
+admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+    databaseURL: "https://acme-explorer-6415d.firebaseio.com"
+});
 
 var routesActors = require('./api/routes/actorRoutes'),
 routesSponsorships = require('./api/routes/sponsorshipRoutes'),
