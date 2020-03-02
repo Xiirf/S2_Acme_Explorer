@@ -53,6 +53,7 @@ routesFinders = require('./api/routes/finderRoutes')
 routesGlobalVars = require('./api/routes/globalVarsRoutes');
 routesDataWareHouse = require('./api/routes/dataWareHouseRoutes'),
 routesStorage = require('./api/routes/storageRoutes'),
+routesLogin = require('./api/routes/loginRoutes');
  
 routesActors(app);
 routesSponsorships(app);
@@ -62,6 +63,7 @@ routesFinders(app);
 routesGlobalVars(app);
 routesDataWareHouse(app);
 routesStorage(app);
+routesLogin(app);
  
 console.log("Connecting DB to: " + mongoDBURI);
 mongoose.connection.on("open", function (err, conn) {
