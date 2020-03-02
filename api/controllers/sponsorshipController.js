@@ -19,6 +19,12 @@ GlobalVars = mongoose.model('GlobalVars');
  *          required: false
  *          schema:
  *            type: string
+ *        - name: payed
+ *          in: query
+ *          description: Wheter you want to display the sponsorships that are payed or the ones that ain't
+ *          required: false
+ *          schema:
+ *            type: boolean
  *      responses:
  *        '200':
  *          description: OK
@@ -37,6 +43,7 @@ GlobalVars = mongoose.model('GlobalVars');
 exports.list_all_sponsorships = function(req, res) {
     var filters = {}
     if(req.query.tripId) filters.trip_id = req.query.tripId;
+    if(req.query.payed != null) filters.payed = req.query.payed; 
     Sponsorships.find(filters, function(err, sponsorships) {
         if(err) {
             res.status(500).send(err);
