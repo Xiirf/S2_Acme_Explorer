@@ -283,7 +283,7 @@ exports.edit_status_of_an_application = function(req, res) {
         } 
         else {
             if (req.body.status == "ACCEPTED") {
-                application.payedAt = Date.now;
+                application.payedAt = Date.now();
             }
             application.status = req.body.status;
             application.save(function(err, application) {
