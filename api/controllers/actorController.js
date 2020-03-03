@@ -12,6 +12,7 @@
 
 var mongoose = require('mongoose')
 Actors = mongoose.model('Actors');
+var admin = require('firebase-admin');
 
  /**
  * @swagger
@@ -362,7 +363,7 @@ exports.login_an_actor = async function(req, res) {
     console.log('starting login an actor');
     var emailParam = req.query.email;
     var password = req.query.password;
-    Actor.findOne({ email: emailParam }, function (err, actor) {
+    Actors.findOne({ email: emailParam }, function (err, actor) {
         if (err) { res.send(err); }
   
         // No actor found with that email as username
@@ -388,13 +389,14 @@ exports.login_an_actor = async function(req, res) {
   
             else {
                 try{
-                  var customToken = await admin.auth().createCustomToken(actor.email);
+                    var customToken = await admin.auth().createCustomToken(actor.email);
+                    actor.customToken = customToken;
+                    console.log('Login Success... sending JSON with custom token');
+                    res.json(actor);
                 } catch (error){
                   console.log("Error creating custom token:", error);
                 }
-                actor.customToken = customToken;
-                console.log('Login Success... sending JSON with custom token');
-                res.json(actor);
+                
             }
         });
       }
