@@ -3,6 +3,8 @@
 var mongoose = require('mongoose'),
     Actor = mongoose.model('Actors');
 var admin = require('firebase-admin');
+var LangDictionnary = require('../langDictionnary');
+var dict = new LangDictionnary();
 
 exports.getUserId = async function (idToken) {
     console.log('idToken: ' + idToken);
@@ -35,9 +37,10 @@ exports.verifyUser = function (requiredRoles) {
         console.log('starting verifying idToken');
         console.log('requiredRoles: ' + requiredRoles);
         var idToken = req.headers['authorization'];
+        var lang = dict.getLang(req);
 
         if(!idToken) {
-            res.status(401).json('Unauthorized, you need a token');
+            res.status(401).send({ err: dict.get('Unauthorized', lang) });
         } else {
             idToken = idToken.replace('Bearer ', '');
             admin.auth().verifyIdToken(idToken).then(function (decodedToken) {
@@ -55,8 +58,7 @@ exports.verifyUser = function (requiredRoles) {
     
                     // No actor found with that email as username
                     else if (!actor) {
-                        res.status(401); //an access token isn’t provided, or is invalid
-                        res.json({ message: 'No actor found with the provided email as username', error: err });
+                        res.status(404).send({ err: dict.get('RessourceNotFound', lang, 'actor', uid) });
                     }
     
                     else {
@@ -71,16 +73,14 @@ exports.verifyUser = function (requiredRoles) {
                         }
                         if (isAuth) return callback(null, actor);
                         else {
-                            res.status(403); //an access token is valid, but requires more privileges
-                            res.json({ message: 'The actor has not the required roles', error: err });
+                            res.status(403).send({ err: dict.get('Forbidden', lang) });
                         }
                     }
                 });
             }).catch(function (err) {
                 // Handle error
                 console.log("Error en autenticación: " + err);
-                res.status(403); //an access token is valid, but requires more privileges
-                res.json({ message: 'The actor has not the required roles', error: err });
+                res.status(403).send({ err: dict.get('Forbidden', lang) });
             });
         }
     }

@@ -413,8 +413,7 @@ exports.login_an_actor = async function(req, res) {
   
         // No actor found with that email as username
         else if (!actor) {
-          res.status(401); //an access token isn’t provided, or is invalid
-          res.json({message: 'forbidden',error: err});
+            res.status(404).send({ err: dict.get('RessourceNotFound', lang, 'actor', emailParam) });
         }
   
         else{
@@ -427,9 +426,7 @@ exports.login_an_actor = async function(req, res) {
   
             // Password did not match
             else if (!isMatch) {
-              //res.send(err);
-              res.status(401); //an access token isn’t provided, or is invalid
-              res.json({message: 'forbidden',error: err});
+              res.status(403).send({ err: dict.get('Forbidden', lang) });
             }
   
             else {
@@ -437,7 +434,7 @@ exports.login_an_actor = async function(req, res) {
                     var customToken = await admin.auth().createCustomToken(actor.email);
                     actor.customToken = customToken;
                     console.log('Login Success... sending JSON with custom token');
-                    res.json(actor);
+                    res.status(200).json(actor);
                 } catch (error){
                   console.log("Error creating custom token:", error);
                 }
