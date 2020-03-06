@@ -27,6 +27,7 @@ dict = new LangDictionnary();
  *          required: false
  *          schema:
  *            type: boolean
+ *        - $ref: '#/components/parameters/language'
  *      responses:
  *        '200':
  *          description: OK
@@ -66,6 +67,8 @@ exports.list_all_sponsorships = function(req, res) {
  *      description: >-
  *        Create a new sponsorship
  *      operationId: postSponsorships
+ *      parameters:
+ *        - $ref: '#/components/parameters/language'
  *      requestBody:
  *        required: true
  *        content:
@@ -135,12 +138,13 @@ exports.create_a_sponsorship = function(req, res) {
  *        Retrieve details from a specific sponsorship
  *      operationId: getSponsorship
  *      parameters:
- *         - name: sponsorshipId
- *           in: path
- *           description: id of the sponsorship you want to get details from
- *           required: true
- *           schema:
- *             type: string
+ *        - name: sponsorshipId
+ *          in: path
+ *          description: id of the sponsorship you want to get details from
+ *          required: true
+ *          schema:
+ *            type: string
+ *        - $ref: '#/components/parameters/language'
  *      responses:
  *        '200':
  *          description: OK
@@ -186,12 +190,13 @@ exports.read_a_sponsorship = function(req, res) {
  *        Update a specific sponsorship
  *      operationId: putSponsorship
  *      parameters:
- *         - name: sponsorshipId
- *           in: path
- *           description: id of the sponsorship you want to update
- *           required: true
- *           schema:
- *             type: string
+ *        - name: sponsorshipId
+ *          in: path
+ *          description: id of the sponsorship you want to update
+ *          required: true
+ *          schema:
+ *            type: string
+ *        - $ref: '#/components/parameters/language'
  *      requestBody:
  *        required: true
  *        content:
@@ -269,12 +274,13 @@ exports.edit_a_sponsorship = function(req, res) {
  *        Pay or set to unpayed a sponsorship
  *      operationId: patchSponsorshipPayement
  *      parameters:
- *         - name: sponsorshipId
- *           in: path
- *           description: id of the sponsorship you want to ban or unban
- *           required: true
- *           schema:
- *             type: string
+ *        - name: sponsorshipId
+ *          in: path
+ *          description: id of the sponsorship you want to ban or unban
+ *          required: true
+ *          schema:
+ *            type: string
+ *        - $ref: '#/components/parameters/language'
  *      requestBody:
  *        required: true
  *        content:
@@ -296,7 +302,7 @@ exports.edit_a_sponsorship = function(req, res) {
  *                - $ref: '#/components/schemas/sponsorship'
  *        '404':
  *           description: Sponsorship not found
- *           content: Not Found
+ *           content: {}
  *        '422':
  *           description: Incorrect body
  *           content: {}
@@ -345,6 +351,8 @@ exports.handle_sponsorship_payement = function(req, res) {
  *      description: >-
  *       fix flat rate for all sponsorships
  *      operationId: patchSponsorshipsFlatRate
+ *      parameters:
+ *        - $ref: '#/components/parameters/language'
  *      requestBody:
  *        required: true
  *        content:
@@ -407,12 +415,13 @@ exports.handle_flat_rate_change = function(req, res) {
  *        Delete a specific sponsorship
  *      operationId: deleteSponsorship
  *      parameters:
- *         - name: sponsorshipId
- *           in: path
- *           description: id of the sponsorship you want to delete
- *           required: true
- *           schema:
- *             type: string
+ *        - name: sponsorshipId
+ *          in: path
+ *          description: id of the sponsorship you want to delete
+ *          required: true
+ *          schema:
+ *            type: string
+ *        - $ref: '#/components/parameters/language'
  *      responses:
  *        '204':
  *          description: No content

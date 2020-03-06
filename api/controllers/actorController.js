@@ -26,6 +26,8 @@ var dict = new LangDictionnary();
  *      description: >-
  *        Retrieve all the actors
  *      operationId: getActors
+ *      parameters:
+ *        - $ref: '#/components/parameters/language'
  *      responses:
  *        '200':
  *          description: OK
@@ -61,6 +63,8 @@ exports.list_all_actors = function(req, res) {
  *      description: >-
  *        Create a new actor
  *      operationId: postActors
+ *      parameters:
+ *        - $ref: '#/components/parameters/language'
  *      requestBody:
  *        required: true
  *        content:
@@ -139,6 +143,7 @@ exports.create_an_actor = function(req, res) {
  *           required: true
  *           schema:
  *             type: string
+ *         - $ref: '#/components/parameters/language'
  *      responses:
  *        '200':
  *          description: OK
@@ -190,6 +195,7 @@ exports.read_an_actor = function(req, res) {
  *           required: true
  *           schema:
  *             type: string
+ *         - $ref: '#/components/parameters/language'
  *      requestBody:
  *        required: true
  *        content:
@@ -272,6 +278,7 @@ exports.edit_an_actor = function(req, res) {
  *           required: true
  *           schema:
  *             type: string
+ *         - $ref: '#/components/parameters/language'
  *      requestBody:
  *        required: true
  *        content:
@@ -342,6 +349,7 @@ exports.handle_actor_banishment = function(req, res) {
  *           required: true
  *           schema:
  *             type: string
+ *         - $ref: '#/components/parameters/language'
  *      responses:
  *        '204':
  *          description: No content

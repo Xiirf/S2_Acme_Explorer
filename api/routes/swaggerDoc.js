@@ -24,6 +24,19 @@ const options = {
         },
       },
       components: {
+        parameters: {
+          language: {
+            name: "Accept-Language",
+            in: "header",
+            description: "The ISO 639-1 language code that will be used to return error messages. Only the first two letters of the header are relevant.",
+            required: false,
+            schema: {
+              type: "string",
+              default: "en-US"
+            },
+            example: "en-US"
+          }
+        },
         securitySchemes: {
           bearerAuth: {
             type: 'http',

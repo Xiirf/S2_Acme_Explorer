@@ -83,7 +83,7 @@ const DEFAULT_ENTRIES = [
         values: [
             {
                 lang: 'en',
-                text: 'Schema validation error: the entity does\'nt respect constraints'
+                text: 'Schema validation error: the entity doesn\'t respect constraints'
             }, {
                 lang: 'es',
                 text: 'Error de validacion del esquema: la entidad no esta valida'
