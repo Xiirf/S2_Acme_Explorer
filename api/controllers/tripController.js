@@ -8,6 +8,7 @@ var mongoose = require('mongoose')
 Trips = mongoose.model('Trips');
 Stages = mongoose.model('Stages');
 Applications = require('../models/applicationModel');
+var authController = require('../controllers/authController');
 
 /**
  * @swagger
@@ -154,7 +155,55 @@ exports.search_trips = function(req, res) {
  *        content:
  *          application/json:
  *            schema:
- *              $ref: '#/components/schemas/Trip'
+ *              type: object
+ *              required:
+ *                - title
+ *                - description
+ *                - requirements
+ *                - start
+ *                - end
+ *                - managerId
+ *              properties:
+ *                title:
+ *                  type: string
+ *                  description: Trip title.
+ *                description:
+ *                  type: string
+ *                  description: Trip description.
+ *                requirements:
+ *                  type: array
+ *                  items: string
+ *                  description: Trip requirements.
+ *                start:
+ *                  type: Date
+ *                  description: Trip start date.
+ *                end:
+ *                  type: Date
+ *                  description: Trip end date.
+ *                pictures:
+ *                  type: array
+ *                  items: object
+ *                  properties:
+ *                    data:
+ *                      type: Buffer
+ *                    contentType:
+ *                      type: string
+ *                  description: Array of Trip pictures.
+ *                stages:
+ *                  type: array
+ *                  items: object
+ *                  $ref: '#/components/schemas/Stage'
+ *                  description: Array of Trip pictures.
+ *              example:
+ *                title: titleUpdate
+ *                description: descTrip
+ *                requirementes: ["testReq"]
+ *                start: 2020-02-14
+ *                end: 2020-02-14
+ *                stages:
+ *                  title: testExample
+ *                  description: desExample
+ *                  price: 250
  *      responses:
  *        "201":
  *          description: Trip created
@@ -168,22 +217,28 @@ exports.search_trips = function(req, res) {
  *          description: Server error
  */
 exports.create_a_trip = function(req, res) {
+    token = req.headers['authorization'];
     var new_trip = new Trips(req.body);
-    // 1) Test si managerId est un actor avec le role de manager
-    // Faire fonction pour récupérer l'actor et le role et utiliser le controller
-    // 2) test si utilisateur connecté est bien le bon 
-    new_trip.save(function(err) {
-        if (err){
-            if(err.name=='ValidationError') {
-                res.status(422).send(err);
+    //Use Actual Manager id
+    authController.getUserId(token)
+    .then((managerId) => {
+        new_trip.managerId= managerId;
+        new_trip.save(function(err) {
+            if (err){
+                if(err.name=='ValidationError') {
+                    res.status(422).send(err);
+                }
+                else{
+                    res.status(500).send(err);
+                }
+            } else {
+                res.status(201).json(new_trip);
             }
-            else{
-                res.status(500).send(err);
-            }
-        } else {
-            res.status(201).json(new_trip);
-        }
-    });
+        });
+    })
+    .catch((err) => {
+        res.status(500).send(err);
+    })
 }
 
 /**
@@ -275,31 +330,40 @@ unique_find = function(req, res) {
  *          description: Internal error
  */
 exports.edit_a_trip = function(req, res) {
-    // Voir si l'utilisateur est un admin ou manager
     Trips.findById({_id: req.params.tripId}, function(err, trip) {
         if (err) {
             res.status(500).send(err); // internal server error
         } else {
             if (trip) {
-                if(!trip.published){
-                    Trips.updateOne({_id: req.params.tripId}, req.body, {new:true, runValidators: true}, function(err, trip) {
-                        if (err){
-                            if(err.name=='ValidationError') {
-                                res.status(422).send(err);
+                verifyManagerTripOwner(req.headers['authorization'], trip.managerId)
+                    .then((isSame) => {
+                        if (isSame) {
+                            if(!trip.published) {
+                                Trips.updateOne({_id: req.params.tripId}, req.body, {new:true, runValidators: true}, function(err, trip) {
+                                    if (err){
+                                        if(err.name=='ValidationError') {
+                                            res.status(422).send(err);
+                                        }
+                                        else{
+                                          res.status(500).send(err);
+                                        }
+                                    } else if (!trip) {
+                                        res.status(404)
+                                            .json({ error: 'No se ha encontrado la ID.'});
+                                    } else {
+                                        unique_find(req, res);
+                                    }
+                                });
+                            } else {
+                                res.status(403).json({message: 'Acción prohibida, el viaje es publicado'});
                             }
-                            else{
-                              res.status(500).send(err);
-                            }
-                        } else if (!trip) {
-                            res.status(404)
-                                .json({ error: 'No se ha encontrado la ID.'});
                         } else {
-                            unique_find(req, res);
+                            res.status(401).json({error: 'Unauthorized'});
                         }
                     })
-                } else {
-                    res.status(403).json({message: 'Acción prohibida, el viaje es publicado'});
-                }
+                    .catch((error) => {
+                        res.status(500).send(error);
+                    });
             } else {
               res.sendStatus(404); // not found
             }
@@ -323,7 +387,11 @@ exports.edit_a_trip = function(req, res) {
  *             type: string
  *      responses:
  *        "200":
- *          description: Item delete msg
+ *          description: Item delete
+ *        "400":
+ *          description: Bad Request
+ *        "401":
+ *          description: Unauthorized
  *        "403":
  *          description: Forbidden
  *        "404":
@@ -332,25 +400,34 @@ exports.edit_a_trip = function(req, res) {
  *          description: Internal error
  */
 exports.delete_a_trip = function(req, res) {
-    // Voir si l'utilisateur connecté est un admin ou manager
     Trips.findById({_id: req.params.tripId}, function(err, trip) {
         if (err) {
             res.status(500).send(err); // internal server error
         } else {
             if (trip) {
-                if(!trip.published){
-                    Trips.deleteOne({_id: req.params.tripId}, function(err) {
-                        if(err) {
-                            res.status(500).send(err);
+                verifyManagerTripOwner(req.headers['authorization'], trip.managerId)
+                .then((isSame) => {
+                    if (isSame) {
+                        if(!trip.published){
+                            Trips.deleteOne({_id: req.params.tripId}, function(err) {
+                                if(err) {
+                                    res.status(500).send(err);
+                                } else {
+                                    res.status(200).json({message: 'Trip successfully deleted'});
+                                }
+                            });
                         } else {
-                            res.status(200).json({message: 'Trip successfully deleted'});
+                            res.status(403).json({message: 'Acción prohibida, el viaje es publicado'});
                         }
-                    });
-                } else {
-                    res.status(403).json({message: 'Acción prohibida, el viaje es publicado'});
-                }
+                    } else {
+                        res.status(401).json({error: 'Unauthorized'});
+                    }
+                })
+                .catch((error) => {
+                    res.status(500).send(error);
+                });
             } else {
-              res.sendStatus(404); // not found
+            res.sendStatus(404); // not found
             }
         }
     });
@@ -391,7 +468,6 @@ exports.delete_a_trip = function(req, res) {
  *          description: Internal error
  */
 exports.add_a_stage_in_trip = function(req, res) {
-    // Voir si l'utilisateur connecté est un admin ou manager
     var id = req.params.tripId;
     var stage = new Stages(req.body)
     if (!stage) {
@@ -403,24 +479,33 @@ exports.add_a_stage_in_trip = function(req, res) {
                 res.status(500).send(err); // internal server error
               } else {
                 if (trip) {
-                    if(!trip.published){
-                        trip.stages.push(stage);
-                        trip.save(function(err2, newTrip) {
-                            if (err2) {
-                                console.log(err2);
-                                if(err.name=='ValidationError') {
-                                    res.status(422).send(err2);
-                                }
-                                else{
-                                    res.status(500).send(err2);
+                    verifyManagerTripOwner(req.headers['authorization'], trip.managerId)
+                        .then((isSame) => {
+                            if (isSame) {
+                                if(!trip.published){
+                                    trip.stages.push(stage);
+                                    trip.save(function(err2, newTrip) {
+                                        if (err2) {
+                                            if(err.name=='ValidationError') {
+                                                res.status(422).send(err2);
+                                            }
+                                            else{
+                                                res.status(500).send(err2);
+                                            }
+                                        } else {
+                                            res.send(newTrip); // return the updated actor
+                                        }
+                                    });
+                                } else {
+                                    res.status(403).json({message: 'Acción prohibida, el viaje es publicado'});
                                 }
                             } else {
-                                res.send(newTrip); // return the updated actor
+                                res.status(401).json({error: 'Unauthorized'});
                             }
+                        })
+                        .catch((error) => {
+                            res.status(500).send(error);
                         });
-                    } else {
-                        res.status(403).json({message: 'Acción prohibida, el viaje es publicado'});
-                    }
                 } else {
                   res.sendStatus(404); // not found
                 }
@@ -476,7 +561,6 @@ exports.add_a_stage_in_trip = function(req, res) {
  *          description: Internal error
  */
 exports.cancel_a_trip = function(req, res) {
-    // Voir si l'utilisateur connecté est un admin ou manager
     var reasonCancelling = req.body.reasonCancelling;
     var id = req.params.tripId;
     if (!reasonCancelling) {
@@ -488,44 +572,66 @@ exports.cancel_a_trip = function(req, res) {
                 res.status(500).send(err); // internal server error
               } else {
                 if (trip) {
-                    if (trip.cancelled){
-                        res.status(400) // bad request because trip already cancelled
-                            .json({ error: 'Trip ya cancelado'});
-                    } else if (new Date(trip.start) <= Date()){
-                        res.status(403)
-                            .json({ error: 'Trip started'})
-                    } else {
-                        Applications.findOne({idTrip: trip._id, status: 'ACCEPTED'}, function(err,app){
-                            if (err) {
-                                res.status(500).send(err);
-                            } 
-                            else if (!app) {
-                                console.log(JSON.stringify(trip));
-                                trip.cancelled = true;
-                                trip.reasonCancelling = reasonCancelling;
-                                trip.save(function(err2, newTrip) {
-                                    if (err2) {
-                                        if(err2.name=='ValidationError') {
-                                            res.status(422).send(err2);
+                    verifyManagerTripOwner(req.headers['authorization'], trip.managerId)
+                        .then((isSame) => {
+                            if (isSame) {
+                                if (trip.cancelled){
+                                    res.status(400) // bad request because trip already cancelled
+                                        .json({ error: 'Trip ya cancelado'});
+                                } else if (new Date(trip.start) <= Date()){
+                                    res.status(403)
+                                        .json({ error: 'Trip started'})
+                                } else {
+                                    Applications.findOne({idTrip: trip._id, status: 'ACCEPTED'}, function(err,app){
+                                        if (err) {
+                                            res.status(500).send(err);
+                                        } 
+                                        else if (!app) {
+                                            trip.cancelled = true;
+                                            trip.reasonCancelling = reasonCancelling;
+                                            trip.save(function(err2, newTrip) {
+                                                if (err2) {
+                                                    if(err2.name=='ValidationError') {
+                                                        res.status(422).send(err2);
+                                                    }
+                                                    else{
+                                                        res.status(500).send(err2);
+                                                    }
+                                                } else {
+                                                    res.send(newTrip); // return the updated actor
+                                                }
+                                            });
                                         }
-                                        else{
-                                            res.status(500).send(err2);
+                                        else {
+                                            res.status(403)
+                                                .json({ error: 'Trip applied'})
                                         }
-                                    } else {
-                                        res.send(newTrip); // return the updated actor
-                                    }
-                                });
+                                    });
+                                }
+                            } else {
+                                res.status(401).json({error: 'Unauthorized'});
                             }
-                            else {
-                                res.status(403)
-                                    .json({ error: 'Trip applied'})
-                            }
+                        })
+                        .catch((error) => {
+                            res.status(500).send(error);
                         });
-                    }
                 } else {
                   res.sendStatus(404); // not found
                 }
             }
         });
     }
+}
+
+verifyManagerTripOwner = (token, idManager) => {
+    return authController.getUserId(token)
+    .then((idActor) => {
+        if (idActor) {
+            return (new String(idActor).valueOf() == new String(idManager).valueOf());
+        }
+        return false;
+    })
+    .catch((error) => {
+        return false;
+    })
 }

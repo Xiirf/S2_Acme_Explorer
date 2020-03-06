@@ -359,6 +359,38 @@ exports.delete_an_actor = function(req, res) {
     });
 }
 
+/**
+ * @swagger
+ * path:
+ *  /login:
+ *    get:
+ *      summary: Log in
+ *      tags: [Actor]
+ *      parameters:
+ *         - name: email
+ *           in: query
+ *           description: Actor email
+ *           required: true
+ *           schema:
+ *             type: string
+ *         - name: password
+ *           in: query
+ *           description: Actor password
+ *           required: true
+ *           schema:
+ *             type: string
+ *      responses:
+ *        "200":
+ *          description: Return an Actor with token
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/actor'
+ *        "401":
+ *          description: Forbidden
+ *        "500":
+ *          description: Internal error
+ */
 exports.login_an_actor = async function(req, res) {
     console.log('starting login an actor');
     var emailParam = req.query.email;
