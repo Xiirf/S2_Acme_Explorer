@@ -118,7 +118,7 @@ exports.create_an_actor = function(req, res) {
             }
             else{
                 console.error('Error create data in DB');
-                res.status(500).send({ err: dict.get('ErrorCreatetDB', lang) });
+                res.status(500).send({ err: dict.get('ErrorCreateDB', lang) });
             }
         } else {
             res.status(201).send(actor);
