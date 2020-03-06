@@ -19,6 +19,8 @@ var dict = new LangDictionnary();
  *    get:
  *      summary: Get all applications
  *      tags: [Applications]
+ *      parameters:
+ *        - $ref: '#/components/parameters/language'
  *      responses:
  *        "200":
  *          description: Return all applications
@@ -49,6 +51,8 @@ exports.list_all_applications = function(req, res) {
  *    post:
  *      summary: Create an Application
  *      tags: [Applications]
+ *      parameters:
+ *        - $ref: '#/components/parameters/language'
  *      requestBody:
  *        required: true
  *        content:
@@ -112,6 +116,7 @@ exports.create_an_application = function(req, res) {
  *           required: true
  *           schema:
  *             type: string
+ *         - $ref: '#/components/parameters/language'
  *      responses:
  *        "200":
  *          description: Return an application
@@ -153,6 +158,7 @@ exports.read_an_application = function(req, res) {
  *           required: true
  *           schema:
  *             type: string
+ *         - $ref: '#/components/parameters/language'
  *      requestBody:
  *        required: true
  *        content:
@@ -208,6 +214,7 @@ exports.edit_an_application = function(req, res) {
  *           required: true
  *           schema:
  *             type: string
+ *         - $ref: '#/components/parameters/language'
  *      responses:
  *        "204":
  *          description: Item delete msg
@@ -239,6 +246,7 @@ exports.delete_an_application = function(req, res) {
  *           required: true
  *           schema:
  *             type: string
+ *         - $ref: '#/components/parameters/language'
  *      requestBody:
  *        required: true
  *        content:

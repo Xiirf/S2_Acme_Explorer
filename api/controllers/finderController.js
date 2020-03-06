@@ -18,6 +18,8 @@ var dict = new LangDictionnary();
  *    get:
  *      summary: Get all finders
  *      tags: [Finders]
+ *      parameters:
+ *        - $ref: '#/components/parameters/language'
  *      responses:
  *        "200":
  *          description: Return all finders
@@ -48,6 +50,8 @@ exports.list_all_finders = function(req, res) {
  *    post:
  *      summary: Create an finder
  *      tags: [Finders]
+ *      parameters:
+ *        - $ref: '#/components/parameters/language'
  *      requestBody:
  *        required: true
  *        content:
@@ -98,6 +102,7 @@ exports.create_a_finder = function(req, res) {
  *           required: true
  *           schema:
  *             type: string
+ *         - $ref: '#/components/parameters/language'
  *      responses:
  *        "200":
  *          description: Return a finder
@@ -139,6 +144,7 @@ exports.read_a_finder = function(req, res) {
  *           required: true
  *           schema:
  *             type: string
+ *         - $ref: '#/components/parameters/language'
  *      requestBody:
  *        required: true
  *        content:
@@ -194,6 +200,7 @@ exports.edit_a_finder = function(req, res) {
  *           required: true
  *           schema:
  *             type: string
+ *         - $ref: '#/components/parameters/language'
  *      responses:
  *        "200":
  *          description: Item delete msg
