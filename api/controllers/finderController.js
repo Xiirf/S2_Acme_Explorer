@@ -8,6 +8,8 @@
  */
 var mongoose = require('mongoose'),
 Finders = mongoose.model('Finders');
+var LangDictionnary = require('../langDictionnary');
+var dict = new LangDictionnary();
 
 /**
  * @swagger
@@ -28,9 +30,10 @@ Finders = mongoose.model('Finders');
  *          description: Internal error
  */
 exports.list_all_finders = function(req, res) {
+    var lang = dict.getLang(req);
     Finders.find({}, function(err, finders) {
         if (err) {
-            res.status(500).send(err);
+            res.status(500).send({ err: dict.get('ErrorGetDB', lang) });
         }
         else {
             res.status(200).json(finders);
@@ -64,14 +67,15 @@ exports.list_all_finders = function(req, res) {
  *          description: Server error
  */
 exports.create_a_finder = function(req, res) {
+    var lang = dict.getLang(req);
     var new_finder = new Finders(req.body);
     new_finder.save(function(err, finder) {
         if (err) {
             if (err.name=='ValidationError') {
-                res.status(422).send(err);
+                res.status(422).send({ err: dict.get('ErrorSchema', lang) });
             }
             else{
-                res.status(500).send(err);
+                res.status(500).send({ err: dict.get('ErrorCreateDB', lang) });
             }
         }
         else {
@@ -107,13 +111,13 @@ exports.create_a_finder = function(req, res) {
  *          description: Internal error
  */
 exports.read_a_finder = function(req, res) {
-    var id = req.params.finderId;
-    Finders.findById(id, function(err, finder) {
+    var lang = dict.getLang(req);
+    Finders.findById(req.params.finderId, function(err, finder) {
         if (err) {
-            res.status(500).send(err);
+            res.status(500).send({ err: dict.get('ErrorGetDB', lang) });
         } 
         else if (!finder) {
-            res.status(404).json({ error: 'No finders with this Id were found.'});
+            res.status(404).send({ err: dict.get('RessourceNotFound', lang, 'finder', req.params.finderId) });
         }
         else {
             res.json(finder);
@@ -157,18 +161,18 @@ exports.read_a_finder = function(req, res) {
  *          description: Internal error
  */
 exports.edit_a_finder = function(req, res) {
+    var lang = dict.getLang(req);
     Finders.findOneAndUpdate({_id: req.params.finderId}, req.body, {new:true, runValidators: true}, function(err, finder) {
         if (err) {
             if (err.name=='ValidationError') {
-                res.status(422).send(err);
+                res.status(422).send({ err: dict.get('ErrorSchema', lang) });
             }
             else {
-              res.status(500).send(err);
+              res.status(500).send({ err: dict.get('ErrorUpdateDB', lang) });
             }
         } 
         else if (!finder) {
-            res.status(404)
-                .json({ error: 'No finders with this Id were found.'});
+            res.status(404).send({ err: dict.get('RessourceNotFound', lang, 'finder', req.params.finderId) });
         } 
         else {
             res.status(200).json(finder);
@@ -197,14 +201,14 @@ exports.edit_a_finder = function(req, res) {
  *          description: Internal error
  */
 exports.delete_a_finder = function(req, res) {
+    var lang = dict.getLang(req);
     var id = req.params.finderId
     Finders.findOneAndDelete({"_id": id}, null, function(err, finder) {
         if(err) {
-            res.status(500).send(err);
+            res.status(500).send({ err: dict.get('ErrorDeleteDB', lang) });
         } 
         else {
-            res.status(204);
-            res.json({message: 'Finder successfully deleted', finder});
+            res.sendStatus(204);
         }
     })
 }
