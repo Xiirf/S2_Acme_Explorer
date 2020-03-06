@@ -48,6 +48,7 @@ Class Stage {
 Class Application {
   date: Date {NotBlank}
   status: Status = Status.PENDING
+  payedAt: Date
   comments: String
   reasonCancelling: String
 }

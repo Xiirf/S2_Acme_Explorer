@@ -4,16 +4,21 @@ app = express(),
 port = process.env.PORT || 8080,
 mongoose = require('mongoose'),
 swaggerDoc = require('./api/routes/swaggerDoc'),
+GlobalVars = require('./api/models/globalVarsModel'),
 Actor = require('./api/models/actorModel'),
+Trip = require('./api/models/tripModel'),
 Sponsorship = require('./api/models/sponsorshipModel'),
 Application = require('./api/models/applicationModel'),
-Trip = require('./api/models/tripModel'),
 Finder = require('./api/models/finderModel'),
+DataWareHouse = require('./api/models/dataWareHouseModel'),
+Cube = require('./api/models/cubeModel'),
+admin = require('firebase-admin'),
+serviceAccount = require("./acme-explorer-6415d-firebase-adminsdk-ea57g-024809d2fe"),
 bodyParser = require('body-parser');
 require('dotenv').config();
 // MongoDB URI building
-var mongoDBUser = process.env.MONGO_USER || "myUser";
-var mongoDBPass = process.env.MONGO_PASSWORD || "myUserPassword";
+var mongoDBUser = process.env.MONGO_USER || "admin";
+var mongoDBPass = process.env.MONGO_PASSWORD || "mdp";
 var mongoDBCredentials = (mongoDBUser && mongoDBPass) ? mongoDBUser + ":" + mongoDBPass + "@" : "";
 
 var mongoDBHostname = process.env.mongoDBHostname || "localhost";
@@ -40,23 +45,38 @@ app.use(enable_cors());
 
 app.use("/v1", swaggerDoc);
 
+admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+    databaseURL: "https://acme-explorer-6415d.firebaseio.com"
+});
+
 var routesActors = require('./api/routes/actorRoutes'),
 routesSponsorships = require('./api/routes/sponsorshipRoutes'),
 routesActors = require('./api/routes/actorRoutes'),
 routesApplications = require('./api/routes/applicationRoutes'),
 routesTrips = require('./api/routes/tripRoutes'),
-routesFinders = require('./api/routes/finderRoutes');
-routesStorage = require('./api/routes/storageRoutes');
+routesFinders = require('./api/routes/finderRoutes')
+routesGlobalVars = require('./api/routes/globalVarsRoutes');
+routesDataWareHouse = require('./api/routes/dataWareHouseRoutes'),
+routesStorage = require('./api/routes/storageRoutes'),
+routesLogin = require('./api/routes/loginRoutes');
  
 routesActors(app);
 routesSponsorships(app);
 routesApplications(app);
 routesTrips(app);
 routesFinders(app);
+routesGlobalVars(app);
+routesDataWareHouse(app);
 routesStorage(app);
+routesLogin(app);
  
 console.log("Connecting DB to: " + mongoDBURI);
 mongoose.connection.on("open", function (err, conn) {
+    GlobalVars.findOneAndUpdate({}, {}, { upsert: true, new: true, setDefaultsOnInsert: true, runValidators: true }, (err, glob) => {
+        console.log(glob);
+    });
+        
     app.listen(port, function () {
         console.log('ACME-Explorer RESTful API server started on: ' + port);
     });

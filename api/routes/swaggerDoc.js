@@ -24,6 +24,19 @@ const options = {
         },
       },
       components: {
+        parameters: {
+          language: {
+            name: "Accept-Language",
+            in: "header",
+            description: "The ISO 639-1 language code that will be used to return error messages. Only the first two letters of the header are relevant.",
+            required: false,
+            schema: {
+              type: "string",
+              default: "en-US"
+            },
+            example: "en-US"
+          }
+        },
         securitySchemes: {
           bearerAuth: {
             type: 'http',
@@ -47,12 +60,16 @@ const options = {
         "./api/models/sponsorshipModel.js",
         "./api/models/applicationModel.js",
         "./api/models/finderModel.js",
+        "./api/models/globalVarsModel.js",
+        "./api/models/dataWareHouseModel.js",
+        "./api/controllers/globalVarsController.js",
         "./api/controllers/actorController.js",
         "./api/controllers/sponsorshipController.js",
         "./api/controllers/tripController.js",
         "./api/controllers/applicationController.js",
         "./api/controllers/finderController.js",
-        "./api/controllers/storageController.js",
+        "./api/controllers/dataWareHouseController.js",
+        "./api/controllers/storageController.js"
     ],        
   };
 
