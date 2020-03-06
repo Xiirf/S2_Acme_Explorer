@@ -13,6 +13,8 @@
 var mongoose = require('mongoose')
 Actors = mongoose.model('Actors');
 var admin = require('firebase-admin');
+var LangDictionnary = require('../langDictionnary');
+var dict = new LangDictionnary();
 
  /**
  * @swagger
@@ -24,6 +26,8 @@ var admin = require('firebase-admin');
  *      description: >-
  *        Retrieve all the actors
  *      operationId: getActors
+ *      parameters:
+ *        - $ref: '#/components/parameters/language'
  *      responses:
  *        '200':
  *          description: OK
@@ -39,9 +43,10 @@ var admin = require('firebase-admin');
  *           content: {}
  */
 exports.list_all_actors = function(req, res) {
+    var lang = dict.getLang(req);
     Actors.find({}, function(err, actors) {
         if(err) {
-            res.status(500).send(err);
+            res.status(500).send({ err: dict.get('ErrorGetDB', lang) });
         } else {
             res.json(actors);
         }
@@ -58,6 +63,8 @@ exports.list_all_actors = function(req, res) {
  *      description: >-
  *        Create a new actor
  *      operationId: postActors
+ *      parameters:
+ *        - $ref: '#/components/parameters/language'
  *      requestBody:
  *        required: true
  *        content:
@@ -103,18 +110,18 @@ exports.list_all_actors = function(req, res) {
  */
 exports.create_an_actor = function(req, res) {
     var new_actor = new Actors(req.body);
+    var lang = dict.getLang(req);
     new_actor.save(function(err, actor) {
         if(err) {
             if(err.name=='ValidationError') {
-                res.status(422).send(err);
+                res.status(422).send({ err: dict.get('ErrorSchema', lang) });
             }
             else{
-                console.error('Error getting data from DB');
-                res.status(500).send(err);
+                console.error('Error create data in DB');
+                res.status(500).send({ err: dict.get('ErrorCreateDB', lang) });
             }
         } else {
-            res.status(201);
-            res.send(actor);
+            res.status(201).send(actor);
         }
     });
 }
@@ -136,6 +143,7 @@ exports.create_an_actor = function(req, res) {
  *           required: true
  *           schema:
  *             type: string
+ *         - $ref: '#/components/parameters/language'
  *      responses:
  *        '200':
  *          description: OK
@@ -153,17 +161,18 @@ exports.create_an_actor = function(req, res) {
  */
 exports.read_an_actor = function(req, res) {
     var id = req.params.actorId;
+    var lang = dict.getLang(req);
     Actors.findById(id, function (err, actor) {
         if (err) {
           console.error('Error getting data from DB');
-          res.status(500).send(err); // internal server error
+          res.status(500).send({ err: dict.get('ErrorGetDB', lang) }); // internal server error
         } else {
           if (actor) {
             console.info("Sending actor: " + JSON.stringify(actor, 2, null));
             res.send(actor);
           } else {
-            console.warn("There are no actor with id " + id);
-            res.sendStatus(404); // not found
+            console.warn(dict.get('RessourceNotFound', lang, 'actor', id));
+            res.status(404).send({ err: dict.get('RessourceNotFound', lang, 'actor', id) }); // not found
           }
         }
       });
@@ -186,6 +195,7 @@ exports.read_an_actor = function(req, res) {
  *           required: true
  *           schema:
  *             type: string
+ *         - $ref: '#/components/parameters/language'
  *      requestBody:
  *        required: true
  *        content:
@@ -214,27 +224,27 @@ exports.read_an_actor = function(req, res) {
 exports.edit_an_actor = function(req, res) {
     var updatedActor = req.body;
     var id = req.params.actorId;
-    console.log(updatedActor)
+    var lang = dict.getLang(req);
     if (!updatedActor) {
         console.warn("New PUT request to /actors/ without actor, sending 400...");
-        res.sendStatus(422); // bad request
+        res.status(422).send({ err: dict.get('ErrorSchema', lang) }); // bad request
     } else {
         console.info("New PUT request to /actors/" + id + " with data " + JSON.stringify(updatedActor, 2, null));
         Actors.findById(id, function(err, actor) {
             if (err) {
-                console.error('Error updating data in DB');
-                res.status(500).send(err); // internal server error
+                console.error('Error getting data from DB');
+                res.status(500).send({ err: dict.get('ErrorGetDB', lang) }); // internal server error
               } else {
                 if (actor) {
                     actor = Object.assign(actor, updatedActor)
                     actor.save(function(err2, newActor) {
                         if (err2) {
                             if(err.name=='ValidationError') {
-                                res.status(422).send(err2);
+                                res.status(422).send({ err: dict.get('ErrorSchema', lang) });
                             }
                             else{
                                 console.error('Error updating data from DB');
-                                res.status(500).send(err2);
+                                res.status(500).send({ err: dict.get('ErrorUpdateDB', lang) });
                             }
                         } else {
                             res.send(newActor); // return the updated actor
@@ -242,8 +252,8 @@ exports.edit_an_actor = function(req, res) {
                     });
                     
                 } else {
-                  console.warn("There are no actor with id " + id);
-                  res.sendStatus(404); // not found
+                  console.warn(dict.get('RessourceNotFound', lang, 'actor', id));
+                  res.status(404).send({ err: dict.get('RessourceNotFound', lang, 'actor', id) }); // not found
                 }
             }
         });
@@ -268,6 +278,7 @@ exports.edit_an_actor = function(req, res) {
  *           required: true
  *           schema:
  *             type: string
+ *         - $ref: '#/components/parameters/language'
  *      requestBody:
  *        required: true
  *        content:
@@ -300,22 +311,22 @@ exports.edit_an_actor = function(req, res) {
 exports.handle_actor_banishment = function(req, res) {
     var banned = req.body ? req.body.banned : undefined;
     var id = req.params.actorId;
+    var lang = dict.getLang(req);
     if (!banned || typeof(banned) != "boolean") {
         console.warn("New PATCH request to /actors/id/ban without correct attribute banned, sending 422...");
-        res.sendStatus(422);
+        res.status(422).send({ err: dict.get('ErrorSchema', lang) });
     } else {
         console.info("New PATCH request to /actors/" + id + "/ban with value " + JSON.stringify(banned, 2, null));
         Actors.findOneAndUpdate({"_id": id}, { "banned": banned }, { new: true }, function(err, actor) {
             if (err) {
                 console.error('Error getting data from DB');
-                res.status(500).send(err);
+                res.status(500).send({ err: dict.get('ErrorGetDB', lang) });
             } else {
                 if (actor) {
                     res.send(actor); // return the updated actor
                 } else {
-                    console.warn("There are not any actor with id " + id);
-                    res.sendStatus(404); // not found
-                }
+                    console.warn(dict.get('RessourceNotFound', lang, 'actor', id));
+                    res.status(404).send({ err: dict.get('RessourceNotFound', lang, 'actor', id) });                }
             }
         });
     }
@@ -338,6 +349,7 @@ exports.handle_actor_banishment = function(req, res) {
  *           required: true
  *           schema:
  *             type: string
+ *         - $ref: '#/components/parameters/language'
  *      responses:
  *        '204':
  *          description: No content
@@ -348,10 +360,11 @@ exports.handle_actor_banishment = function(req, res) {
  */
 exports.delete_an_actor = function(req, res) {
     var id = req.params.actorId;
+    var lang = dict.getLang(req);
     Actors.findOneAndDelete({"_id": id}, null, function (err) {
       if (err) {
         console.error('Error removing data from DB');
-        res.status(500).send(err); // internal server error
+        res.status(500).send({ err: dict.get('ErrorDeleteDB', lang) }); // internal server error
       } else {
         console.info("The actor with id " + id + " has been succesfully deleted, sending 204...");
         res.sendStatus(204); // no content
