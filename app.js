@@ -16,6 +16,8 @@ admin = require('firebase-admin'),
 serviceAccount = require("./acme-explorer-6415d-firebase-adminsdk-ea57g-024809d2fe"),
 bodyParser = require('body-parser');
 require('dotenv').config();
+var fs = require('fs');
+var https = require('https');
 // MongoDB URI building
 var mongoDBUser = process.env.MONGO_USER || "admin";
 var mongoDBPass = process.env.MONGO_PASSWORD || "mdp";
@@ -76,8 +78,12 @@ mongoose.connection.on("open", function (err, conn) {
     GlobalVars.findOneAndUpdate({}, {}, { upsert: true, new: true, setDefaultsOnInsert: true, runValidators: true }, (err, glob) => {
         console.log(glob);
     });
-        
-    app.listen(port, function () {
+    
+    https.createServer({
+        key: fs.readFileSync('./server.key'),
+        cert: fs.readFileSync('./server.cert')
+    }, app)
+    .listen(port, function () {
         console.log('ACME-Explorer RESTful API server started on: ' + port);
     });
 });
