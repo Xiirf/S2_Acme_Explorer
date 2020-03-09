@@ -3,7 +3,8 @@ enable_cors = require('cors'),
 app = express(),
 port = process.env.PORT || 8080,
 mongoose = require('mongoose'),
-swaggerDoc = require('./api/routes/swaggerDoc'),
+swaggerDocV1 = require('./api/routes/swaggerDocV1'),
+swaggerDocV2 = require('./api/routes/swaggerDocV2'),
 GlobalVars = require('./api/models/globalVarsModel'),
 Actor = require('./api/models/actorModel'),
 Trip = require('./api/models/tripModel'),
@@ -45,7 +46,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(enable_cors());
 
-app.use("/v1", swaggerDoc);
+app.use("/v1", swaggerDocV1);
+app.use("/v2", swaggerDocV2);
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),

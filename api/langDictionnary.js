@@ -122,6 +122,17 @@ const DEFAULT_ENTRIES = [
                 text: 'Viaje (ya) cancelado'
             }, 
         ]
+    }, {
+        id: 'PreconditionFailed',
+        values: [
+            {
+                lang: 'en',
+                text: 'Precondition Failed'
+            }, {
+                lang: 'es',
+                text: 'La condición previa falló'
+            }, 
+        ]
     }
 
 ];
