@@ -50,7 +50,7 @@ const options = {
       }],
       servers: [
         {
-          url: process.env.urlApp || "http://localhost:8080/v1"
+          url: process.env.urlApp || "https://localhost:8080/v1"
         }
       ]
     },
