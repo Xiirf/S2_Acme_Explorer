@@ -2,8 +2,8 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var mongodb = require('mongodb');
 var mongoose = require('mongoose');
-Actors = mongoose.model('Actors');
-Trips = mongoose.model('Trips');
+Actors = require('./actorModel');
+Trips = require('./tripModel');
 
 
 /**

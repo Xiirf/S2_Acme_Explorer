@@ -27,7 +27,11 @@ module.exports = {
     ticker: {
         function: function() {
             var date=dateFormat(new Date(), "yymmdd");
-            return [date, generate('ABCDEFGHIJKLMNOPQRSTUVWXYZ', 4)].join('-');
+            var ticker = [date, generate('ABCDEFGHIJKLMNOPQRSTUVWXYZ', 4)].join('-');
+            while(this.db.trips.find(trip => trip.ticker === ticker)){
+                ticker = [date, generate('ABCDEFGHIJKLMNOPQRSTUVWXYZ', 4)].join('-');
+            }
+            return ticker;
         }
     },
     name: {

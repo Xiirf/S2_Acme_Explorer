@@ -3,7 +3,8 @@ var mongoose = require('mongoose'),
 DataWareHouse = mongoose.model('DataWareHouse'),
 Applications = mongoose.model('Applications'),
 Trips = mongoose.model('Trips');
-Finders = mongoose.model('Finders');
+Finders = mongoose.model('Finders'),
+Cube = mongoose.model('Cube');
 const Table = require('olap-cube').model.Table
 const COMPARISON_OPERATIONS = new Map([
     ['EQ', (b) => (a)  => a == b],
@@ -105,11 +106,6 @@ exports.last_indicator = function(req, res) {
  *           description: Internal server error
  */
 exports.compute_cube = function(req, res) {
-    var cubeMoneySpent = new Table({
-        dimensions: ['month', 'year', 'explorer'],
-        fields: ['moneySpent']
-    })
-
     dateMax = new Date();
     dateMin = new Date();
     dateMin.setFullYear(dateMin.getFullYear() - 3);
@@ -179,11 +175,29 @@ exports.compute_cube = function(req, res) {
         if(err) {
             res.status(500).send(err);
         } else {
-            cube = cubeMoneySpent.addRows({
-                header: ['month', 'year', 'explorer', 'moneySpent'],
-                rows: res2.map(row => [parseInt(row.month) - 1, parseInt(row.year) - 1970, row.idExplorer.toString(), row.moneySpent])
-            });
-            res.sendStatus(201);
+            Cube.remove({})
+            Cube.findOneAndReplace(
+                {},
+                {
+                    rows: res2.map(row => {
+                        return {
+                            month: parseInt(row.month) - 1,
+                            year: parseInt(row.year) - 1970,
+                            idExplorer: row.idExplorer.toString(),
+                            moneySpent: row.moneySpent
+                        }
+                    })
+                },
+                { upsert: true, returnNewDocument: true },
+                (err, res3) => {
+                    if(err) {
+                        res.status(500).send(err);
+                    } else {
+                    
+                        res.sendStatus(201);
+                    }
+                }
+            );
         }
     })
 }
@@ -197,6 +211,7 @@ exports.compute_cube = function(req, res) {
  *        - DataWareHouse
  *      description: >-
  *        Retrieve the result of a query on the cube (only if he's already computed)
+*          
  *      operationId: queryCube
  *      parameters:
  *        - name: period
@@ -205,6 +220,7 @@ exports.compute_cube = function(req, res) {
  *          required: true
  *          schema:
  *            type: string
+ *          example: M01-M036
  *        - name: explorer
  *          in: query
  *          description: Id of the explorer that you wanna retrieve the money spent on the period
@@ -217,6 +233,7 @@ exports.compute_cube = function(req, res) {
  *          required: false
  *          schema:
  *            type: number
+ *          example: 0
  *        - name: operator
  *          in: query
  *          description: Operator to use to compare the value to the money spent by each explorer on the period
@@ -241,57 +258,90 @@ exports.compute_cube = function(req, res) {
  *                        oneOf:
  *                          - string
  *                          - float
+ *        '422':
+ *          description: Incorrect query
+ *          content: {}
+ *        '503':
+ *          description: Cube not computed
+ *          content: {}
  *        '500':
- *           description: Internal server error
- *           content: {}
+ *          description: Internal server error
+ *          content: {}
  */
 exports.read_cube_data = function(req, res) {
     idExplorer = req.query.explorer;
     period = req.query.period; // M01-36 || Y01-03
-    if(!(typeof(period) == 'string' && period.match(/(M0[1-9])|(M[1-2][0-9])|(M3[0-6])|(Y0[0-3])/g))) {
+    if(!(typeof(period) == 'string' && period.match(
+            /^(((M0[1-9])|(M[1-9][0-9]))-((M0[1-9])|(M[1-9][0-9])))$|^(((Y0[1-9])|(Y[1-9][0-9]))-((Y0[1-9])|(Y[1-9][0-9])))$/g
+        ))) {
         res.status(422).send({ error: "Incorrect query"});
         return;
     }
-    numberPeriod = parseInt(period.slice(1));
-    year = period.slice(0, 1) == 'Y' ? numberPeriod - 1 : Math.floor(numberPeriod / 12);
-    month = period.slice(0, 1) == 'M' ? numberPeriod - 1 % 12 : null;
-    if(idExplorer) {
-        cubeTemp = cube.slice('explorer', idExplorer);
-        console.log(cubeTemp.rows)
-        cubeTemp = cubeTemp.slice('year', year);
-        if(month) {
-            moneySpent = cubeTemp.slice('month', month).data;
-        } else {
-            moneySpent = cubeTemp.rollup('year', ['moneySpent'], summation, [0]).data;
+    var cubeMoneySpent = new Table({
+        dimensions: ['month', 'year', 'explorer'],
+        fields: ['moneySpent']
+    })
+    Cube.findOne({}, (err, res2) => {
+        if(!res2) {
+            res.status(503).send({ error: "Cube not computed"});
+            return;
         }
-        res.send({ result: moneySpent.length > 0 ? moneySpent[0] : 0 });
-    } else {
-        var explorers;
-        value = parseInt(req.query.value);
-        operator = req.query.operator;
-        if(typeof(value) != 'number' || !COMPARISON_OPERATIONS.has(operator)) {
+        cubeMoneySpent = cubeMoneySpent.addRows({
+            header: ['month', 'year', 'explorer', 'moneySpent'],
+            rows: res2.rows.map(row => [row.month, row.year, row.idExplorer, row.moneySpent])
+        });
+        numberPeriodMin = parseInt(period.slice(1, 3));
+        numberPeriodMax = parseInt(period.slice(5));
+        if(numberPeriodMin > numberPeriodMax) {
             res.status(422).send({ error: "Incorrect query"});
             return;
         }
-        year = period.slice(0, 1) == 'Y' ? numberPeriod - 1 : Math.floor(numberPeriod / 12);
-        month = period.slice(0, 1) == 'M' ? numberPeriod - 1 % 12 : null;
-        operation = COMPARISON_OPERATIONS.get(operator)(value);
-        cubeTemp = cube.slice('year', year);
-        if(month) {
-            cubeTemp = cubeTemp.slice('month', month);
-            explorers = cubeTemp.rows
-                .filter(row => operation(row[3]))
-                .map(row => row[2]);
-        } else {
-
-            cubeTemp = cubeTemp.rollup('explorer', ['moneySpent'], summation, [0]);
-            explorers = cubeTemp.rows
-                .filter(row => operation(row[1]))
-                .map(row => row[0]);
+        yearMin = period.slice(0, 1) == 'Y' ? numberPeriodMin - 1 : Math.floor(numberPeriodMin / 12);
+        monthMin = period.slice(0, 1) == 'M' ? numberPeriodMin - 1 % 12 : null;
+        yearMax = period.slice(0, 1) == 'Y' ? numberPeriodMax - 1 : Math.floor(numberPeriodMax / 12);
+        monthMax = period.slice(0, 1) == 'M' ? numberPeriodMax - 1 % 12 : null;
+        filterPeriod = (cube) => {
+            if(monthMin != null && monthMax != null) {
+                return cube.dice((points) =>
+                    (yearMin < points[1] && points[1] > yearMax) ||
+                    (monthMin <= points[0] && yearMin == points[1] && yearMin != yearMax) ||
+                    (monthMax >= points[0] && yearMax == points[1] && yearMin != yearMax) ||
+                    (monthMin <= points[0] && points[0] <= monthMax && yearMin == points[1] && points[1] == yearMax)
+                );
+            } else {
+                return cube.dice((points) => yearMin <= points[1] && points[1] <= yearMax);
+            }
         }
-        
-        res.send({ result: explorers.flat() });
-    }
+        if(idExplorer) {
+            cubeMoneySpent = cubeMoneySpent.slice('explorer', idExplorer);
+            if(!cubeMoneySpent) {
+                res.send({result: []});
+                return;
+            }
+            cubeMoneySpent = filterPeriod(cubeMoneySpent)
+            moneySpent = cubeMoneySpent.rollup('explorer', ['moneySpent'], summation, [0]).data;
+            res.send({ result: moneySpent.length > 0 ? moneySpent[0] : 0 });
+        } else {
+            var explorers;
+            value = parseInt(req.query.value);
+            operator = req.query.operator;
+            if(typeof(value) != 'number' || !operator || !COMPARISON_OPERATIONS.has(operator)) {
+                res.status(422).send({ error: "Incorrect query"});
+                return;
+            }
+            operation = COMPARISON_OPERATIONS.get(operator)(value);
+            cubeMoneySpent = filterPeriod(cubeMoneySpent)
+            explorers = cubeMoneySpent.rows
+                .filter(row => operation(row[3]))
+                .map(row => {
+                    return {
+                        idExplorer: row[2],
+                        moneySpent: row[3],
+                    }
+                });
+            res.send({ result: explorers.flat() });
+        }
+    })
 }
 
 var CronJob = require('cron').CronJob;
@@ -301,7 +351,7 @@ var CronTime = require('cron').CronTime;
 //'*/30 * * * * *' cada 30 segundos
 //'*/10 * * * * *' cada 10 segundos
 //'* * * * * *' cada segundo
-var rebuildPeriod = '*/10 * * * * *';  //El que se usará por defecto
+var rebuildPeriod = '*/60 * * * * *';  //El que se usará por defecto
 var computeDataWareHouseJob;
 
 exports.rebuildPeriod = function(req, res) {
@@ -330,7 +380,6 @@ function createDataWareHouseJob(){
           console.log("Error computing datawarehouse: "+err);
         }
         else {
-            console.log(results)
             new_dataWareHouse.statsNumberTripsByManager = results[0];
             new_dataWareHouse.statsNumberApplicationByTrips = results[1];
             new_dataWareHouse.statsPriceByTrips = results[2];

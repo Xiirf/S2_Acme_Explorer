@@ -2,7 +2,7 @@ var mongodb = require('mongodb')
 var mongoose = require('mongoose')
 var Schema = mongoose.Schema;
 var Actors = require('./actorModel');
-var Trips = require('./tripModel');
+Trips = require('./tripModel');
 var GlobalVars = require('./globalVarsModel');
 
 /**
@@ -64,7 +64,7 @@ var sponsorshipModel = new Schema({
         validate: {
             validator: async function(v) {
                 return Promise.resolve(Trips.findById(v, function(err, trip) {
-                    return trip != null;
+                    return trip;
                 }));
             },
             message: "There are no trip with this id"

@@ -1,6 +1,8 @@
 var mongoose = require('mongoose')
 Sponsorships = mongoose.model('Sponsorships');
 GlobalVars = mongoose.model('GlobalVars');
+var LangDictionnary = require('../langDictionnary');
+dict = new LangDictionnary();
 
  /**
  * @swagger
@@ -19,6 +21,13 @@ GlobalVars = mongoose.model('GlobalVars');
  *          required: false
  *          schema:
  *            type: string
+ *        - name: payed
+ *          in: query
+ *          description: Wheter you want to display the sponsorships that are payed or the ones that ain't
+ *          required: false
+ *          schema:
+ *            type: boolean
+ *        - $ref: '#/components/parameters/language'
  *      responses:
  *        '200':
  *          description: OK
@@ -35,11 +44,13 @@ GlobalVars = mongoose.model('GlobalVars');
  */
 
 exports.list_all_sponsorships = function(req, res) {
-    var filters = {}
+    var filters = {}    
     if(req.query.tripId) filters.trip_id = req.query.tripId;
+    if(req.query.payed != null) filters.payed = req.query.payed; 
+    var lang = dict.getLang(req);
     Sponsorships.find(filters, function(err, sponsorships) {
         if(err) {
-            res.status(500).send(err);
+            res.status(500).send({ err: dict.get('ErrorGetDB', lang) });
         } else {
             res.json(sponsorships);
         }
@@ -56,6 +67,8 @@ exports.list_all_sponsorships = function(req, res) {
  *      description: >-
  *        Create a new sponsorship
  *      operationId: postSponsorships
+ *      parameters:
+ *        - $ref: '#/components/parameters/language'
  *      requestBody:
  *        required: true
  *        content:
@@ -97,14 +110,15 @@ exports.list_all_sponsorships = function(req, res) {
  */
 exports.create_a_sponsorship = function(req, res) {
     var new_sponsorship = new Sponsorships(req.body);
+    var lang = dict.getLang(req);
     new_sponsorship.save(function(err, sponsorship) {
         if(err) {
             if(err.name=='ValidationError') {
-                res.status(422).send(err);
+                res.status(422).send({ err: dict.get('ErrorSchema', lang) });
             }
             else{
                 console.error('Error getting data from DB');
-                res.status(500).send(err);
+                res.status(500).send({ err: dict.get('ErrorCreateDB', lang) });
             }
         } else {
             res.status(201);
@@ -124,12 +138,13 @@ exports.create_a_sponsorship = function(req, res) {
  *        Retrieve details from a specific sponsorship
  *      operationId: getSponsorship
  *      parameters:
- *         - name: sponsorshipId
- *           in: path
- *           description: id of the sponsorship you want to get details from
- *           required: true
- *           schema:
- *             type: string
+ *        - name: sponsorshipId
+ *          in: path
+ *          description: id of the sponsorship you want to get details from
+ *          required: true
+ *          schema:
+ *            type: string
+ *        - $ref: '#/components/parameters/language'
  *      responses:
  *        '200':
  *          description: OK
@@ -147,17 +162,18 @@ exports.create_a_sponsorship = function(req, res) {
  */
 exports.read_a_sponsorship = function(req, res) {
     var id = req.params.sponsorshipId;
+    var lang = dict.getLang(req);
     Sponsorships.findById(id, function (err, sponsorship) {
         if (err) {
           console.error('Error getting data from DB');
-          res.status(500).send(err); // internal server error
+          res.status(500).send({ err: dict.get('ErrorGetDB', lang) }); // internal server error
         } else {
           if (sponsorship) {
             console.info("Sending sponsorship: " + JSON.stringify(sponsorship, 2, null));
             res.send(sponsorship);
           } else {
             console.warn("There are no sponsorship with id " + id);
-            res.sendStatus(404); // not found
+            res.status(404).send({ err: dict.get('RessourceNotFound', lang, 'actor', id) }); // not found
           }
         }
     });
@@ -174,12 +190,13 @@ exports.read_a_sponsorship = function(req, res) {
  *        Update a specific sponsorship
  *      operationId: putSponsorship
  *      parameters:
- *         - name: sponsorshipId
- *           in: path
- *           description: id of the sponsorship you want to update
- *           required: true
- *           schema:
- *             type: string
+ *        - name: sponsorshipId
+ *          in: path
+ *          description: id of the sponsorship you want to update
+ *          required: true
+ *          schema:
+ *            type: string
+ *        - $ref: '#/components/parameters/language'
  *      requestBody:
  *        required: true
  *        content:
@@ -195,6 +212,9 @@ exports.read_a_sponsorship = function(req, res) {
  *              schema:
  *                allOf:
  *                - $ref: '#/components/schemas/sponsorship'
+ *        '400':
+ *           description: Missing sponsorshipid parameter
+ *           content: {}
  *        '404':
  *           description: Sponsorship not found
  *           content: {}
@@ -208,26 +228,27 @@ exports.read_a_sponsorship = function(req, res) {
 exports.edit_a_sponsorship = function(req, res) {
     var updatedSponsorship = req.body;
     var id = req.params.sponsorshipId;
+    var lang = dict.getLang(req);
     if (!updatedSponsorship) {
         console.warn("New PUT request to /sponsorships/ without sponsorship, sending 400...");
-        res.sendStatus(400); // bad request
+        res.status(400).send({ err: dict.get('MissingBody', lang, 'sponsorship') }); // bad request
     } else {
         console.info("New PUT request to /sponsorships/" + id + " with data " + JSON.stringify(updatedSponsorship, 2, null));
         Sponsorships.findById(id, function(err, sponsorship) {
             if (err) {
                 console.error('Error getting data from DB');
-                res.status(500).send(err);
+                res.status(500).send({ err: dict.get('ErrorGetDB', lang) });
             } else {
                 if (sponsorship) {
                     sponsorship = Object.assign(sponsorship, updatedSponsorship);
                     sponsorship.save(function(err2, newSponsorship) {
                         if (err2) {
                             if(err.name=='ValidationError') {
-                                res.status(422).send(err2);
+                                res.status(422).send({ err: dict.get('ErrorSchema', lang) });
                             }
                             else{
-                                console.error('Error getting data from DB');
-                                res.status(500).send(err2);
+                                console.error('Error updating data from DB');
+                                res.status(500).send({ err: dict.get('ErrorUpdateDB', lang) });
                             }
                         } else {
                             res.send(newSponsorship); // return the updated sponsorship
@@ -235,7 +256,7 @@ exports.edit_a_sponsorship = function(req, res) {
                     });
                 } else {
                     console.warn("There are not any sponsorship with id " + id);
-                    res.sendStatus(404); // not found
+                    res.status(404).send({ err: dict.get('RessourceNotFound', lang, 'actor', id) }); // not found
                 }
             }
         });
@@ -253,12 +274,13 @@ exports.edit_a_sponsorship = function(req, res) {
  *        Pay or set to unpayed a sponsorship
  *      operationId: patchSponsorshipPayement
  *      parameters:
- *         - name: sponsorshipId
- *           in: path
- *           description: id of the sponsorship you want to ban or unban
- *           required: true
- *           schema:
- *             type: string
+ *        - name: sponsorshipId
+ *          in: path
+ *          description: id of the sponsorship you want to ban or unban
+ *          required: true
+ *          schema:
+ *            type: string
+ *        - $ref: '#/components/parameters/language'
  *      requestBody:
  *        required: true
  *        content:
@@ -280,7 +302,7 @@ exports.edit_a_sponsorship = function(req, res) {
  *                - $ref: '#/components/schemas/sponsorship'
  *        '404':
  *           description: Sponsorship not found
- *           content: Not Found
+ *           content: {}
  *        '422':
  *           description: Incorrect body
  *           content: {}
@@ -291,26 +313,27 @@ exports.edit_a_sponsorship = function(req, res) {
 exports.handle_sponsorship_payement = function(req, res) {
     var payed = req.body ? req.body.payed : undefined;
     var id = req.params.sponsorshipId;
+    var lang = dict.getLang(req);
     if (!payed || typeof(payed) != "boolean") {
         console.warn("New PATCH request to /sponsorships/id/pay without correct attribute payed, sending 400...");
-        res.sendStatus(422);
+        res.status(422).send({ err: dict.get('ErrorSchema', lang) });
     } else {
         console.info("New PATCH request to /sponsorships/" + id + "/pay with value " + JSON.stringify(payed, 2, null));
         Sponsorships.findOneAndUpdate({"_id": id}, { "payed": payed }, { new: true }, function(err, sponsorship) {
             if (err) {
                 if(err.name=='ValidationError') {
-                    res.status(422).send(err);
+                    res.status(422).send({ err: dict.get('ErrorSchema', lang) });
                 }
                 else{
                     console.error('Error getting data from DB');
-                    res.status(500).send(err);
+                    res.status(500).send({ err: dict.get('ErrorUpdateDB', lang) });
                 }
             } else {
                 if (sponsorship) {
                     res.send(sponsorship); // return the updated sponsorship
                 } else {
                     console.warn("There are not any sponsorship with id " + id);
-                    res.sendStatus(404); // not found
+                    res.status(404).send({ err: dict.get('RessourceNotFound', lang, 'actor', id) }); // not found
                 }
             }
         });
@@ -328,6 +351,8 @@ exports.handle_sponsorship_payement = function(req, res) {
  *      description: >-
  *       fix flat rate for all sponsorships
  *      operationId: patchSponsorshipsFlatRate
+ *      parameters:
+ *        - $ref: '#/components/parameters/language'
  *      requestBody:
  *        required: true
  *        content:
@@ -357,19 +382,20 @@ exports.handle_sponsorship_payement = function(req, res) {
  */
 exports.handle_flat_rate_change = function(req, res) {
     var flatRateSponsorships = req.body ? req.body.flatRateSponsorships : undefined;
+    var lang = dict.getLang(req);
     if ((flatRateSponsorships !== 0 && !flatRateSponsorships) || typeof(flatRateSponsorships) != "number") {
         console.warn("New PATCH request to /sponsorships/flatRate without correct attribute flatRateSponsorships, sending 400...");
-        res.sendStatus(422);
+        res.status(422).send({ err: dict.get('ErrorSchema', lang) });
     } else {
         console.info("New PATCH request to /sponsorships/flatRate with value " + JSON.stringify(flatRateSponsorships, 2, null));
         GlobalVars.findOneAndUpdate({}, { "flatRateSponsorships": flatRateSponsorships }, { upsert: true, new: true, setDefaultsOnInsert: true, runValidators: true }, function(err, globalVars) {
             if (err) {
                 if(err.name=='ValidationError') {
-                    res.status(422).send(err);
+                    res.status(422).send({ err: dict.get('ErrorSchema', lang) });
                 }
                 else{
                     console.error('Error getting data from DB');
-                    res.status(500).send(err);
+                    res.status(500).send({ err: dict.get('ErrorUpdateDB', lang) });
                 }
             } else {
                 res.status(200).send(globalVars);
@@ -389,12 +415,13 @@ exports.handle_flat_rate_change = function(req, res) {
  *        Delete a specific sponsorship
  *      operationId: deleteSponsorship
  *      parameters:
- *         - name: sponsorshipId
- *           in: path
- *           description: id of the sponsorship you want to delete
- *           required: true
- *           schema:
- *             type: string
+ *        - name: sponsorshipId
+ *          in: path
+ *          description: id of the sponsorship you want to delete
+ *          required: true
+ *          schema:
+ *            type: string
+ *        - $ref: '#/components/parameters/language'
  *      responses:
  *        '204':
  *          description: No content
@@ -405,10 +432,11 @@ exports.handle_flat_rate_change = function(req, res) {
  */
 exports.delete_a_sponsorship = function(req, res) {
     var id = req.params.sponsorshipId;
+    var lang = dict.getLang(req);
     Sponsorships.findOneAndDelete({"_id": id}, null, function (err) {
       if (err) {
         console.error('Error removing data from DB');
-        res.status(500).send(err); // internal server error
+        res.status(500).send({ err: dict.get('ErrorDeleteDB', lang) }); // internal server error
       } else {
         console.info("The sponsorship with id " + id + " has been succesfully deleted, sending 204...");
         res.sendStatus(204); // no content

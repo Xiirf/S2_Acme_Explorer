@@ -24,6 +24,19 @@ const options = {
         },
       },
       components: {
+        parameters: {
+          language: {
+            name: "Accept-Language",
+            in: "header",
+            description: "The ISO 639-1 language code that will be used to return error messages. Only the first two letters of the header are relevant.",
+            required: false,
+            schema: {
+              type: "string",
+              default: "en-US"
+            },
+            example: "en-US"
+          }
+        },
         securitySchemes: {
           bearerAuth: {
             type: 'http',
@@ -37,7 +50,7 @@ const options = {
       }],
       servers: [
         {
-          url: process.env.urlApp || "http://localhost:8080/v1"
+          url: process.env.urlApp || "https://localhost:8080/v1"
         }
       ]
     },

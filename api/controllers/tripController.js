@@ -8,6 +8,9 @@ var mongoose = require('mongoose')
 Trips = mongoose.model('Trips');
 Stages = mongoose.model('Stages');
 Applications = require('../models/applicationModel');
+var authController = require('../controllers/authController');
+var LangDictionnary = require('../langDictionnary');
+var dict = new LangDictionnary();
 
 /**
  * @swagger
@@ -35,6 +38,7 @@ Applications = require('../models/applicationModel');
  *           required: false
  *           schema:
  *             type: date
+ *         - $ref: '#/components/parameters/language'
  *      responses:
  *        "200":
  *          description: Return all trips
@@ -48,9 +52,10 @@ Applications = require('../models/applicationModel');
  */
 exports.list_all_trips = function(req, res) {
     var query = req.query;
+    var lang = dict.getLang(req);
     Trips.find(query, function(err, trips) {
         if(err) {
-            res.status(500).send(err);
+            res.status(500).send({ err: dict.get('ErrorGetDB', lang) });
         } else {
             res.status(200).json(trips);
         }
@@ -95,6 +100,7 @@ exports.list_all_trips = function(req, res) {
  *           required: false
  *           schema:
  *             type: number
+ *         - $ref: '#/components/parameters/language'
  *      responses:
  *        "200":
  *          description: Return all trips
@@ -108,7 +114,8 @@ exports.list_all_trips = function(req, res) {
  */
 exports.search_trips = function(req, res) {
     var query = {};
-    
+    var lang = dict.getLang(req);
+
     if(req.query.keyword){
         query.$text = {$search: req.query.keyword};
     }
@@ -134,10 +141,10 @@ exports.search_trips = function(req, res) {
     Trips.find(query)
         .lean()
         .exec(function(err, trip){
-            if (err){
-                res.send(err);
+            if(err) {
+                res.status(500).send({ err: dict.get('ErrorGetDB', lang) });
             } else {
-                res.json(trip);
+                res.status(200).json(trip);
             }
         });
 }
@@ -149,12 +156,62 @@ exports.search_trips = function(req, res) {
  *    post:
  *      summary: Create a Trip
  *      tags: [Trips]
+ *      parameters:
+ *        - $ref: '#/components/parameters/language'
  *      requestBody:
  *        required: true
  *        content:
  *          application/json:
  *            schema:
- *              $ref: '#/components/schemas/Trip'
+ *              type: object
+ *              required:
+ *                - title
+ *                - description
+ *                - requirements
+ *                - start
+ *                - end
+ *                - managerId
+ *              properties:
+ *                title:
+ *                  type: string
+ *                  description: Trip title.
+ *                description:
+ *                  type: string
+ *                  description: Trip description.
+ *                requirements:
+ *                  type: array
+ *                  items: string
+ *                  description: Trip requirements.
+ *                start:
+ *                  type: Date
+ *                  description: Trip start date.
+ *                end:
+ *                  type: Date
+ *                  description: Trip end date.
+ *                pictures:
+ *                  type: array
+ *                  items: object
+ *                  properties:
+ *                    data:
+ *                      type: Buffer
+ *                    contentType:
+ *                      type: string
+ *                  description: Array of Trip pictures.
+ *                stages:
+ *                  type: array
+ *                  items: object
+ *                  $ref: '#/components/schemas/Stage'
+ *                  description: Array of Trip pictures.
+ *              example:
+ *                title: titleUpdate
+ *                description: descTrip
+ *                requirementes: ["testReq"]
+ *                start: 2020-02-14
+ *                end: 2020-02-14
+ *                stages:
+ *                  title: testExample
+ *                  description: desExample
+ *                  price: 250
  *      responses:
  *        "201":
  *          description: Trip created
@@ -168,22 +225,30 @@ exports.search_trips = function(req, res) {
  *          description: Server error
  */
 exports.create_a_trip = function(req, res) {
+    var lang = dict.getLang(req);
+    var token = req.headers['authorization'];
     var new_trip = new Trips(req.body);
-    // 1) Test si managerId est un actor avec le role de manager
-    // Faire fonction pour récupérer l'actor et le role et utiliser le controller
-    // 2) test si utilisateur connecté est bien le bon 
-    new_trip.save(function(err) {
-        if (err){
-            if(err.name=='ValidationError') {
-                res.status(422).send(err);
+
+    //Use Actual Manager id
+    authController.getUserId(token)
+    .then((managerId) => {
+        new_trip.managerId= managerId;
+        new_trip.save(function(err) {
+            if (err){
+                if(err.name=='ValidationError') {
+                    res.status(422).send({ err: dict.get('ErrorSchema', lang) });
+                }
+                else{
+                    res.status(500).send({ err: dict.get('ErrorCreateDB', lang) });
+                }
+            } else {
+                res.status(201).json(new_trip);
             }
-            else{
-                res.status(500).send(err);
-            }
-        } else {
-            res.status(201).json(new_trip);
-        }
-    });
+        });
+    })
+    .catch((err) => {
+        res.status(500).send(err);
+    })
 }
 
 /**
@@ -200,6 +265,7 @@ exports.create_a_trip = function(req, res) {
  *           required: true
  *           schema:
  *             type: string
+ *         - $ref: '#/components/parameters/language'
  *      responses:
  *        "200":
  *          description: Return a trip
@@ -217,14 +283,14 @@ exports.read_a_trip = function(req, res) {
 }
 
 unique_find = function(req, res) {
+    var lang = dict.getLang(req);
     Trips.findById(req.params.tripId, function(err, trip) {
         if(err) {
-            res.status(500).send(err);
+            res.status(500).send({ err: dict.get('ErrorGetDB', lang) });
         } else if (!trip) {
-            res.status(404)
-                .json({ error: 'No se ha encontrado la ID.'});
+            res.status(404).send({ err: dict.get('RessourceNotFound', lang, 'trip', req.params.tripId) });
         } else {
-            res.json(trip);
+            res.status(200).json(trip);
         }
     })
 }
@@ -243,6 +309,7 @@ unique_find = function(req, res) {
  *           required: true
  *           schema:
  *             type: string
+ *         - $ref: '#/components/parameters/language'
  *      requestBody:
  *        required: true
  *        content:
@@ -275,33 +342,42 @@ unique_find = function(req, res) {
  *          description: Internal error
  */
 exports.edit_a_trip = function(req, res) {
-    // Voir si l'utilisateur est un admin ou manager
+    var lang = dict.getLang(req);
     Trips.findById({_id: req.params.tripId}, function(err, trip) {
         if (err) {
-            res.status(500).send(err); // internal server error
+            res.status(500).send({ err: dict.get('ErrorGetDB', lang) });
         } else {
             if (trip) {
-                if(!trip.published){
-                    Trips.updateOne({_id: req.params.tripId}, req.body, {new:true, runValidators: true}, function(err, trip) {
-                        if (err){
-                            if(err.name=='ValidationError') {
-                                res.status(422).send(err);
+                verifyManagerTripOwner(req.headers['authorization'], trip.managerId)
+                    .then((isSame) => {
+                        if (isSame) {
+                            if(!trip.published || trip.cancelled) {
+                                Trips.updateOne({_id: req.params.tripId}, req.body, {new:true, runValidators: true}, function(err, trip) {
+                                    if (err){
+                                        if(err.name=='ValidationError') {
+                                            res.status(422).send({ err: dict.get('ErrorSchema', lang) });
+                                        }
+                                        else{
+                                            res.status(500).send({ err: dict.get('ErrorGetDB', lang) });
+                                        }
+                                    } else if (!trip) {
+                                        res.status(404).send({ err: dict.get('RessourceNotFound', lang, 'trip', req.params.tripId) });
+                                    } else {
+                                        unique_find(req, res);
+                                    }
+                                });
+                            } else {
+                                res.status(403).send({ err: dict.get('Forbidden', lang) });
                             }
-                            else{
-                              res.status(500).send(err);
-                            }
-                        } else if (!trip) {
-                            res.status(404)
-                                .json({ error: 'No se ha encontrado la ID.'});
                         } else {
-                            unique_find(req, res);
+                            res.status(401).send({ err: dict.get('Unauthorized', lang) });
                         }
                     })
-                } else {
-                    res.status(403).json({message: 'Acción prohibida, el viaje es publicado'});
-                }
+                    .catch((error) => {
+                        res.status(500).send({ err: dict.get('ErrorGetDB', lang) });
+                    });
             } else {
-              res.sendStatus(404); // not found
+                res.status(404).send({ err: dict.get('RessourceNotFound', lang, 'trip', req.params.tripId) });
             }
         }
     });
@@ -321,9 +397,14 @@ exports.edit_a_trip = function(req, res) {
  *           required: true
  *           schema:
  *             type: string
+ *         - $ref: '#/components/parameters/language'
  *      responses:
- *        "200":
- *          description: Item delete msg
+ *        "204":
+ *          description: Item delete
+ *        "400":
+ *          description: Bad Request
+ *        "401":
+ *          description: Unauthorized
  *        "403":
  *          description: Forbidden
  *        "404":
@@ -332,25 +413,35 @@ exports.edit_a_trip = function(req, res) {
  *          description: Internal error
  */
 exports.delete_a_trip = function(req, res) {
-    // Voir si l'utilisateur connecté est un admin ou manager
+    var lang = dict.getLang(req);
     Trips.findById({_id: req.params.tripId}, function(err, trip) {
         if (err) {
-            res.status(500).send(err); // internal server error
+            res.status(500).send({ err: dict.get('ErrorGetDB', lang) });
         } else {
             if (trip) {
-                if(!trip.published){
-                    Trips.deleteOne({_id: req.params.tripId}, function(err) {
-                        if(err) {
-                            res.status(500).send(err);
+                verifyManagerTripOwner(req.headers['authorization'], trip.managerId)
+                .then((isSame) => {
+                    if (isSame) {
+                        if(!trip.published){
+                            Trips.deleteOne({_id: req.params.tripId}, function(err) {
+                                if(err) {
+                                    res.status(500).send({ err: dict.get('ErrorDeleteDB', lang) });
+                                } else {
+                                    res.sendStatus(204);
+                                }
+                            });
                         } else {
-                            res.status(200).json({message: 'Trip successfully deleted'});
+                            res.status(403).send({ err: dict.get('Forbidden', lang) });
                         }
-                    });
-                } else {
-                    res.status(403).json({message: 'Acción prohibida, el viaje es publicado'});
-                }
+                    } else {
+                        res.status(401).send({ err: dict.get('Unauthorized', lang) });
+                    }
+                })
+                .catch((error) => {
+                    res.status(500).send(error);
+                });
             } else {
-              res.sendStatus(404); // not found
+                res.status(404).send({ err: dict.get('RessourceNotFound', lang, 'trip', req.params.tripId) });
             }
         }
     });
@@ -370,6 +461,7 @@ exports.delete_a_trip = function(req, res) {
  *           required: true
  *           schema:
  *             type: string
+ *         - $ref: '#/components/parameters/language'
  *      requestBody:
  *        required: true
  *        content:
@@ -391,38 +483,48 @@ exports.delete_a_trip = function(req, res) {
  *          description: Internal error
  */
 exports.add_a_stage_in_trip = function(req, res) {
-    // Voir si l'utilisateur connecté est un admin ou manager
+    var lang = dict.getLang(req);
     var id = req.params.tripId;
     var stage = new Stages(req.body)
     if (!stage) {
-        res.status(400) // bad request
-            .json({ error: 'No se ha encontrado el nuevo stage.'});
+        res.status(422).send({ err: dict.get('ErrorSchema', lang) });
     } else {
         Trips.findById(id, function(err, trip) {
             if (err) {
-                res.status(500).send(err); // internal server error
+                res.status(500).send({ err: dict.get('ErrorGetDB', lang) });
               } else {
                 if (trip) {
-                    if(!trip.published){
-                        trip.stages.push(stage);
-                        trip.save(function(err2, newTrip) {
-                            if (err2) {
-                                console.log(err2);
-                                if(err.name=='ValidationError') {
-                                    res.status(422).send(err2);
-                                }
-                                else{
-                                    res.status(500).send(err2);
+                    verifyManagerTripOwner(req.headers['authorization'], trip.managerId)
+                        .then((isSame) => {
+                            if (isSame) {
+                                if (trip.cancelled){
+                                    res.status(422).send({ err: dict.get('AlreadyCancelled', lang) });
+                                } else if(!trip.published){
+                                    trip.stages.push(stage);
+                                    trip.save(function(err2, newTrip) {
+                                        if (err2) {
+                                            if(err.name=='ValidationError') {
+                                                res.status(422).send({ err: dict.get('ErrorSchema', lang) });
+                                            }
+                                            else{
+                                                res.status(500).send({ err: dict.get('ErrorUpdateDB', lang) });
+                                            }
+                                        } else {
+                                            res.status(200).send(newTrip); // return the updated actor
+                                        }
+                                    });
+                                } else {
+                                    res.status(403).send({ err: dict.get('Forbidden', lang) });
                                 }
                             } else {
-                                res.send(newTrip); // return the updated actor
+                                res.status(401).send({ err: dict.get('Unauthorized', lang) });
                             }
+                        })
+                        .catch((error) => {
+                            res.status(500).send(error);
                         });
-                    } else {
-                        res.status(403).json({message: 'Acción prohibida, el viaje es publicado'});
-                    }
                 } else {
-                  res.sendStatus(404); // not found
+                    res.status(404).send({ err: dict.get('RessourceNotFound', lang, 'trip', req.params.tripId) });
                 }
             }
         });
@@ -443,6 +545,7 @@ exports.add_a_stage_in_trip = function(req, res) {
  *           required: true
  *           schema:
  *             type: string
+ *         - $ref: '#/components/parameters/language'
  *      requestBody:
  *        required: true
  *        content:
@@ -476,56 +579,75 @@ exports.add_a_stage_in_trip = function(req, res) {
  *          description: Internal error
  */
 exports.cancel_a_trip = function(req, res) {
-    // Voir si l'utilisateur connecté est un admin ou manager
+    var lang = dict.getLang(req);
     var reasonCancelling = req.body.reasonCancelling;
     var id = req.params.tripId;
     if (!reasonCancelling) {
-        res.status(400) // bad request
-            .json({ error: 'No se ha encontrado la razón de la cancelación.'});
+        res.status(422).send({ err: dict.get('ErrorSchema', lang) });
     } else {
         Trips.findById(id, function(err, trip) {
             if (err) {
-                res.status(500).send(err); // internal server error
+                res.status(500).send({ err: dict.get('ErrorGetDB', lang) });
               } else {
                 if (trip) {
-                    if (trip.cancelled){
-                        res.status(400) // bad request because trip already cancelled
-                            .json({ error: 'Trip ya cancelado'});
-                    } else if (new Date(trip.start) <= Date()){
-                        res.status(403)
-                            .json({ error: 'Trip started'})
-                    } else {
-                        Applications.findOne({idTrip: trip._id, status: 'ACCEPTED'}, function(err,app){
-                            if (err) {
-                                res.status(500).send(err);
-                            } 
-                            else if (!app) {
-                                console.log(JSON.stringify(trip));
-                                trip.cancelled = true;
-                                trip.reasonCancelling = reasonCancelling;
-                                trip.save(function(err2, newTrip) {
-                                    if (err2) {
-                                        if(err2.name=='ValidationError') {
-                                            res.status(422).send(err2);
+                    verifyManagerTripOwner(req.headers['authorization'], trip.managerId)
+                        .then((isSame) => {
+                            if (isSame) {
+                                if (trip.cancelled){
+                                    res.status(422).send({ err: dict.get('AlreadyCancelled', lang) });
+                                } else if (new Date(trip.start) <= Date()){
+                                    res.status(403).send({ err: dict.get('Forbidden', lang) });
+                                } else {
+                                    Applications.findOne({idTrip: trip._id, status: 'ACCEPTED'}, function(err,app){
+                                        if (err) {
+                                            res.status(500).send({ err: dict.get('ErrorGetDB', lang) });
+                                        } 
+                                        else if (!app) {
+                                            trip.cancelled = true;
+                                            trip.reasonCancelling = reasonCancelling;
+                                            trip.save(function(err2, newTrip) {
+                                                if (err2) {
+                                                    if(err2.name=='ValidationError') {
+                                                        res.status(422).send({ err: dict.get('ErrorSchema', lang) });
+                                                    }
+                                                    else{
+                                                        res.status(500).send({ err: dict.get('ErrorUpdateDB', lang) });
+                                                    }
+                                                } else {
+                                                    res.status(200).send(newTrip); // return the updated actor
+                                                }
+                                            });
                                         }
-                                        else{
-                                            res.status(500).send(err2);
+                                        else {
+                                            res.status(403).send({ err: dict.get('Forbidden', lang) });
                                         }
-                                    } else {
-                                        res.send(newTrip); // return the updated actor
-                                    }
-                                });
+                                    });
+                                }
+                            } else {
+                                res.status(401).send({ err: dict.get('Unauthorized', lang) });
                             }
-                            else {
-                                res.status(403)
-                                    .json({ error: 'Trip applied'})
-                            }
+                        })
+                        .catch((error) => {
+                            res.status(500).send(error);
                         });
-                    }
                 } else {
-                  res.sendStatus(404); // not found
+                    res.status(404).send({ err: dict.get('RessourceNotFound', lang, 'trip', req.params.tripId) });
                 }
             }
         });
     }
+}
+
+verifyManagerTripOwner = (token, idManager) => {
+    return authController.getUserId(token)
+    .then((idActor) => {
+        if (idActor) {
+            return (new String(idActor).valueOf() == new String(idManager).valueOf());
+        }
+        return false;
+    })
+    .catch((error) => {
+        console.log(error);
+        return false;
+    })
 }
