@@ -89,7 +89,41 @@ const DEFAULT_ENTRIES = [
                 text: 'Error de validacion del esquema: la entidad no esta valida'
             }, 
         ]
+    }, {
+        id: 'Forbidden',
+        values: [
+            {
+                lang: 'en',
+                text: 'Forbidden'
+            }, {
+                lang: 'es',
+                text: 'Prohibido'
+            }, 
+        ]
+    }, {
+        id: 'Unauthorized',
+        values: [
+            {
+                lang: 'en',
+                text: 'Unauthorized'
+            }, {
+                lang: 'es',
+                text: 'No autorizado'
+            }, 
+        ]
+    }, {
+        id: 'AlreadyCancelled',
+        values: [
+            {
+                lang: 'en',
+                text: 'Trip (already) cancelled'
+            }, {
+                lang: 'es',
+                text: 'Viaje (ya) cancelado'
+            }, 
+        ]
     }
+
 ];
 
 module.exports = class LangDictionnary {
