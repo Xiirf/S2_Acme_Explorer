@@ -28,6 +28,7 @@
     "express": "^4.17.1",
     "firebase-admin": "^8.9.2",
     "fs": "0.0.1-security",
+    "https": "^1.0.0",
     "mocker-data-generator": "^2.6.6",
     "mongoose": "^5.8.11",
     "nanoid": "^2.1.11",
