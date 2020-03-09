@@ -7,9 +7,8 @@
 var mongoose = require('mongoose')
 Trips = mongoose.model('Trips');
 Stages = mongoose.model('Stages');
-Applications = require('../models/applicationModel');
-var authController = require('../controllers/authController');
-var LangDictionnary = require('../langDictionnary');
+Applications = require('../../models/applicationModel');
+var LangDictionnary = require('../../langDictionnary');
 var dict = new LangDictionnary();
 
 /**
@@ -38,7 +37,6 @@ var dict = new LangDictionnary();
  *           required: false
  *           schema:
  *             type: date
- *         - $ref: '#/components/parameters/language'
  *      responses:
  *        "200":
  *          description: Return all trips
@@ -100,7 +98,6 @@ exports.list_all_trips = function(req, res) {
  *           required: false
  *           schema:
  *             type: number
- *         - $ref: '#/components/parameters/language'
  *      responses:
  *        "200":
  *          description: Return all trips
@@ -156,62 +153,12 @@ exports.search_trips = function(req, res) {
  *    post:
  *      summary: Create a Trip
  *      tags: [Trips]
- *      parameters:
- *        - $ref: '#/components/parameters/language'
  *      requestBody:
  *        required: true
  *        content:
  *          application/json:
  *            schema:
- *              type: object
- *              required:
- *                - title
- *                - description
- *                - requirements
- *                - start
- *                - end
- *                - managerId
- *              properties:
- *                title:
- *                  type: string
- *                  description: Trip title.
- *                description:
- *                  type: string
- *                  description: Trip description.
- *                requirements:
- *                  type: array
- *                  items: string
- *                  description: Trip requirements.
- *                start:
- *                  type: Date
- *                  description: Trip start date.
- *                end:
- *                  type: Date
- *                  description: Trip end date.
- *                pictures:
- *                  type: array
- *                  items: object
- *                  properties:
- *                    data:
- *                      type: Buffer
- *                    contentType:
- *                      type: string
- *                  description: Array of Trip pictures.
- *                stages:
- *                  type: array
- *                  items: object
- *                  $ref: '#/components/schemas/Stage'
- *                  description: Array of Trip pictures.
- *              example:
- *                title: titleUpdate
- *                description: descTrip
- *                requirementes: ["testReq"]
- *                start: 2020-02-14
- *                end: 2020-02-14
- *                stages:
- *                  title: testExample
- *                  description: desExample
- *                  price: 250
+ *              $ref: '#/components/schemas/Trip'
  *      responses:
  *        "201":
  *          description: Trip created
@@ -225,16 +172,11 @@ exports.search_trips = function(req, res) {
  *          description: Server error
  */
 exports.create_a_trip = function(req, res) {
-    var lang = dict.getLang(req);
-    var token = req.headers['authorization'];
     var new_trip = new Trips(req.body);
+    var lang = dict.getLang(req);
 
-    //Use Actual Manager id
-    authController.getUserId(token)
-    .then((managerId) => {
-        new_trip.managerId= managerId;
-        new_trip.save(function(err) {
-            if (err){
+    new_trip.save(function(err) {
+        if (err){
                 if(err.name=='ValidationError') {
                     res.status(422).send({ err: dict.get('ErrorSchema', lang) });
                 }
@@ -244,11 +186,7 @@ exports.create_a_trip = function(req, res) {
             } else {
                 res.status(201).json(new_trip);
             }
-        });
-    })
-    .catch((err) => {
-        res.status(500).send(err);
-    })
+    });
 }
 
 /**
@@ -265,7 +203,6 @@ exports.create_a_trip = function(req, res) {
  *           required: true
  *           schema:
  *             type: string
- *         - $ref: '#/components/parameters/language'
  *      responses:
  *        "200":
  *          description: Return a trip
@@ -309,7 +246,6 @@ unique_find = function(req, res) {
  *           required: true
  *           schema:
  *             type: string
- *         - $ref: '#/components/parameters/language'
  *      requestBody:
  *        required: true
  *        content:
@@ -332,8 +268,8 @@ unique_find = function(req, res) {
  *              schema:
  *                type: array
  *                $ref: '#/components/schemas/Trip'
- *        "403":
- *          description: Forbidden
+ *        "414":
+ *          description: Precondition Failed
  *        "404":
  *          description: Ressource not found
  *        "422":
@@ -348,34 +284,24 @@ exports.edit_a_trip = function(req, res) {
             res.status(500).send({ err: dict.get('ErrorGetDB', lang) });
         } else {
             if (trip) {
-                verifyManagerTripOwner(req.headers['authorization'], trip.managerId)
-                    .then((isSame) => {
-                        if (isSame) {
-                            if(!trip.published || trip.cancelled) {
-                                Trips.updateOne({_id: req.params.tripId}, req.body, {new:true, runValidators: true}, function(err, trip) {
-                                    if (err){
-                                        if(err.name=='ValidationError') {
-                                            res.status(422).send({ err: dict.get('ErrorSchema', lang) });
-                                        }
-                                        else{
-                                            res.status(500).send({ err: dict.get('ErrorGetDB', lang) });
-                                        }
-                                    } else if (!trip) {
-                                        res.status(404).send({ err: dict.get('RessourceNotFound', lang, 'trip', req.params.tripId) });
-                                    } else {
-                                        unique_find(req, res);
-                                    }
-                                });
-                            } else {
-                                res.status(403).send({ err: dict.get('Forbidden', lang) });
+                if(!trip.published || trip.cancelled){
+                    Trips.updateOne({_id: req.params.tripId}, req.body, {new:true, runValidators: true}, function(err, trip) {
+                        if (err){
+                            if(err.name=='ValidationError') {
+                                res.status(422).send({ err: dict.get('ErrorSchema', lang) });
                             }
+                            else{
+                                res.status(500).send({ err: dict.get('ErrorGetDB', lang) });
+                            }
+                        } else if (!trip) {
+                            res.status(404).send({ err: dict.get('RessourceNotFound', lang, 'trip', req.params.tripId) });
                         } else {
-                            res.status(401).send({ err: dict.get('Unauthorized', lang) });
+                            unique_find(req, res);
                         }
                     })
-                    .catch((error) => {
-                        res.status(500).send({ err: dict.get('ErrorGetDB', lang) });
-                    });
+                } else {
+                    res.status(414).send({ err: dict.get('PreconditionFailed', lang) });
+                }
             } else {
                 res.status(404).send({ err: dict.get('RessourceNotFound', lang, 'trip', req.params.tripId) });
             }
@@ -397,16 +323,11 @@ exports.edit_a_trip = function(req, res) {
  *           required: true
  *           schema:
  *             type: string
- *         - $ref: '#/components/parameters/language'
  *      responses:
- *        "204":
- *          description: Item delete
- *        "400":
- *          description: Bad Request
- *        "401":
- *          description: Unauthorized
- *        "403":
- *          description: Forbidden
+ *        "200":
+ *          description: Item delete msg
+ *        "414":
+ *          description: PreconditionFailed
  *        "404":
  *          description: Not found
  *        "500":
@@ -419,27 +340,17 @@ exports.delete_a_trip = function(req, res) {
             res.status(500).send({ err: dict.get('ErrorGetDB', lang) });
         } else {
             if (trip) {
-                verifyManagerTripOwner(req.headers['authorization'], trip.managerId)
-                .then((isSame) => {
-                    if (isSame) {
-                        if(!trip.published){
-                            Trips.deleteOne({_id: req.params.tripId}, function(err) {
-                                if(err) {
-                                    res.status(500).send({ err: dict.get('ErrorDeleteDB', lang) });
-                                } else {
-                                    res.sendStatus(204);
-                                }
-                            });
+                if(!trip.published){
+                    Trips.deleteOne({_id: req.params.tripId}, function(err) {
+                        if(err) {
+                            res.status(500).send({ err: dict.get('ErrorDeleteDB', lang) });
                         } else {
-                            res.status(403).send({ err: dict.get('Forbidden', lang) });
+                            res.sendStatus(204);
                         }
-                    } else {
-                        res.status(401).send({ err: dict.get('Unauthorized', lang) });
-                    }
-                })
-                .catch((error) => {
-                    res.status(500).send(error);
-                });
+                    });
+                } else {
+                    res.status(414).send({ err: dict.get('PreconditionFailed', lang) });
+                }
             } else {
                 res.status(404).send({ err: dict.get('RessourceNotFound', lang, 'trip', req.params.tripId) });
             }
@@ -461,7 +372,6 @@ exports.delete_a_trip = function(req, res) {
  *           required: true
  *           schema:
  *             type: string
- *         - $ref: '#/components/parameters/language'
  *      requestBody:
  *        required: true
  *        content:
@@ -494,35 +404,25 @@ exports.add_a_stage_in_trip = function(req, res) {
                 res.status(500).send({ err: dict.get('ErrorGetDB', lang) });
               } else {
                 if (trip) {
-                    verifyManagerTripOwner(req.headers['authorization'], trip.managerId)
-                        .then((isSame) => {
-                            if (isSame) {
-                                if (trip.cancelled){
-                                    res.status(422).send({ err: dict.get('AlreadyCancelled', lang) });
-                                } else if(!trip.published){
-                                    trip.stages.push(stage);
-                                    trip.save(function(err2, newTrip) {
-                                        if (err2) {
-                                            if(err.name=='ValidationError') {
-                                                res.status(422).send({ err: dict.get('ErrorSchema', lang) });
-                                            }
-                                            else{
-                                                res.status(500).send({ err: dict.get('ErrorUpdateDB', lang) });
-                                            }
-                                        } else {
-                                            res.status(200).send(newTrip); // return the updated actor
-                                        }
-                                    });
-                                } else {
-                                    res.status(403).send({ err: dict.get('Forbidden', lang) });
+                    if (trip.cancelled){
+                        res.status(422).send({ err: dict.get('AlreadyCancelled', lang) });
+                    } else if(!trip.published){
+                        trip.stages.push(stage);
+                        trip.save(function(err2, newTrip) {
+                            if (err2) {
+                                if(err.name=='ValidationError') {
+                                    res.status(422).send({ err: dict.get('ErrorSchema', lang) });
+                                }
+                                else{
+                                    res.status(500).send({ err: dict.get('ErrorUpdateDB', lang) });
                                 }
                             } else {
-                                res.status(401).send({ err: dict.get('Unauthorized', lang) });
+                                res.status(200).send(newTrip); // return the updated actor
                             }
-                        })
-                        .catch((error) => {
-                            res.status(500).send(error);
                         });
+                    } else {
+                        res.status(414).send({ err: dict.get('PreconditionFailed', lang) });
+                    }
                 } else {
                     res.status(404).send({ err: dict.get('RessourceNotFound', lang, 'trip', req.params.tripId) });
                 }
@@ -545,7 +445,6 @@ exports.add_a_stage_in_trip = function(req, res) {
  *           required: true
  *           schema:
  *             type: string
- *         - $ref: '#/components/parameters/language'
  *      requestBody:
  *        required: true
  *        content:
@@ -569,8 +468,8 @@ exports.add_a_stage_in_trip = function(req, res) {
  *                $ref: '#/components/schemas/Trip'
  *        "400":
  *          description: Bad request
- *        "403":
- *          description: Forbidden
+ *        "414":
+ *          description: Precondition Failed
  *        "404":
  *          description: Ressource not found
  *        "422":
@@ -590,64 +489,40 @@ exports.cancel_a_trip = function(req, res) {
                 res.status(500).send({ err: dict.get('ErrorGetDB', lang) });
               } else {
                 if (trip) {
-                    verifyManagerTripOwner(req.headers['authorization'], trip.managerId)
-                        .then((isSame) => {
-                            if (isSame) {
-                                if (trip.cancelled){
-                                    res.status(422).send({ err: dict.get('AlreadyCancelled', lang) });
-                                } else if (new Date(trip.start) <= Date()){
-                                    res.status(403).send({ err: dict.get('Forbidden', lang) });
-                                } else {
-                                    Applications.findOne({idTrip: trip._id, status: 'ACCEPTED'}, function(err,app){
-                                        if (err) {
-                                            res.status(500).send({ err: dict.get('ErrorGetDB', lang) });
-                                        } 
-                                        else if (!app) {
-                                            trip.cancelled = true;
-                                            trip.reasonCancelling = reasonCancelling;
-                                            trip.save(function(err2, newTrip) {
-                                                if (err2) {
-                                                    if(err2.name=='ValidationError') {
-                                                        res.status(422).send({ err: dict.get('ErrorSchema', lang) });
-                                                    }
-                                                    else{
-                                                        res.status(500).send({ err: dict.get('ErrorUpdateDB', lang) });
-                                                    }
-                                                } else {
-                                                    res.status(200).send(newTrip); // return the updated actor
-                                                }
-                                            });
+                    if (trip.cancelled){
+                        res.status(422).send({ err: dict.get('AlreadyCancelled', lang) });
+                    } else if (new Date(trip.start) <= Date()){
+                        res.status(414).send({ err: dict.get('PreconditionFailed', lang) });
+                    } else {
+                        Applications.findOne({idTrip: trip._id, status: 'ACCEPTED'}, function(err,app){
+                            if (err) {
+                                res.status(500).send({ err: dict.get('ErrorGetDB', lang) });
+                            } 
+                            else if (!app) {
+                                trip.cancelled = true;
+                                trip.reasonCancelling = reasonCancelling;
+                                trip.save(function(err2, newTrip) {
+                                    if (err2) {
+                                        if(err2.name=='ValidationError') {
+                                            res.status(422).send({ err: dict.get('ErrorSchema', lang) });
                                         }
-                                        else {
-                                            res.status(403).send({ err: dict.get('Forbidden', lang) });
+                                        else{
+                                            res.status(500).send({ err: dict.get('ErrorUpdateDB', lang) });
                                         }
-                                    });
-                                }
-                            } else {
-                                res.status(401).send({ err: dict.get('Unauthorized', lang) });
+                                    } else {
+                                        res.status(200).send(newTrip); // return the updated actor
+                                    }
+                                });
                             }
-                        })
-                        .catch((error) => {
-                            res.status(500).send(error);
+                            else {
+                                res.status(414).send({ err: dict.get('PreconditionFailed', lang) });
+                            }
                         });
+                    }
                 } else {
                     res.status(404).send({ err: dict.get('RessourceNotFound', lang, 'trip', req.params.tripId) });
                 }
             }
         });
     }
-}
-
-verifyManagerTripOwner = (token, idManager) => {
-    return authController.getUserId(token)
-    .then((idActor) => {
-        if (idActor) {
-            return (new String(idActor).valueOf() == new String(idManager).valueOf());
-        }
-        return false;
-    })
-    .catch((error) => {
-        console.log(error);
-        return false;
-    })
 }
