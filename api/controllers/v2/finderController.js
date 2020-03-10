@@ -8,7 +8,8 @@
  */
 var mongoose = require('mongoose'),
 Finders = mongoose.model('Finders');
-var LangDictionnary = require('../langDictionnary');
+var authController = require('./authController');
+var LangDictionnary = require('../../langDictionnary');
 var dict = new LangDictionnary();
 
 /**
@@ -33,14 +34,22 @@ var dict = new LangDictionnary();
  */
 exports.list_all_finders = function(req, res) {
     var lang = dict.getLang(req);
-    Finders.find({}, function(err, finders) {
-        if (err) {
-            res.status(500).send({ err: dict.get('ErrorGetDB', lang) });
-        }
-        else {
-            res.status(200).json(finders);
-        }
-    });
+    var token = req.headers['authorization'];
+
+    authController.getUserId(token)
+        .then((explorerId) => {
+            Finders.find({idExplorer: explorerId}, function(err, finders) {
+                if (err) {
+                    res.status(500).send({ err: dict.get('ErrorGetDB', lang) });
+                }
+                else {
+                    res.status(200).json(finders);
+                }
+            });
+        })
+        .catch((err) => {
+            res.status(500).send(err);
+        })
 }
 
 /**
@@ -125,9 +134,20 @@ exports.read_a_finder = function(req, res) {
             res.status(404).send({ err: dict.get('RessourceNotFound', lang, 'finder', req.params.finderId) });
         }
         else {
-            res.json(finder);
+            verifyExplorerApplicationOwner(req.headers['authorization'], application.idExplorer)
+                .then((isSame) => {
+                    if (isSame) {
+                        res.json(finder);
+                    }
+                    else {
+                        res.status(401).send({ err: dict.get('Unauthorized', lang) });
+                    }
+                })
+                .catch((error) => {
+                    res.status(500).send({ err: dict.get('ErrorGetDB', lang) });
+                });
         }
-    })
+    });
 }
 
 /**
@@ -168,20 +188,42 @@ exports.read_a_finder = function(req, res) {
  */
 exports.edit_a_finder = function(req, res) {
     var lang = dict.getLang(req);
-    Finders.findOneAndUpdate({_id: req.params.finderId}, req.body, {new:true, runValidators: true}, function(err, finder) {
+
+    Finders.findById(req.params.finderId, function(err, finder) {
         if (err) {
-            if (err.name=='ValidationError') {
-                res.status(422).send({ err: dict.get('ErrorSchema', lang) });
-            }
-            else {
-              res.status(500).send({ err: dict.get('ErrorUpdateDB', lang) });
-            }
+            res.status(500).send({ err: dict.get('ErrorGetDB', lang) });
         } 
         else if (!finder) {
             res.status(404).send({ err: dict.get('RessourceNotFound', lang, 'finder', req.params.finderId) });
-        } 
+        }
         else {
-            res.status(200).json(finder);
+            verifyExplorerFinderOwner(req.headers['authorization'], finder.idExplorer)
+                .then((isSame) => {
+                    if (isSame) {
+                        Finders.findOneAndUpdate({_id: req.params.finderId}, req.body, {new:true, runValidators: true}, function(err, finder) {
+                            if (err) {
+                                if (err.name=='ValidationError') {
+                                    res.status(422).send({ err: dict.get('ErrorSchema', lang) });
+                                }
+                                else {
+                                  res.status(500).send({ err: dict.get('ErrorUpdateDB', lang) });
+                                }
+                            } 
+                            else if (!finder) {
+                                res.status(404).send({ err: dict.get('RessourceNotFound', lang, 'finder', req.params.finderId) });
+                            } 
+                            else {
+                                res.status(200).json(finder);
+                            }
+                        })
+                    }
+                    else {
+                        res.status(401).send({ err: dict.get('Unauthorized', lang) });
+                    }
+                })
+                .catch((error) => {
+                    res.status(500).send({ err: dict.get('ErrorGetDB', lang) });
+                });
         }
     })
 }
@@ -218,4 +260,18 @@ exports.delete_a_finder = function(req, res) {
             res.sendStatus(204);
         }
     })
+}
+
+async function verifyExplorerFinderOwner(token, idExplorer) {
+    return authController.getUserId(token)
+        .then((idActor) => {
+            if (idActor) {
+                return (new String(idActor).valueOf() == new String(idExplorer).valueOf());
+            }
+            return false;
+        })
+        .catch((error) => {
+            console.log(error);
+            return false;
+        })
 }
