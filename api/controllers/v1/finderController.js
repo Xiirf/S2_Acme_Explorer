@@ -8,7 +8,7 @@
  */
 var mongoose = require('mongoose'),
 Finders = mongoose.model('Finders');
-var LangDictionnary = require('../langDictionnary');
+var LangDictionnary = require('../../langDictionnary');
 var dict = new LangDictionnary();
 
 /**
