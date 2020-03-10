@@ -466,7 +466,14 @@ exports.delete_a_trip = function(req, res) {
  *        content:
  *          application/json:
  *            schema:
- *              $ref: '#/components/schemas/Stage'
+ *              type: object
+ *              required:
+ *                - stages
+ *              properties:
+ *                stages:
+ *                  type: array
+ *                  items: object
+ *                  $ref: '#/components/schemas/Stage'
  *      responses:
  *        "200":
  *          description: Trip updated
@@ -484,8 +491,8 @@ exports.delete_a_trip = function(req, res) {
 exports.add_a_stage_in_trip = function(req, res) {
     var lang = dict.getLang(req);
     var id = req.params.tripId;
-    var stage = new Stages(req.body)
-    if (!stage) {
+    var stages = req.body.stages;
+    if (!stages) {
         res.status(422).send({ err: dict.get('ErrorSchema', lang) });
     } else {
         Trips.findById(id, function(err, trip) {
@@ -499,10 +506,13 @@ exports.add_a_stage_in_trip = function(req, res) {
                                 if (trip.cancelled){
                                     res.status(422).send({ err: dict.get('AlreadyCancelled', lang) });
                                 } else if(!trip.published){
-                                    trip.stages.push(stage);
+                                    for (var stage of stages){
+                                        var stageToAdd = new Stages(stage)
+                                        trip.stages.push(stageToAdd);
+                                    }
                                     trip.save(function(err2, newTrip) {
                                         if (err2) {
-                                            if(err.name=='ValidationError') {
+                                            if(err2.name=='ValidationError') {
                                                 res.status(422).send({ err: dict.get('ErrorSchema', lang) });
                                             }
                                             else{
