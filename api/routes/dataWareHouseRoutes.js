@@ -4,7 +4,8 @@ const express = require('express');
 var router = express.Router();
 
 module.exports = function(app) {
-    var dataWareHouse = require('../controllers/dataWareHouseController');
+	var dataWareHouse = require('../controllers/dataWareHouseController');
+	var auth = require('../controllers/authController');
     
     dataWareHouse.createDataWareHouseJob();
 
@@ -18,8 +19,8 @@ module.exports = function(app) {
 	 * 
 	*/
 	router.route('/dataWareHouse')
-		.get(dataWareHouse.list_all_indicators)
-		.post(dataWareHouse.rebuildPeriod);
+		.get(auth.verifyUser(['Administrator']), dataWareHouse.list_all_indicators)
+		.post(auth.verifyUser(['Administrator']), dataWareHouse.rebuildPeriod);
 
 	/**
 	 * Get a list of last computed indicator
@@ -30,7 +31,7 @@ module.exports = function(app) {
 	 * 
 	*/
 	router.route('/dataWareHouse/latest')
-	.get(dataWareHouse.last_indicator);
+	.get(auth.verifyUser(['Administrator']), dataWareHouse.last_indicator);
 	
 		/**
 	 * Get a list of last computed cube
@@ -41,7 +42,7 @@ module.exports = function(app) {
 	 * 
 	*/
 	router.route('/dataWareHouse/cube')
-	.get(dataWareHouse.read_cube_data)
+	.get(auth.verifyUser(['Administrator']), dataWareHouse.read_cube_data)
 	
 		/**
 	 * Generated a new cube
@@ -51,7 +52,7 @@ module.exports = function(app) {
 	 * @url /dataWareHouse/cube
 	 * 
 	*/
-    .post(dataWareHouse.compute_cube);
+    .post(auth.verifyUser(['Administrator']), dataWareHouse.compute_cube);
     
     app.use("/v1/", router);
 };

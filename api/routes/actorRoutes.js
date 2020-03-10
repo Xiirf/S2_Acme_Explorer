@@ -3,17 +3,18 @@ const express = require('express');
 var router = express.Router();
 
 module.exports = function(app) {
-    var actors = require('../controllers/actorController');
+    var actorsv2 = require('../controllers/v2/actorController');
+    var auth = require('../controllers/authController')
 
     router.route('/actors')
-        .get(actors.list_all_actors)
-        .post(actors.create_an_actor);
+        .get(actorsv2.list_all_actors)
+        .post(actorsv2.create_an_actor);
     router.route('/actors/:actorId')
-        .get(actors.read_an_actor)
-        .put(actors.edit_an_actor)
-        .delete(actors.delete_an_actor)
+        .get(actorsv2.read_an_actor)
+        .put(actorsv2.edit_an_actor)
+        .delete(auth.verifyUser(['Administrator']), actorsv2.delete_an_actor)
     router.route('/actors/:actorId/ban')
-        .patch(actors.handle_actor_banishment)
+        .patch(auth.verifyUser(['Administrator']), actorsv2.handle_actor_banishment)
 
-    app.use("/v1", router)
+    app.use("/v2", router)
 }

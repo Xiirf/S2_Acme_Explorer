@@ -75,8 +75,20 @@ routesLogin(app);
  
 console.log("Connecting DB to: " + mongoDBURI);
 mongoose.connection.on("open", function (err, conn) {
-    GlobalVars.findOneAndUpdate({}, {}, { upsert: true, new: true, setDefaultsOnInsert: true, runValidators: true }, (err, glob) => {
-        console.log(glob);
+    GlobalVars.findOneAndUpdate({}, {}, { upsert: true, new: true, setDefaultsOnInsert: true, runValidators: true }, (err, glob) => {});
+
+    Actors.findOne({"email": "admin@test.com"}, (err, actor) => {
+        if(!actor) {
+            new Actor({
+                "name": "Test",
+                "surname": "Test",
+                "email": "admin@test.com",
+                "phone": "012459786",
+                "password": "mdp",
+                "adress": "algun lugar",
+                "role": "Administrator"
+            }).save();
+        }
     });
     
     https.createServer({

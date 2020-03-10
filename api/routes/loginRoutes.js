@@ -1,6 +1,6 @@
 'use strict';
 module.exports = function(app) {
-  var actors = require('../controllers/actorController');
+  var actors = require('../controllers/v2/actorController');
 
   /**
 	 * Get custom auth token, for an actor by providing email and password
