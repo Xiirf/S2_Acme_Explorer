@@ -12,7 +12,7 @@
 
 var mongoose = require('mongoose')
 Actors = mongoose.model('Actors');
-var LangDictionnary = require('../langDictionnary');
+var LangDictionnary = require('../../langDictionnary');
 var dict = new LangDictionnary();
 
  /**

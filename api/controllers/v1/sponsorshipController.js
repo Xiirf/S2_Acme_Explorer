@@ -1,7 +1,7 @@
 var mongoose = require('mongoose')
 Sponsorships = mongoose.model('Sponsorships');
 GlobalVars = mongoose.model('GlobalVars');
-var LangDictionnary = require('../langDictionnary');
+var LangDictionnary = require('../../langDictionnary');
 dict = new LangDictionnary();
 
  /**

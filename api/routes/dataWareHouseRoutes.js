@@ -1,27 +1,29 @@
 'use strict';
 
 const express = require('express');
-var router = express.Router();
+var routerv1 = express.Router();
+var routerv2 = express.Router();
+
 
 module.exports = function(app) {
 	var dataWareHousev1 = require('../controllers/v1/dataWareHouseController');
 	var dataWareHousev2 = require('../controllers/v2/dataWareHouseController');
 	var auth = require('../controllers/authController');
     
-    dataWareHouse.createDataWareHouseJob();
-	router.route('/dataWareHouse')
+	routerv1.route('/dataWareHouse')
 		.get(dataWareHousev1.list_all_indicators)
 		.post(dataWareHousev1.rebuildPeriod);
 
-	router.route('/dataWareHouse/latest')
+	routerv1.route('/dataWareHouse/latest')
 		.get(dataWareHousev1.last_indicator);
 
-	router.route('/dataWareHouse/cube')
+	routerv1.route('/dataWareHouse/cube')
 		.get(dataWareHousev1.read_cube_data)
     	.post(dataWareHousev1.compute_cube);
     
-	app.use("/v1/", router);
+	app.use("/v1/", routerv1);
 
+	dataWareHousev2.createDataWareHouseJob();
   	/**
 	 * Get a list of all indicators or post a new computation period for rebuilding
 	 * RequiredRole: Administrator
@@ -31,7 +33,7 @@ module.exports = function(app) {
 	 * @param [string] rebuildPeriod
 	 * 
 	*/
-	router.route('/dataWareHouse')
+	routerv2.route('/dataWareHouse')
 		.get(auth.verifyUser(['Administrator']), dataWareHousev2.list_all_indicators)
 		.post(auth.verifyUser(['Administrator']), dataWareHousev2.rebuildPeriod);
 
@@ -43,7 +45,7 @@ module.exports = function(app) {
 	 * @url /dataWareHouse/latest
 	 * 
 	*/
-	router.route('/dataWareHouse/latest')
+	routerv2.route('/dataWareHouse/latest')
 		.get(auth.verifyUser(['Administrator']), dataWareHousev2.last_indicator);
 	
 		/**
@@ -54,7 +56,7 @@ module.exports = function(app) {
 		 * @url /dataWareHouse/cube
 		 * 
 		*/
-	router.route('/dataWareHouse/cube')
+	routerv2.route('/dataWareHouse/cube')
 		.get(auth.verifyUser(['Administrator']), dataWareHousev2.read_cube_data)
 	
 		/**
@@ -67,5 +69,5 @@ module.exports = function(app) {
 		*/
     	.post(auth.verifyUser(['Administrator']), dataWareHousev2.compute_cube);
     
-    app.use("/v2/", router);
+    app.use("/v2/", routerv2);
 };
