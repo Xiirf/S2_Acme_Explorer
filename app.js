@@ -91,3 +91,5 @@ mongoose.connection.on("open", function (err, conn) {
 mongoose.connection.on("error", function (err, conn) {
     console.error("DB init error " + err);
 });
+
+module.exports = app;
