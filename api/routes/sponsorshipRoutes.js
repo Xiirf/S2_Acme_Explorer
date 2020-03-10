@@ -6,7 +6,7 @@ var routerv2 = express.Router();
 module.exports = function(app) {
     var sponsorshipsv1 = require('../controllers/v1/sponsorshipController');
     var sponsorshipsv2 = require('../controllers/v2/sponsorshipController');
-    var auth = require('../controllers/authController');
+    var auth = require('../controllers/v2/authController');
 
     routerv1.route('/sponsorships')
         .get(sponsorshipsv1.list_all_sponsorships)

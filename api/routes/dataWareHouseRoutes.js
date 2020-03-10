@@ -8,7 +8,7 @@ var routerv2 = express.Router();
 module.exports = function(app) {
 	var dataWareHousev1 = require('../controllers/v1/dataWareHouseController');
 	var dataWareHousev2 = require('../controllers/v2/dataWareHouseController');
-	var auth = require('../controllers/authController');
+	var auth = require('../controllers/v2/authController');
     
 	routerv1.route('/dataWareHouse')
 		.get(dataWareHousev1.list_all_indicators)

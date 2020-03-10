@@ -6,7 +6,7 @@ var routerv2 = express.Router();
 module.exports = function(app) {
     var actorsv1 = require('../controllers/v1/actorController');
     var actorsv2 = require('../controllers/v2/actorController');
-    var auth = require('../controllers/authController')
+    var auth = require('../controllers/v2/authController')
 
     routerv1.route('/actors')
         .get(actorsv1.list_all_actors)

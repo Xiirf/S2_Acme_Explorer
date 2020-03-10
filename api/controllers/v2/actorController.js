@@ -13,7 +13,7 @@
 var mongoose = require('mongoose')
 Actors = mongoose.model('Actors');
 var admin = require('firebase-admin');
-var auth = require('../authController');
+var auth = require('./authController');
 var LangDictionnary = require('../../langDictionnary');
 var dict = new LangDictionnary();
 
