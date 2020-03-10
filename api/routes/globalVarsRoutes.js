@@ -4,10 +4,16 @@ const express = require('express');
 var router = express.Router();
 
 module.exports = function(app) {
-    var finders = require('../controllers/globalVarsController');
+    var findersv1 = require('../controllers/v1/globalVarsController');
+    var findersv2 = require('../controllers/v2/globalVarsController');
     
     router.route('/globalVars')
-        .get(finders.list_global_vars);
+        .get(findersv1.list_global_vars);
     
     app.use("/v1/", router);
+    
+    router.route('/globalVars')
+        .get(findersv2.list_global_vars);
+    
+    app.use("/v2/", router);
 }

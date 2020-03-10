@@ -62,13 +62,13 @@ const options = {
         "./api/models/finderModel.js",
         "./api/models/globalVarsModel.js",
         "./api/models/dataWareHouseModel.js",
-        "./api/controllers/globalVarsController.js",
+        "./api/controllers/v2/globalVarsController.js",
         "./api/controllers/v2/actorController.js",
         "./api/controllers/v2/sponsorshipController.js",
         "./api/controllers/tripController.js",
         "./api/controllers/applicationController.js",
         "./api/controllers/finderController.js",
-        "./api/controllers/dataWareHouseController.js",
+        "./api/controllers/v2/dataWareHouseController.js",
         "./api/controllers/storageController.js"
     ],        
   };
