@@ -39,6 +39,13 @@ describe('Integration tests', () => {
             });
     });
 
+    after((done) => {
+        Finders.collection.deleteMany({});
+        Actors.collection.deleteMany({});
+
+        done();
+    })
+
     describe('POST finders', () => {
         it('should return status code 201', done => {
             chai
