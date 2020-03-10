@@ -39,7 +39,7 @@ Trips = require('./tripModel');
  *            items: String
  *            description: Comments of the explorer.
  *            example: ['A comment', 'Another comment']
- *          reasonCancelling:
+ *          reasonRejected:
  *            type: String
  *            description: Reason why the application was cancelled.
  *            example: 'a reason'
@@ -84,7 +84,7 @@ var applicationSchema = new Schema({
     comments: {
         type: [String]
     },
-    reasonCancelling: {
+    reasonRejected: {
         type: String,
         default: null
     }
