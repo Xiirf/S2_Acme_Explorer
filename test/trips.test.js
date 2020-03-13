@@ -9,7 +9,7 @@ Stages = mongoose.model('Stages');
 const { expect } = chai;
 chai.use(chaiHttp);
 
-describe('Integration tests', () => {
+describe('Trips Integration tests', () => {
     var actorId = null;
     var tripId = null;
 
