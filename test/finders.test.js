@@ -217,17 +217,16 @@ describe('Integration tests', () => {
                 });
         });
 
-        it('should return status code 404', done => {
+        it('should return status code 204', done => {
             chai
                 .request(app)
-                .get('/v1/finders/'+finderId)
+                .delete('/v1/finders/'+finderId)
                 .end((err, res) => {
-                    expect(res).to.have.status(404);
+                    expect(res).to.have.status(204);
 
                     if (err) done(err);
                     else done();
                 });
         });
     });
-
-})
+});
