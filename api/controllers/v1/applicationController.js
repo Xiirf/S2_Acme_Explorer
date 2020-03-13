@@ -9,7 +9,7 @@
 var mongoose = require('mongoose'),
 Applications = mongoose.model('Applications'),
 Trips = mongoose.model('Trips');
-var LangDictionnary = require('../langDictionnary');
+var LangDictionnary = require('../../langDictionnary');
 var dict = new LangDictionnary();
 
 /**

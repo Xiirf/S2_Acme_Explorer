@@ -3,11 +3,10 @@
 var mongoose = require('mongoose'),
     Actor = mongoose.model('Actors');
 var admin = require('firebase-admin');
-var LangDictionnary = require('../langDictionnary');
+var LangDictionnary = require('../../langDictionnary');
 var dict = new LangDictionnary();
 
 exports.getUserId = async function (idToken) {
-    console.log('idToken: ' + idToken);
     idToken = idToken.replace('Bearer ', '');
     var id = null;
 
@@ -16,16 +15,11 @@ exports.getUserId = async function (idToken) {
     var uid = actorFromFB.uid;
     var auth_time = actorFromFB.auth_time;
     var exp = actorFromFB.exp;
-    console.log('idToken verificado para el uid: ' + uid);
-    console.log('auth_time: ' + auth_time);
-    console.log('exp: ' + exp);
 
     var mongoActor = await Actor.findOne({ email: uid });
     if (!mongoActor) { return null; }
 
     else {
-        console.log('The actor exists in our DB');
-        console.log('actor: ' + mongoActor);
         id = mongoActor._id;
         return id;
     }
@@ -34,8 +28,6 @@ exports.getUserId = async function (idToken) {
 
 exports.verifyUser = function (requiredRoles) {
     return function (req, res, callback) {
-        console.log('starting verifying idToken');
-        console.log('requiredRoles: ' + requiredRoles);
         var idToken = req.headers['authorization'];
         var lang = dict.getLang(req);
 
@@ -43,15 +35,10 @@ exports.verifyUser = function (requiredRoles) {
             res.status(401).send({ err: dict.get('Unauthorized', lang) });
         } else {
             idToken = idToken.replace('Bearer ', '');
-            admin.auth().verifyIdToken(idToken).then(function (decodedToken) {
-                console.log('entra en el then de verifyIdToken: ');
-    
+            admin.auth().verifyIdToken(idToken).then(function (decodedToken) {    
                 var uid = decodedToken.uid;
                 var auth_time = decodedToken.auth_time;
                 var exp = decodedToken.exp;
-                console.log('idToken verificado para el uid: ' + uid);
-                console.log('auth_time: ' + auth_time);
-                console.log('exp: ' + exp);
     
                 Actor.findOne({ email: uid }, function (err, actor) {
                     if (err) { res.send(err); }
@@ -61,10 +48,7 @@ exports.verifyUser = function (requiredRoles) {
                         res.status(404).send({ err: dict.get('RessourceNotFound', lang, 'actor', uid) });
                     }
     
-                    else {
-                        console.log('The actor exists in our DB');
-                        console.log('actor: ' + actor);
-    
+                    else {    
                         var isAuth = false;
                         for (var i = 0; i < requiredRoles.length; i++) {
                             if (requiredRoles[i] === actor.role) {
@@ -79,9 +63,16 @@ exports.verifyUser = function (requiredRoles) {
                 });
             }).catch(function (err) {
                 // Handle error
-                console.log("Error en autenticación: " + err);
                 res.status(403).send({ err: dict.get('Forbidden', lang) });
             });
         }
     }
+}
+
+exports.getUserRoleAndId = async function (idToken) {
+    return this.getUserId(idToken).then((idActor) => {
+        return Actor.findById(idActor).then((actor) => {
+            return {id: idActor, role: actor.role};
+        });
+    })
 }

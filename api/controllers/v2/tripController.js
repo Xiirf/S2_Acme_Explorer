@@ -7,9 +7,9 @@
 var mongoose = require('mongoose')
 Trips = mongoose.model('Trips');
 Stages = mongoose.model('Stages');
-Applications = require('../models/applicationModel');
-var authController = require('../controllers/authController');
-var LangDictionnary = require('../langDictionnary');
+Applications = require('../../models/applicationModel');
+var authController = require('./authController');
+var LangDictionnary = require('../../langDictionnary');
 var dict = new LangDictionnary();
 
 /**
@@ -170,7 +170,6 @@ exports.search_trips = function(req, res) {
  *                - requirements
  *                - start
  *                - end
- *                - managerId
  *              properties:
  *                title:
  *                  type: string
@@ -332,8 +331,8 @@ unique_find = function(req, res) {
  *              schema:
  *                type: array
  *                $ref: '#/components/schemas/Trip'
- *        "403":
- *          description: Forbidden
+ *        "414":
+ *          description: PreconditionFailed
  *        "404":
  *          description: Ressource not found
  *        "422":
@@ -367,7 +366,7 @@ exports.edit_a_trip = function(req, res) {
                                     }
                                 });
                             } else {
-                                res.status(403).send({ err: dict.get('Forbidden', lang) });
+                                res.status(414).send({ err: dict.get('PreconditionFailed', lang) });
                             }
                         } else {
                             res.status(401).send({ err: dict.get('Unauthorized', lang) });
@@ -405,8 +404,8 @@ exports.edit_a_trip = function(req, res) {
  *          description: Bad Request
  *        "401":
  *          description: Unauthorized
- *        "403":
- *          description: Forbidden
+ *        "414":
+ *          description: Precondition Failed
  *        "404":
  *          description: Not found
  *        "500":
@@ -431,7 +430,7 @@ exports.delete_a_trip = function(req, res) {
                                 }
                             });
                         } else {
-                            res.status(403).send({ err: dict.get('Forbidden', lang) });
+                            res.status(414).send({ err: dict.get('PreconditionFailed', lang) });
                         }
                     } else {
                         res.status(401).send({ err: dict.get('Unauthorized', lang) });
@@ -467,7 +466,14 @@ exports.delete_a_trip = function(req, res) {
  *        content:
  *          application/json:
  *            schema:
- *              $ref: '#/components/schemas/Stage'
+ *              type: object
+ *              required:
+ *                - stages
+ *              properties:
+ *                stages:
+ *                  type: array
+ *                  items: object
+ *                  $ref: '#/components/schemas/Stage'
  *      responses:
  *        "200":
  *          description: Trip updated
@@ -485,8 +491,8 @@ exports.delete_a_trip = function(req, res) {
 exports.add_a_stage_in_trip = function(req, res) {
     var lang = dict.getLang(req);
     var id = req.params.tripId;
-    var stage = new Stages(req.body)
-    if (!stage) {
+    var stages = req.body.stages;
+    if (!stages) {
         res.status(422).send({ err: dict.get('ErrorSchema', lang) });
     } else {
         Trips.findById(id, function(err, trip) {
@@ -500,10 +506,13 @@ exports.add_a_stage_in_trip = function(req, res) {
                                 if (trip.cancelled){
                                     res.status(422).send({ err: dict.get('AlreadyCancelled', lang) });
                                 } else if(!trip.published){
-                                    trip.stages.push(stage);
+                                    for (var stage of stages){
+                                        var stageToAdd = new Stages(stage)
+                                        trip.stages.push(stageToAdd);
+                                    }
                                     trip.save(function(err2, newTrip) {
                                         if (err2) {
-                                            if(err.name=='ValidationError') {
+                                            if(err2.name=='ValidationError') {
                                                 res.status(422).send({ err: dict.get('ErrorSchema', lang) });
                                             }
                                             else{
@@ -514,7 +523,7 @@ exports.add_a_stage_in_trip = function(req, res) {
                                         }
                                     });
                                 } else {
-                                    res.status(403).send({ err: dict.get('Forbidden', lang) });
+                                    res.status(414).send({ err: dict.get('PreconditionFailed', lang) });
                                 }
                             } else {
                                 res.status(401).send({ err: dict.get('Unauthorized', lang) });
@@ -569,8 +578,8 @@ exports.add_a_stage_in_trip = function(req, res) {
  *                $ref: '#/components/schemas/Trip'
  *        "400":
  *          description: Bad request
- *        "403":
- *          description: Forbidden
+ *        "414":
+ *          description: Precondition Failed
  *        "404":
  *          description: Ressource not found
  *        "422":
@@ -596,7 +605,7 @@ exports.cancel_a_trip = function(req, res) {
                                 if (trip.cancelled){
                                     res.status(422).send({ err: dict.get('AlreadyCancelled', lang) });
                                 } else if (new Date(trip.start) <= Date()){
-                                    res.status(403).send({ err: dict.get('Forbidden', lang) });
+                                    res.status(414).send({ err: dict.get('PreconditionFailed', lang) });
                                 } else {
                                     Applications.findOne({idTrip: trip._id, status: 'ACCEPTED'}, function(err,app){
                                         if (err) {
@@ -619,7 +628,7 @@ exports.cancel_a_trip = function(req, res) {
                                             });
                                         }
                                         else {
-                                            res.status(403).send({ err: dict.get('Forbidden', lang) });
+                                            res.status(414).send({ err: dict.get('PreconditionFailed', lang) });
                                         }
                                     });
                                 }
