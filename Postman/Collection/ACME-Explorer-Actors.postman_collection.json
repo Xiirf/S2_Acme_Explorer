@@ -77,7 +77,7 @@
 							"/*pm.test(\"Return 1 item\", function () { pm.expect(pm.response.json().length).to.eql(1)});",
 							"pm.test(\"Return the right item\", function () { pm.expect(pm.response.json()[0].name).to.eql(\"Antoño\") && pm.expect(pm.response.json()[0].surname).to.eql(\"Banderas\")});",
 							"*/pm.test('Schema is valid', function() {",
-							"  pm.expect(ajv.validate(pm.response.json()[0], schema), JSON.stringify(ajv.errors)).to.be.true;",
+							"  pm.expect(ajv.validate(pm.response.json()[pm.response.json().length - 1], schema), JSON.stringify(ajv.errors)).to.be.true;",
 							"});",
 							"const echoDeleteRequest = {",
 							"  url: pm.variables.get('host') + '/actors/' + pm.response.json()[pm.response.json().length - 1]._id,",
