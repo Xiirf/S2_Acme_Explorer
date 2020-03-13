@@ -8,7 +8,7 @@ Finders = mongoose.model('Finders');
 const { expect } = chai;
 chai.use(chaiHttp);
 
-describe('Integration tests', () => {
+describe('Finders Integration tests', () => {
     var actorId = null;
     var finderId = null;
 

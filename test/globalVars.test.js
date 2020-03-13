@@ -7,7 +7,7 @@ GlobalVars = mongoose.model('GlobalVars');
 const { expect } = chai;
 chai.use(chaiHttp);
 
-describe('Integration tests', () => {
+describe('GlobalVars Integration tests', () => {
     var resPost;
 
     var getFunc = (done, callback) => chai

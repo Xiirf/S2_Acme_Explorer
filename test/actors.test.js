@@ -7,7 +7,7 @@ Actors = mongoose.model('Actors');
 const { expect } = chai;
 chai.use(chaiHttp);
 
-describe('Integration tests', () => {
+describe('Actors Integration tests', () => {
     var actorId;
     var resPost;
 

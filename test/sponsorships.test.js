@@ -9,7 +9,7 @@ Sponsorships = mongoose.model('Sponsorships');
 const { expect } = chai;
 chai.use(chaiHttp);
 
-describe('Integration tests', () => {
+describe('Sponsorships Integration tests', () => {
     var managerId;
     var sponsorId;
     var tripId;
