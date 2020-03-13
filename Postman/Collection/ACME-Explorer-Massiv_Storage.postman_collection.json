@@ -1,0 +1,165 @@
+{
+	"info": {
+		"_postman_id": "4250ecc0-aa8f-44b2-89ef-f84fc01eaf73",
+		"name": "ACME-Explorer-Massiv_Storage",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "POST actors",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/{{ressource}}?dbURL={{MongoDBURL}}&mongooseModel=Actors&sourceFile={{folderLocation}}/dataActors.json",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"{{ressource}}"
+					],
+					"query": [
+						{
+							"key": "dbURL",
+							"value": "{{MongoDBURL}}"
+						},
+						{
+							"key": "mongooseModel",
+							"value": "Actors"
+						},
+						{
+							"key": "sourceFile",
+							"value": "{{folderLocation}}/dataActors.json"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST trips",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/{{ressource}}?dbURL={{MongoDBURL}}&mongooseModel=Trips&sourceFile={{folderLocation}}/dataTrips.json",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"{{ressource}}"
+					],
+					"query": [
+						{
+							"key": "dbURL",
+							"value": "{{MongoDBURL}}"
+						},
+						{
+							"key": "mongooseModel",
+							"value": "Trips"
+						},
+						{
+							"key": "sourceFile",
+							"value": "{{folderLocation}}/dataTrips.json"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST sponsorships",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/{{ressource}}?dbURL={{MongoDBURL}}&mongooseModel=Sponsorships&sourceFile={{folderLocation}}/dataSponsorships.json",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"{{ressource}}"
+					],
+					"query": [
+						{
+							"key": "dbURL",
+							"value": "{{MongoDBURL}}"
+						},
+						{
+							"key": "mongooseModel",
+							"value": "Sponsorships"
+						},
+						{
+							"key": "sourceFile",
+							"value": "{{folderLocation}}/dataSponsorships.json"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST applications",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/{{ressource}}?dbURL={{MongoDBURL}}&mongooseModel=Applications&sourceFile={{folderLocation}}/dataApplications.json",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"{{ressource}}"
+					],
+					"query": [
+						{
+							"key": "dbURL",
+							"value": "{{MongoDBURL}}"
+						},
+						{
+							"key": "mongooseModel",
+							"value": "Applications"
+						},
+						{
+							"key": "sourceFile",
+							"value": "{{folderLocation}}/dataApplications.json"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST finders",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/{{ressource}}?dbURL={{MongoDBURL}}&mongooseModel=Finders&sourceFile={{folderLocation}}/dataFinders.json",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"{{ressource}}"
+					],
+					"query": [
+						{
+							"key": "dbURL",
+							"value": "{{MongoDBURL}}"
+						},
+						{
+							"key": "mongooseModel",
+							"value": "Finders"
+						},
+						{
+							"key": "sourceFile",
+							"value": "{{folderLocation}}/dataFinders.json"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
