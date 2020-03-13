@@ -3,7 +3,8 @@ enable_cors = require('cors'),
 app = express(),
 port = process.env.PORT || 8080,
 mongoose = require('mongoose'),
-swaggerDoc = require('./api/routes/swaggerDoc'),
+swaggerDocV1 = require('./api/routes/swaggerDocV1'),
+swaggerDocV2 = require('./api/routes/swaggerDocV2'),
 GlobalVars = require('./api/models/globalVarsModel'),
 Actor = require('./api/models/actorModel'),
 Trip = require('./api/models/tripModel'),
@@ -45,7 +46,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(enable_cors());
 
-app.use("/v1", swaggerDoc);
+app.use("/v1", swaggerDocV1);
+app.use("/v2", swaggerDocV2);
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
@@ -75,8 +77,20 @@ routesLogin(app);
  
 console.log("Connecting DB to: " + mongoDBURI);
 mongoose.connection.on("open", function (err, conn) {
-    GlobalVars.findOneAndUpdate({}, {}, { upsert: true, new: true, setDefaultsOnInsert: true, runValidators: true }, (err, glob) => {
-        console.log(glob);
+    GlobalVars.findOneAndUpdate({}, {}, { upsert: true, new: true, setDefaultsOnInsert: true, runValidators: true }, (err, glob) => {});
+
+    Actors.findOne({"email": "admin@test.com"}, (err, actor) => {
+        if(!actor) {
+            new Actor({
+                "name": "Test",
+                "surname": "Test",
+                "email": "admin@test.com",
+                "phone": "012459786",
+                "password": "mdp",
+                "adress": "algun lugar",
+                "role": "Administrator"
+            }).save();
+        }
     });
     
     https.createServer({

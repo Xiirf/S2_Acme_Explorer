@@ -13,7 +13,8 @@
 var mongoose = require('mongoose')
 Actors = mongoose.model('Actors');
 var admin = require('firebase-admin');
-var LangDictionnary = require('../langDictionnary');
+var auth = require('./authController');
+var LangDictionnary = require('../../langDictionnary');
 var dict = new LangDictionnary();
 
  /**
@@ -44,7 +45,7 @@ var dict = new LangDictionnary();
  */
 exports.list_all_actors = function(req, res) {
     var lang = dict.getLang(req);
-    Actors.find({}, function(err, actors) {
+    Actors.find({}, { password: 0, customToken: 0 }, function(err, actors) {
         if(err) {
             res.status(500).send({ err: dict.get('ErrorGetDB', lang) });
         } else {
@@ -110,20 +111,27 @@ exports.list_all_actors = function(req, res) {
  */
 exports.create_an_actor = function(req, res) {
     var new_actor = new Actors(req.body);
-    var lang = dict.getLang(req);
-    new_actor.save(function(err, actor) {
-        if(err) {
-            if(err.name=='ValidationError') {
-                res.status(422).send({ err: dict.get('ErrorSchema', lang) });
+    createOperation = () => {
+        var lang = dict.getLang(req);
+        new_actor.save(function(err, actor) {
+            if(err) {
+                if(err.name=='ValidationError') {
+                    res.status(422).send({ err: dict.get('ErrorSchema', lang) });
+                }
+                else{
+                    console.error('Error create data in DB');
+                    res.status(500).send({ err: dict.get('ErrorCreatetDB', lang) });
+                }
+            } else {
+                res.status(201).send(actor);
             }
-            else{
-                console.error('Error create data in DB');
-                res.status(500).send({ err: dict.get('ErrorCreateDB', lang) });
-            }
-        } else {
-            res.status(201).send(actor);
-        }
-    });
+        });
+    }
+    if(new_actor.role != 'Explorer') {
+        auth.verifyUser(['Administrator'])(req, res, createOperation);
+    } else {
+        createOperation();
+    }
 }
 
 /**
@@ -160,22 +168,28 @@ exports.create_an_actor = function(req, res) {
  *           content: {}
  */
 exports.read_an_actor = function(req, res) {
-    var id = req.params.actorId;
-    var lang = dict.getLang(req);
-    Actors.findById(id, function (err, actor) {
-        if (err) {
-          console.error('Error getting data from DB');
-          res.status(500).send({ err: dict.get('ErrorGetDB', lang) }); // internal server error
-        } else {
-          if (actor) {
-            console.info("Sending actor: " + JSON.stringify(actor, 2, null));
-            res.send(actor);
-          } else {
-            console.warn(dict.get('RessourceNotFound', lang, 'actor', id));
-            res.status(404).send({ err: dict.get('RessourceNotFound', lang, 'actor', id) }); // not found
-          }
+    auth.verifyUser(['Administrator', 'Manager', 'Explorer', 'Sponsor'])(req, res, (error, user) => {
+        var id = req.params.actorId;
+        var lang = dict.getLang(req);
+        if(id != user._id) {
+            res.status(401).send({ err: dict.get('Unauthorized', lang) })
+            return;
         }
-      });
+        Actors.findById(id, { password: 0, customToken: 0 }, function (err, actor) {
+            if (err) {
+            console.error('Error getting data from DB');
+            res.status(500).send({ err: dict.get('ErrorGetDB', lang) }); // internal server error
+            } else {
+            if (actor) {
+                console.info("Sending actor: " + JSON.stringify(actor, 2, null));
+                res.send(actor);
+            } else {
+                console.warn(dict.get('RessourceNotFound', lang, 'actor', id));
+                res.status(404).send({ err: dict.get('RessourceNotFound', lang, 'actor', id) }); // not found
+            }
+            }
+        });
+    });
 }
 
 /**
@@ -222,42 +236,49 @@ exports.read_an_actor = function(req, res) {
  *           content: {}
  */
 exports.edit_an_actor = function(req, res) {
-    var updatedActor = req.body;
-    var id = req.params.actorId;
-    var lang = dict.getLang(req);
-    if (!updatedActor) {
-        console.warn("New PUT request to /actors/ without actor, sending 400...");
-        res.status(422).send({ err: dict.get('ErrorSchema', lang) }); // bad request
-    } else {
-        console.info("New PUT request to /actors/" + id + " with data " + JSON.stringify(updatedActor, 2, null));
-        Actors.findById(id, function(err, actor) {
-            if (err) {
-                console.error('Error getting data from DB');
-                res.status(500).send({ err: dict.get('ErrorGetDB', lang) }); // internal server error
-              } else {
-                if (actor) {
-                    actor = Object.assign(actor, updatedActor)
-                    actor.save(function(err2, newActor) {
-                        if (err2) {
-                            if(err.name=='ValidationError') {
-                                res.status(422).send({ err: dict.get('ErrorSchema', lang) });
-                            }
-                            else{
-                                console.error('Error updating data from DB');
-                                res.status(500).send({ err: dict.get('ErrorUpdateDB', lang) });
-                            }
-                        } else {
-                            res.send(newActor); // return the updated actor
-                        }
-                    });
-                    
+    console.log(req.headers);
+    auth.verifyUser(['Administrator', 'Manager', 'Explorer', 'Sponsor'])(req, res, (error, user) => {
+        var updatedActor = req.body;
+        var id = req.params.actorId;
+        var lang = dict.getLang(req);
+        if(id != user._id) {
+            res.status(401).send({ err: dict.get('Unauthorized', lang) })
+            return;
+        }
+        if (!updatedActor) {
+            console.warn("New PUT request to /actors/ without actor, sending 400...");
+            res.status(422).send({ err: dict.get('ErrorSchema', lang) }); // bad request
+        } else {
+            console.info("New PUT request to /actors/" + id + " with data " + JSON.stringify(updatedActor, 2, null));
+            Actors.findById(id, function(err, actor) {
+                if (err) {
+                    console.error('Error getting data from DB');
+                    res.status(500).send({ err: dict.get('ErrorGetDB', lang) }); // internal server error
                 } else {
-                  console.warn(dict.get('RessourceNotFound', lang, 'actor', id));
-                  res.status(404).send({ err: dict.get('RessourceNotFound', lang, 'actor', id) }); // not found
+                    if (actor) {
+                        actor = Object.assign(actor, updatedActor)
+                        actor.save(function(err2, newActor) {
+                            if (err2) {
+                                if(err2.name=='ValidationError') {
+                                    res.status(422).send({ err: dict.get('ErrorSchema', lang) });
+                                }
+                                else{
+                                    console.error('Error updating data from DB');
+                                    res.status(500).send({ err: dict.get('ErrorUpdateDB', lang) });
+                                }
+                            } else {
+                                res.send(newActor); // return the updated actor
+                            }
+                        });
+                        
+                    } else {
+                    console.warn(dict.get('RessourceNotFound', lang, 'actor', id));
+                    res.status(404).send({ err: dict.get('RessourceNotFound', lang, 'actor', id) }); // not found
+                    }
                 }
-            }
-        });
-    }
+            });
+        }
+    });
 }
 
 
@@ -362,14 +383,14 @@ exports.delete_an_actor = function(req, res) {
     var id = req.params.actorId;
     var lang = dict.getLang(req);
     Actors.findOneAndDelete({"_id": id}, null, function (err) {
-      if (err) {
-        console.error('Error removing data from DB');
-        res.status(500).send({ err: dict.get('ErrorDeleteDB', lang) }); // internal server error
-      } else {
-        console.info("The actor with id " + id + " has been succesfully deleted, sending 204...");
-        res.sendStatus(204); // no content
-      }
-    });
+        if (err) {
+            console.error('Error removing data from DB');
+            res.status(500).send({ err: dict.get('ErrorDeleteDB', lang) }); // internal server error
+        } else {
+            console.info("The actor with id " + id + " has been succesfully deleted, sending 204...");
+            res.sendStatus(204); // no content
+        }
+    })
 }
 
 /**

@@ -1,13 +1,29 @@
 'use strict';
 
 const express = require('express');
-var router = express.Router();
+var routerv1 = express.Router();
+var routerv2 = express.Router();
+
 
 module.exports = function(app) {
-    var dataWareHouse = require('../controllers/dataWareHouseController');
+	var dataWareHousev1 = require('../controllers/v1/dataWareHouseController');
+	var dataWareHousev2 = require('../controllers/v2/dataWareHouseController');
+	var auth = require('../controllers/v2/authController');
     
-    dataWareHouse.createDataWareHouseJob();
+	routerv1.route('/dataWareHouse')
+		.get(dataWareHousev1.list_all_indicators)
+		.post(dataWareHousev1.rebuildPeriod);
 
+	routerv1.route('/dataWareHouse/latest')
+		.get(dataWareHousev1.last_indicator);
+
+	routerv1.route('/dataWareHouse/cube')
+		.get(dataWareHousev1.read_cube_data)
+    	.post(dataWareHousev1.compute_cube);
+    
+	app.use("/v1/", routerv1);
+
+	dataWareHousev2.createDataWareHouseJob();
   	/**
 	 * Get a list of all indicators or post a new computation period for rebuilding
 	 * RequiredRole: Administrator
@@ -17,9 +33,9 @@ module.exports = function(app) {
 	 * @param [string] rebuildPeriod
 	 * 
 	*/
-	router.route('/dataWareHouse')
-		.get(dataWareHouse.list_all_indicators)
-		.post(dataWareHouse.rebuildPeriod);
+	routerv2.route('/dataWareHouse')
+		.get(auth.verifyUser(['Administrator']), dataWareHousev2.list_all_indicators)
+		.post(auth.verifyUser(['Administrator']), dataWareHousev2.rebuildPeriod);
 
 	/**
 	 * Get a list of last computed indicator
@@ -29,29 +45,29 @@ module.exports = function(app) {
 	 * @url /dataWareHouse/latest
 	 * 
 	*/
-	router.route('/dataWareHouse/latest')
-	.get(dataWareHouse.last_indicator);
+	routerv2.route('/dataWareHouse/latest')
+		.get(auth.verifyUser(['Administrator']), dataWareHousev2.last_indicator);
 	
 		/**
-	 * Get a list of last computed cube
-	 * RequiredRole: Administrator
-	 * @section dataWareHouse
-	 * @type get
-	 * @url /dataWareHouse/cube
-	 * 
-	*/
-	router.route('/dataWareHouse/cube')
-	.get(dataWareHouse.read_cube_data)
+		 * Get a list of last computed cube
+		 * RequiredRole: Administrator
+		 * @section dataWareHouse
+		 * @type get
+		 * @url /dataWareHouse/cube
+		 * 
+		*/
+	routerv2.route('/dataWareHouse/cube')
+		.get(auth.verifyUser(['Administrator']), dataWareHousev2.read_cube_data)
 	
 		/**
-	 * Generated a new cube
-	 * RequiredRole: Administrator
-	 * @section dataWareHouse
-	 * @type post
-	 * @url /dataWareHouse/cube
-	 * 
-	*/
-    .post(dataWareHouse.compute_cube);
+		 * Generated a new cube
+		 * RequiredRole: Administrator
+		 * @section dataWareHouse
+		 * @type post
+		 * @url /dataWareHouse/cube
+		 * 
+		*/
+    	.post(auth.verifyUser(['Administrator']), dataWareHousev2.compute_cube);
     
-    app.use("/v1/", router);
+    app.use("/v2/", routerv2);
 };
