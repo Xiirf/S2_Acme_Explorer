@@ -6,6 +6,7 @@ Para que funciona con https hay que hacer :
     File -> Settings -> SSL certificate verification: off
 
 Puede encontrar pruebas para todos los modelos y una collection "Massive_Storage" para la carga massiva de datos.
+Para cambiar el numero de item se puede cambiar para cada collection en ./data/generator.js
 
 ## Cube
 

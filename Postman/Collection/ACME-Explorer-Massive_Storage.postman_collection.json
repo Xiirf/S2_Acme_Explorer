@@ -1,0 +1,235 @@
+{
+	"info": {
+		"_postman_id": "4250ecc0-aa8f-44b2-89ef-f84fc01eaf73",
+		"name": "ACME-Explorer-Massive_Storage",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "POST actors",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "85f9e243-759d-44f0-95e3-06a06247c600",
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/{{ressource}}?dbURL={{MongoDBURL}}&mongooseModel=Actors&sourceFile={{folderLocation}}/dataActors.json",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"{{ressource}}"
+					],
+					"query": [
+						{
+							"key": "dbURL",
+							"value": "{{MongoDBURL}}"
+						},
+						{
+							"key": "mongooseModel",
+							"value": "Actors"
+						},
+						{
+							"key": "sourceFile",
+							"value": "{{folderLocation}}/dataActors.json"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST trips",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "41fbe2a2-d251-4d1d-bab9-a8d2a48601fe",
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/{{ressource}}?dbURL={{MongoDBURL}}&mongooseModel=Trips&sourceFile={{folderLocation}}/dataTrips.json",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"{{ressource}}"
+					],
+					"query": [
+						{
+							"key": "dbURL",
+							"value": "{{MongoDBURL}}"
+						},
+						{
+							"key": "mongooseModel",
+							"value": "Trips"
+						},
+						{
+							"key": "sourceFile",
+							"value": "{{folderLocation}}/dataTrips.json"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST sponsorships",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "e04b46f6-9bc4-4173-9c68-46765b634afe",
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/{{ressource}}?dbURL={{MongoDBURL}}&mongooseModel=Sponsorships&sourceFile={{folderLocation}}/dataSponsorships.json",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"{{ressource}}"
+					],
+					"query": [
+						{
+							"key": "dbURL",
+							"value": "{{MongoDBURL}}"
+						},
+						{
+							"key": "mongooseModel",
+							"value": "Sponsorships"
+						},
+						{
+							"key": "sourceFile",
+							"value": "{{folderLocation}}/dataSponsorships.json"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST applications",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "0a4483a0-4b43-4789-8b3e-9cb285b84b1d",
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/{{ressource}}?dbURL={{MongoDBURL}}&mongooseModel=Applications&sourceFile={{folderLocation}}/dataApplications.json",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"{{ressource}}"
+					],
+					"query": [
+						{
+							"key": "dbURL",
+							"value": "{{MongoDBURL}}"
+						},
+						{
+							"key": "mongooseModel",
+							"value": "Applications"
+						},
+						{
+							"key": "sourceFile",
+							"value": "{{folderLocation}}/dataApplications.json"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST finders",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "d0e3f75c-84aa-41e8-bb84-6e13e19268bc",
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/{{ressource}}?dbURL={{MongoDBURL}}&mongooseModel=Finders&sourceFile={{folderLocation}}/dataFinders.json",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"{{ressource}}"
+					],
+					"query": [
+						{
+							"key": "dbURL",
+							"value": "{{MongoDBURL}}"
+						},
+						{
+							"key": "mongooseModel",
+							"value": "Finders"
+						},
+						{
+							"key": "sourceFile",
+							"value": "{{folderLocation}}/dataFinders.json"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
