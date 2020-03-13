@@ -9,7 +9,10 @@ Trips = mongoose.model('Trips');
 Stages = mongoose.model('Stages');
 Applications = require('../../models/applicationModel');
 var LangDictionnary = require('../../langDictionnary');
+var Cacheman = require('cacheman');
 var dict = new LangDictionnary();
+
+var cache = new Cacheman('trips');
 
 /**
  * @swagger
@@ -112,6 +115,7 @@ exports.list_all_trips = function(req, res) {
 exports.search_trips = function(req, res) {
     var query = {};
     var lang = dict.getLang(req);
+    var keyCache = "";
 
     if(req.query.keyword){
         query.$text = {$search: req.query.keyword};
@@ -135,15 +139,26 @@ exports.search_trips = function(req, res) {
     query.published = true;
     query.cancelled = false;
 
-    Trips.find(query)
-        .lean()
-        .exec(function(err, trip){
-            if(err) {
-                res.status(500).send({ err: dict.get('ErrorGetDB', lang) });
-            } else {
-                res.status(200).json(trip);
+    keyCache = JSON.stringify(query);
+
+    cache.get(keyCache)
+        .then((value) => {
+            if (value == null) {
+                Trips.find(query)
+                    .lean()
+                    .exec(function(err, trip){
+                        if(err) {
+                            res.status(500).send({ err: dict.get('ErrorGetDB', lang) });
+                        } else {
+                            cache.set(keyCache, trip);
+                            res.status(200).json(trip);
+                        }
+                    });
             }
-        });
+            else {
+                res.status(200).json(value);
+            }
+        })
 }
 
 /**
@@ -184,6 +199,7 @@ exports.create_a_trip = function(req, res) {
                     res.status(500).send({ err: dict.get('ErrorCreateDB', lang) });
                 }
             } else {
+                cache.clear();
                 res.status(201).json(new_trip);
             }
     });
