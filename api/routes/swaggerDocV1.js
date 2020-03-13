@@ -66,8 +66,8 @@ const options = {
         "./api/controllers/v1/actorController.js",
         "./api/controllers/v1/sponsorshipController.js",
         "./api/controllers/v1/tripController.js",
-        "./api/controllers/applicationController.js",
-        "./api/controllers/finderController.js",
+        "./api/controllers/v1/applicationController.js",
+        "./api/controllers/v1/finderController.js",
         "./api/controllers/v1/dataWareHouseController.js",
         "./api/controllers/storageController.js"
     ],        
