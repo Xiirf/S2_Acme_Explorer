@@ -9,7 +9,7 @@ Applications = mongoose.model('Applications');
 const { expect } = chai;
 chai.use(chaiHttp);
 
-describe('Integration tests', () => {
+describe('Applications Integration Tests', () => {
     var managerId = null;
     var explorerId = null;
     var tripId = null;
@@ -38,7 +38,40 @@ describe('Integration tests', () => {
                 } 
                 else {
                     managerId = res.body._id;
-                    console.log("MANAGER " + managerId)
+
+                    chai
+                        .request(app)
+                        .post('/v1/trips')
+                        .send({
+                            "title": "testTitle",
+                            "description": "testDescription",
+                            "requirements": ["testRequirement"],
+                            "start": "2021-02-12",
+                            "end": "2021-02-28",
+                            "published": true,
+                            "stages": [
+                                {
+                                    "title": "Paris",
+                                    "description": "Paris step",
+                                    "price": 620
+                                },
+                                {
+                                    "title": "Rouen",
+                                    "description": "Rouen step",
+                                    "price": 380
+                                }
+                            ],
+                            "managerId": managerId
+                        })
+                        .end((err, res) => {
+                            if (err) {
+                                done(err);
+                            } 
+                            else {
+                                tripId = res.body._id;
+                                done();
+                            }
+                        });
                 }
             });
 
@@ -60,42 +93,6 @@ describe('Integration tests', () => {
                 } 
                 else {
                     explorerId = res.body._id;
-                    console.log("EXPLORER " + explorerId)
-                }
-            });
-
-        chai
-            .request(app)
-            .post('/v1/trips')
-            .send({
-                "title": "testTitle",
-                "description": "testDescription",
-                "requirements": ["testRequirement"],
-                "start": "2021-02-12",
-                "end": "2021-02-28",
-                "published": true,
-                "stages": [
-                    {
-                        "title": "Paris",
-                        "description": "Paris step",
-                        "price": 620
-                    },
-                    {
-                        "title": "Rouen",
-                        "description": "Rouen step",
-                        "price": 380
-                    }
-                ],
-                "managerId": managerId
-            })
-            .end((err, res) => {
-                if (err) {
-                    done(err);
-                } 
-                else {
-                    tripId = res.body._id;
-                    console.log("TRIP " + tripId)
-                    done();
                 }
             });
     });
@@ -110,8 +107,6 @@ describe('Integration tests', () => {
 
     describe('POST applications', () => {
         it('should return status code 201', done => {
-            console.log(explorerId);
-            console.log(tripId);
             chai
                 .request(app)
                 .post('/v1/applications')
@@ -145,7 +140,7 @@ describe('Integration tests', () => {
                 .request(app)
                 .post('/v1/applications')
                 .send({
-                    "idExplorer": explorerId,
+                    "idTrip": tripId,
                     "status": "PENDING",
                     "comments": [
                       "A comment",
@@ -154,6 +149,26 @@ describe('Integration tests', () => {
                 })
                 .end((err, res) => {
                     expect(res).to.have.status(422);
+
+                    if (err) done(err);
+                    else done();
+                });
+        });
+
+        it('should return status code 500', done => {
+            chai
+                .request(app)
+                .post('/v1/applications')
+                .send({
+                    "idExplorer": explorerId,
+                    "status": "PENDING",
+                    "comments": [
+                      "A comment",
+                      "Another comment"
+                    ]
+                })
+                .end((err, res) => {
+                    expect(res).to.have.status(500);
 
                     if (err) done(err);
                     else done();
