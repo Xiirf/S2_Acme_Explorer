@@ -176,137 +176,122 @@ describe('Applications Integration Tests', () => {
         });
     });
 
-//     describe('GET applications', () => {
-//         it('should return status code 200', done => {
-//             chai
-//                 .request(app)
-//                 .get('/v1/applications')
-//                 .end((err, res) => {
-//                     expect(res).to.have.status(200);
-//                     expect(res.body.length).to.equals(1);
-//                     expect(res.body[0].idExplorer).to.equals(actorId);
+    describe('GET applications', () => {
+        it('should return status code 200', done => {
+            chai
+                .request(app)
+                .get('/v1/applications')
+                .end((err, res) => {
+                    expect(res).to.have.status(200);
+                    expect(res.body.length).to.equals(1);
+                    expect(res.body[0].idExplorer).to.equals(explorerId);
+                    expect(res.body[0].idTrip).to.equals(tripId);
 
-//                     if (err) done(err);
-//                     else done();
-//                 });
-//         });
-//     });
+                    if (err) done(err);
+                    else done();
+                });
+        });
+    });
 
-//     describe('GET applications/:applicationsId', () => {
-//         it('should return status code 200', done => {
-//             chai
-//                 .request(app)
-//                 .get('/v1/applications/'+applicationId)
-//                 .end((err, res) => {
-//                     expect(res).to.have.status(200);
-//                     expect(res.body.idExplorer).to.equals(actorId);
+    describe('GET applications/:applicationsId', () => {
+        it('should return status code 200', done => {
+            chai
+                .request(app)
+                .get('/v1/applications/'+applicationId)
+                .end((err, res) => {
+                    expect(res).to.have.status(200);
+                    expect(res.body.idExplorer).to.equals(explorerId);
+                    expect(res.body.idTrip).to.equals(tripId);
 
-//                     if (err) done(err);
-//                     else done();
-//                 });
-//         });
+                    if (err) done(err);
+                    else done();
+                });
+        });
 
-//         it('should return status code 404', done => {
-//             chai
-//                 .request(app)
-//                 .get('/v1/applications/'+actorId)
-//                 .end((err, res) => {
-//                     expect(res).to.have.status(404);
+        it('should return status code 404', done => {
+            chai
+                .request(app)
+                .get('/v1/applications/'+tripId)
+                .end((err, res) => {
+                    expect(res).to.have.status(404);
 
-//                     if (err) done(err);
-//                     else done();
-//                 });
-//         });
-//     });
+                    if (err) done(err);
+                    else done();
+                });
+        });
+    });
 
-//     describe('PUT applications/:applicationsId', () => {
-//         it('should return status code 200', done => {
-//             chai
-//                 .request(app)
-//                 .put('/v1/applications/'+applicationId)
-//                 .send({
-//                     "idExplorer": actorId,
-//                     "keyWord": "Dijon",
-//                     "priceMin": 250,
-//                     "priceMax": 600,
-//                     "dateMin": "2020-02-12",
-//                     "dateMax": "2020-02-28"
-//                 })
-//                 .end((err, res) => {
-//                     expect(res).to.have.status(200);
-//                     expect(res.body.idExplorer).to.equals(actorId);
-//                     expect(res.body.keyWord).to.equals("Dijon");
-//                     expect(res.body.priceMin).to.equals(250);
-//                     expect(res.body.priceMax).to.equals(600);
+    describe('PUT applications/:applicationsId', () => {
+        it('should return status code 200', done => {
+            chai
+                .request(app)
+                .put('/v1/applications/'+applicationId)
+                .send({
+                    "idExplorer": explorerId,
+                    "idTrip": tripId,
+                    "status": "DUE",
+                    "comments": [
+                      "A comment",
+                      "Another comment"
+                    ],
+                    "reasonCancelling": "A reason"
+                })
+                .end((err, res) => {
+                    expect(res).to.have.status(200);
+                    expect(res.body.idExplorer).to.equals(explorerId);
+                    expect(res.body.status).to.equals("DUE");
 
-//                     if (err) done(err);
-//                     else done();
-//                 });
-//         });
+                    if (err) done(err);
+                    else done();
+                });
+        });
 
-//         it('should return status code 500', done => {
-//             chai
-//                 .request(app)
-//                 .put('/v1/applications/'+applicationId)
-//                 .send({
-//                     "keyWord": 45,
-//                     "priceMin": "Sevilla",
-//                     "priceMax": 400,
-//                     "dateMin": "2020-02-12",
-//                     "dateMax": "2020-02-28"
-//                 })
-//                 .end((err, res) => {
-//                     expect(res).to.have.status(500);
+        it('should return status code 404', done => {
+            chai
+                .request(app)
+                .put('/v1/applications/'+explorerId)
+                .send({
+                    "idExplorer": explorerId,
+                    "idTrip": tripId,
+                    "status": "DUE",
+                    "comments": [
+                      "A comment",
+                      "Another comment"
+                    ],
+                    "reasonCancelling": "A reason"
+                })
+                .end((err, res) => {
+                    expect(res).to.have.status(404);
 
-//                     if (err) done(err);
-//                     else done();
-//                 });
-//         });
+                    if (err) done(err);
+                    else done();
+                });
+        });
+    });
 
-//         it('should return status code 404', done => {
-//             chai
-//                 .request(app)
-//                 .put('/v1/applications/'+actorId)
-//                 .send({
-//                     "idExplorer": actorId,
-//                     "keyWord": "Dijon",
-//                     "priceMin": 250,
-//                     "priceMax": 600,
-//                     "dateMin": "2020-02-12",
-//                     "dateMax": "2020-02-28"
-//                 })
-//                 .end((err, res) => {
-//                     expect(res).to.have.status(404);
+    describe('DELETE applications/:applicationsId', () => {
+        it('should return status code 204', done => {
+            chai
+                .request(app)
+                .delete('/v1/applications/'+applicationId)
+                .end((err, res) => {
+                    expect(res).to.have.status(204);
 
-//                     if (err) done(err);
-//                     else done();
-//                 });
-//         });
-//     });
+                    if (err) done(err);
+                    else done();
+                });
+        });
 
-//     describe('DELETE applications/:applicationsId', () => {
-//         it('should return status code 204', done => {
-//             chai
-//                 .request(app)
-//                 .delete('/v1/applications/'+applicationId)
-//                 .end((err, res) => {
-//                     expect(res).to.have.status(204);
+        it('should return status code 204', done => {
+            chai
+                .request(app)
+                .delete('/v1/applications/'+applicationId)
+                .end((err, res) => {
+                    expect(res).to.have.status(204);
 
-//                     if (err) done(err);
-//                     else done();
-//                 });
-//         });
-
-//         it('should return status code 204', done => {
-//             chai
-//                 .request(app)
-//                 .delete('/v1/applications/'+applicationId)
-//                 .end((err, res) => {
-//                     expect(res).to.have.status(204);
-
-//                     if (err) done(err);
-//                     else done();
-//                 });
-//         });
-//     });
+                    if (err) done(err);
+                    else done();
+                });
+        });
+    });
 });
