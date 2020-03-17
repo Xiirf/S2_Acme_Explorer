@@ -8,11 +8,11 @@ application = require('./application-model.js'),
 finder = require('./finder-model.js');
 
 mocker()
-.schema('actors', actor, 10000)
-.schema('trips', trips, 10000)
-.schema('sponsorships', sponsorship, 10000)
-.schema('applications', application, 10000)
-.schema('finders', finder, 10000)
+.schema('actors', actor, 1000)
+.schema('trips', trips, 1000)
+.schema('sponsorships', sponsorship, 1000)
+.schema('applications', application, 1000)
+.schema('finders', finder, 1000)
 .build(function(error, data) {
     if (error) {
         console.error(error);

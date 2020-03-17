@@ -1,0 +1,410 @@
+{
+	"info": {
+		"_postman_id": "53393ade-af00-43d3-af73-8ebc2a7620ba",
+		"name": "ACME-Explorer-Applications",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "POST applications",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "f6a5b166-802e-4cda-b9ec-ac76fd9a4dd6",
+						"exec": [
+							"const echoPostRequestExplorer = {",
+							"    url: pm.environment.get('host') + '/actors',",
+							"    method: 'POST',",
+							"    header: {",
+							"        'content-type': 'application/json',",
+							"    },",
+							"    body: {",
+							"        mode: 'raw',",
+							"        raw: JSON.stringify({",
+							"            \"name\": \"Antoño\",",
+							"            \"surname\": \"Banderas\",",
+							"            \"email\": \"f@f.com\",",
+							"            \"phone\": \"012459786\",",
+							"            \"password\": \"pwd\",",
+							"            \"adress\": \"algun lugar\",",
+							"            \"role\": \"Explorer\"",
+							"        })",
+							"    }",
+							"};",
+							"pm.sendRequest(echoPostRequestExplorer, function (err, res) {",
+							"    console.log(err ? err : res.json());",
+							"    if (err === null) {",
+							"        pm.environment.set('explorer', res.json()._id)",
+							"",
+							"const echoPostRequestManager = {",
+							"    url: pm.environment.get('host') + '/actors',",
+							"    method: 'POST',",
+							"    header: {",
+							"        'content-type': 'application/json',",
+							"    },",
+							"    body: {",
+							"        mode: 'raw',",
+							"        raw: JSON.stringify({",
+							"            \"name\": \"Pedro\",",
+							"            \"surname\": \"Borita\",",
+							"            \"email\": \"t@t.com\",",
+							"            \"phone\": \"0123456789\",",
+							"            \"password\": \"pwd\",",
+							"            \"adress\": \"algun lugar\",",
+							"            \"role\": \"Manager\"",
+							"        })",
+							"    }",
+							"};",
+							"pm.sendRequest(echoPostRequestManager, function (err, res) {",
+							"    console.log(err ? err : res.json());",
+							"    if (err === null) {",
+							"        pm.environment.set('manager', res.json()._id)",
+							"        const echoPostRequestTrip = {",
+							"    url: pm.environment.get('host') + '/trips',",
+							"    method: 'POST',",
+							"    header: {",
+							"        'content-type': 'application/json',",
+							"    },",
+							"    body: {",
+							"        mode: 'raw',",
+							"        raw: JSON.stringify({",
+							"            \"title\": \"testTitle\",",
+							"        \t\"description\": \"testDescription\",",
+							"        \t\"requirements\": [\"testRequirement\"],",
+							"        \t\"start\": \"2021-02-12\",",
+							"        \t\"end\": \"2021-02-28\",",
+							"        \t\"published\": true,",
+							"        \t\"stages\": [",
+							"        \t\t{",
+							"        \t\t\t\"title\": \"Paris\",",
+							"        \t\t\t\"description\": \"Paris step\",",
+							"        \t\t\t\"price\": 620",
+							"        \t\t},",
+							"        \t\t{",
+							"        \t\t\t\"title\": \"Rouen\",",
+							"        \t\t\t\"description\": \"Rouen step\",",
+							"        \t\t\t\"price\": 380",
+							"        \t\t}",
+							"        \t],",
+							"        \t\"managerId\": pm.environment.get('manager')",
+							"        })",
+							"    }",
+							"};",
+							"pm.sendRequest(echoPostRequestTrip, function (err, res) {",
+							"    console.log(err ? err : res.json());",
+							"    if (err === null) {",
+							"        pm.environment.set('trip', res.json()._id)",
+							"    }",
+							"});",
+							"    }",
+							"});",
+							"    }",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "fc4a519d-22e5-4135-bb62-07ea3b531408",
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"idExplorer\": \"{{explorer}}\",\r\n  \"idTrip\": \"{{trip}}\",\r\n  \"status\": \"PENDING\",\r\n  \"comments\": [\r\n    \"A comment\",\r\n    \"Another comment\"\r\n  ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/applications",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"applications"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET applications",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "e108e96b-3178-42a6-85d0-876de855cba3",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/applications",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"applications"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET applications/:applicationId",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "25334014-44ee-4583-905a-ffa8b1c9cdd5",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "08ccfa7f-ce80-4f38-9f9c-eadcf3686968",
+						"exec": [
+							"var path = pm.variables.get(\"host\") + \"/applications\";",
+							"pm.sendRequest(path, function (err, response) {",
+							"    pm.environment.set(\"applicationId\", response.json()[0]._id);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/applications/{{applicationId}}",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"applications",
+						"{{applicationId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PUT applications/:applicationId",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "7633ff14-d157-4cf7-b066-0cb25b16c374",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "2f20e74d-29e6-48f8-86b8-30a756698acd",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200) });"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"idExplorer\": \"{{explorer}}\",\r\n  \"idTrip\": \"{{trip}}\",\r\n  \"status\": \"DUE\",\r\n  \"comments\": [\r\n    \"A comment\",\r\n    \"Another comment\"\r\n  ],\r\n  \"reasonCancelling\": \"A reason\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/applications/{{applicationId}}",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"applications",
+						"{{applicationId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PATCH applications/:applicationId",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "7633ff14-d157-4cf7-b066-0cb25b16c374",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "2f20e74d-29e6-48f8-86b8-30a756698acd",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200) });"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"status\": \"ACCEPTED\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/applications/{{applicationId}}/status",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"applications",
+						"{{applicationId}}",
+						"status"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE applications/:applicationId",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "5eab9e51-e676-492c-a31f-72a2d131b1f2",
+						"exec": [
+							"var path = pm.variables.get(\"host\") + \"/applications\";",
+							"pm.sendRequest(path, function (err, response) {",
+							"    pm.environment.set(\"applicationId\", response.json()[0]._id);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "212cd597-a9ce-4857-988b-b04ba34f84df",
+						"exec": [
+							"pm.test(\"Status code is 204\", function () { pm.response.to.have.status(204) });",
+							"const echoGetRequest = {",
+							"  url: pm.variables.get('host') + '/applications/' + pm.environment.get('applicationId'),",
+							"  method: 'GET',",
+							"};",
+							"pm.sendRequest(echoGetRequest, function (err, res) {",
+							"    pm.test(\"Item has been deleted\", function () { pm.expect(res.code).to.be.oneOf([404]) });",
+							"});",
+							"const echoDeleteRequest1 = {",
+							"  url: pm.variables.get('host') + '/trips/' + pm.environment.get('trip'),",
+							"  method: 'DELETE',",
+							"};",
+							"pm.sendRequest(echoDeleteRequest1)",
+							"const echoDeleteRequest2 = {",
+							"  url: pm.variables.get('host') + '/actors/' + pm.environment.get('explorer'),",
+							"  method: 'DELETE',",
+							"};",
+							"pm.sendRequest(echoDeleteRequest2)",
+							"const echoDeleteRequest3 = {",
+							"  url: pm.variables.get('host') + '/actors/' + pm.environment.get('manager'),",
+							"  method: 'DELETE',",
+							"};",
+							"pm.sendRequest(echoDeleteRequest3)"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/applications/{{applicationId}}",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"applications",
+						"{{applicationId}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}

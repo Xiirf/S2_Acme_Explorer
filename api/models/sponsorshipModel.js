@@ -82,7 +82,7 @@ sponsorshipModel.index( { payed: -1 } );
 
 sponsorshipModel.pre('save', function(callback) {
     var sponsorship = this;
-    // Break out if the password hasn't changed
+
     if (sponsorship.price != null) return callback();
     
     GlobalVars.findOne({}, (err, res) => {

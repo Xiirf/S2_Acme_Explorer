@@ -42,6 +42,7 @@ var finderSchema = new Schema({
     idExplorer: {
         type: mongodb.ObjectID,
         required: 'Kindly enter the idExplorer of the finder',
+        unique: true,
         validate: {
             validator: async function(v) {
                 return Promise.resolve(Actors.findById(v, function(err, actor) {

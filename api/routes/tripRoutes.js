@@ -3,7 +3,7 @@
 const express = require('express');
 var routerV1 = express.Router();
 var routerV2 = express.Router();
-var authController = require('../controllers/authController');
+var authController = require('../controllers/v2/authController');
 
 module.exports = function(app) {
     var tripsV1 = require('../controllers/v1/tripController');
