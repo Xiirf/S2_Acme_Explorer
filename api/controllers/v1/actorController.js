@@ -167,7 +167,6 @@ exports.read_an_actor = function(req, res) {
           res.status(500).send({ err: dict.get('ErrorGetDB', lang) }); // internal server error
         } else {
           if (actor) {
-            console.info("Sending actor: " + JSON.stringify(actor, 2, null));
             res.send(actor);
           } else {
             console.warn(dict.get('RessourceNotFound', lang, 'actor', id));
@@ -228,7 +227,6 @@ exports.edit_an_actor = function(req, res) {
         console.warn("New PUT request to /actors/ without actor, sending 400...");
         res.status(422).send({ err: dict.get('ErrorSchema', lang) }); // bad request
     } else {
-        console.info("New PUT request to /actors/" + id + " with data " + JSON.stringify(updatedActor, 2, null));
         Actors.findById(id, function(err, actor) {
             if (err) {
                 console.error('Error getting data from DB');
@@ -238,7 +236,7 @@ exports.edit_an_actor = function(req, res) {
                     actor = Object.assign(actor, updatedActor)
                     actor.save(function(err2, newActor) {
                         if (err2) {
-                            if(err.name=='ValidationError') {
+                            if(err2.name=='ValidationError') {
                                 res.status(422).send({ err: dict.get('ErrorSchema', lang) });
                             }
                             else{
@@ -315,7 +313,6 @@ exports.handle_actor_banishment = function(req, res) {
         console.warn("New PATCH request to /actors/id/ban without correct attribute banned, sending 422...");
         res.status(422).send({ err: dict.get('ErrorSchema', lang) });
     } else {
-        console.info("New PATCH request to /actors/" + id + "/ban with value " + JSON.stringify(banned, 2, null));
         Actors.findOneAndUpdate({"_id": id}, { "banned": banned }, { new: true }, function(err, actor) {
             if (err) {
                 console.error('Error getting data from DB');
@@ -365,7 +362,6 @@ exports.delete_an_actor = function(req, res) {
         console.error('Error removing data from DB');
         res.status(500).send({ err: dict.get('ErrorDeleteDB', lang) }); // internal server error
       } else {
-        console.info("The actor with id " + id + " has been succesfully deleted, sending 204...");
         res.sendStatus(204); // no content
       }
     });

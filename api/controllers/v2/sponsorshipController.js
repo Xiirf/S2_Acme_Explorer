@@ -177,7 +177,6 @@ exports.read_a_sponsorship = function(req, res) {
                         res.status(401).send({ err: dict.get('Unauthorized', lang) })
                         return;
                     }
-                    console.info("Sending sponsorship: " + JSON.stringify(sponsorship, 2, null));
                     res.send(sponsorship);
                 } else {
                     console.warn("There are no sponsorship with id " + id);
@@ -257,7 +256,7 @@ exports.edit_a_sponsorship = function(req, res) {
                         sponsorship = Object.assign(sponsorship, updatedSponsorship);
                         sponsorship.save(function(err2, newSponsorship) {
                             if (err2) {
-                                if(err.name=='ValidationError') {
+                                if(err2.name=='ValidationError') {
                                     res.status(422).send({ err: dict.get('ErrorSchema', lang) });
                                 }
                                 else{
@@ -334,7 +333,6 @@ exports.handle_sponsorship_payement = function(req, res) {
             console.warn("New PATCH request to /sponsorships/id/pay without correct attribute payed, sending 400...");
             res.status(422).send({ err: dict.get('ErrorSchema', lang) });
         } else {
-            console.info("New PATCH request to /sponsorships/" + id + "/pay with value " + JSON.stringify(payed, 2, null));
             Sponsorships.findOneAndUpdate({"_id": id}, { "payed": payed }, { new: true }, function(err, sponsorship) {
                 if (err) {
                     if(err.name=='ValidationError') {
@@ -408,7 +406,6 @@ exports.handle_flat_rate_change = function(req, res) {
         console.warn("New PATCH request to /sponsorships/flatRate without correct attribute flatRateSponsorships, sending 400...");
         res.status(422).send({ err: dict.get('ErrorSchema', lang) });
     } else {
-        console.info("New PATCH request to /sponsorships/flatRate with value " + JSON.stringify(flatRateSponsorships, 2, null));
         GlobalVars.findOneAndUpdate({}, { "flatRateSponsorships": flatRateSponsorships }, { upsert: true, new: true, setDefaultsOnInsert: true, runValidators: true }, function(err, globalVars) {
             if (err) {
                 if(err.name=='ValidationError') {
@@ -460,7 +457,6 @@ exports.delete_a_sponsorship = function(req, res) {
                 console.error('Error removing data from DB');
                 res.status(500).send({ err: dict.get('ErrorDeleteDB', lang) }); // internal server error
             } else {
-                console.info("The sponsorship with id " + id + " has been succesfully deleted, sending 204...");
                 res.sendStatus(204); // no content
             }
         });

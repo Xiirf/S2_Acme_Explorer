@@ -259,7 +259,7 @@ exports.edit_an_actor = function(req, res) {
                         actor = Object.assign(actor, updatedActor)
                         actor.save(function(err2, newActor) {
                             if (err2) {
-                                if(err.name=='ValidationError') {
+                                if(err2.name=='ValidationError') {
                                     res.status(422).send({ err: dict.get('ErrorSchema', lang) });
                                 }
                                 else{
