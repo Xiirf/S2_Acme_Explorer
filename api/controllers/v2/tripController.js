@@ -37,22 +37,23 @@ exports.list_all_trips = function(req, res) {
     var lang = dict.getLang(req);
     authController.getUserRoleAndId(token)
         .then((actor) => {
+            var query = {};
             if (actor.role == "Manager") {
                 query = {managerId: actor.id};
             } else if (actor.role == "Explorer") {
                 query = {published: true};
             }
+            Trips.find(query, function(err, trips) {
+                if(err) {
+                    res.status(500).send({ err: dict.get('ErrorGetDB', lang) });
+                } else {
+                    res.status(200).json(trips);
+                }
+            });
         })
         .catch((err) => {
             return res.status(500).send(err);
         });
-    Trips.find(query, function(err, trips) {
-        if(err) {
-            res.status(500).send({ err: dict.get('ErrorGetDB', lang) });
-        } else {
-            res.status(200).json(trips);
-        }
-    });
 }
 
 /**
