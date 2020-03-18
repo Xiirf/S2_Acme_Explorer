@@ -102,7 +102,7 @@ describe('Actors Integration tests', () => {
                 "email": "f@f.com",
                 "phone": "012459786",
                 "password": "s",
-                "adress": "d",
+                "address": "d",
                 "role": "Administrator"
             })
             .end((err, res) => {
@@ -155,7 +155,7 @@ describe('Actors Integration tests', () => {
             "email": "f@f.com",
             "phone": "987654321",
             "password": "s",
-            "adress": "d",
+            "address": "d",
             "role": "Sponsor"
         };
         var wrongActor = {
@@ -165,7 +165,7 @@ describe('Actors Integration tests', () => {
             "email": "not an email",
             "phone": "987654321",
             "password": "s",
-            "adress": "d",
+            "address": "d",
             "role": "NonExistantRole"
         };
         it('should return status code 200', done => {

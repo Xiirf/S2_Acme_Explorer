@@ -89,7 +89,7 @@ exports.list_all_actors = function(req, res) {
  *                  type: string
  *                phone:
  *                  type: string
- *                adress:
+ *                address:
  *                  type: string
  *                role:
  *                  type: string

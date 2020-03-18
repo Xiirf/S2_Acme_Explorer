@@ -25,7 +25,7 @@ describe('Finders Integration tests', () => {
                 "email": "f@f.com",
                 "phone": "012459786",
                 "password": "pwd",
-                "adress": "algun lugar",
+                "address": "algun lugar",
                 "role": "Explorer"
             })
             .end((err, res) => {
