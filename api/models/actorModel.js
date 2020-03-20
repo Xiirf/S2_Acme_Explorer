@@ -49,7 +49,7 @@ var actorModel = new Schema({
     }, password: {
         type: String,
         required: 'Enter the password of the actor please'
-    }, adress: {
+    }, address: {
         type: String
     }, phone: {
         type: String

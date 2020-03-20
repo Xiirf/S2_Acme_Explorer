@@ -89,7 +89,7 @@ exports.list_all_actors = function(req, res) {
  *                  type: string
  *                phone:
  *                  type: string
- *                adress:
+ *                address:
  *                  type: string
  *                role:
  *                  type: string
@@ -429,6 +429,7 @@ exports.login_an_actor = async function(req, res) {
     console.log('starting login an actor');
     var emailParam = req.query.email;
     var password = req.query.password;
+    var lang = dict.getLang(req);
     Actors.findOne({ email: emailParam }, function (err, actor) {
         if (err) { res.send(err); }
   

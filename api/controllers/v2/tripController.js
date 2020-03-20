@@ -23,24 +23,6 @@ var cache = new Cacheman('trips');
  *      summary: Get all trips according to the query params
  *      tags: [Trips]
  *      parameters:
- *         - name: published
- *           in: query
- *           description: trip published
- *           required: false
- *           schema:
- *             type: boolean
- *         - name: cancelled
- *           in: query
- *           description: trip cancelled
- *           required: false
- *           schema:
- *             type: boolean
- *         - name: dateMin
- *           in: query
- *           description: Date min
- *           required: false
- *           schema:
- *             type: date
  *         - $ref: '#/components/parameters/language'
  *      responses:
  *        "200":
@@ -54,15 +36,27 @@ var cache = new Cacheman('trips');
  *          description: Internal error
  */
 exports.list_all_trips = function(req, res) {
-    var query = req.query;
+    var token = req.headers['authorization'];
     var lang = dict.getLang(req);
-    Trips.find(query, function(err, trips) {
-        if(err) {
-            res.status(500).send({ err: dict.get('ErrorGetDB', lang) });
-        } else {
-            res.status(200).json(trips);
-        }
-    });
+    authController.getUserRoleAndId(token)
+        .then((actor) => {
+            var query = {};
+            if (actor.role == "Manager") {
+                query = {managerId: actor.id};
+            } else if (actor.role == "Explorer") {
+                query = {published: true};
+            }
+            Trips.find(query, function(err, trips) {
+                if(err) {
+                    res.status(500).send({ err: dict.get('ErrorGetDB', lang) });
+                } else {
+                    res.status(200).json(trips);
+                }
+            });
+        })
+        .catch((err) => {
+            return res.status(500).send(err);
+        });
 }
 
 /**

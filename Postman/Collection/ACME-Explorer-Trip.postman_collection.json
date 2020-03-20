@@ -27,7 +27,7 @@
 							"            \"email\": \"f@testTripTest.com\",\r",
 							"            \"phone\": \"012459786\",\r",
 							"            \"password\": \"pwd\",\r",
-							"            \"adress\": \"algun lugar\",\r",
+							"            \"address\": \"algun lugar\",\r",
 							"            \"role\": \"Manager\"\r",
 							"        })\r",
 							"    }\r",

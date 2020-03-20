@@ -42,7 +42,7 @@ module.exports = {
             return "+" + this.chance.integer({"min": 1, "max": 99}) + " " + this.chance.integer({"min": 100000000, "max": 999999999});
         }
     },
-    adress: {
+    address: {
         function: function() {
             return this.faker.address.streetAddress() + " " + this.faker.address.city() + ", " + this.casual.country;
         }

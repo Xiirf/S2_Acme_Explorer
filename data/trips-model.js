@@ -75,6 +75,8 @@ module.exports = {
             while((actor = this.faker.random.arrayElement(this.db.actors)).role != "Manager") {}
             return actor._id;
         }
+    }, published: {
+        values: [true, false, false, false, false]
     },
     __v: {
         static: 0
