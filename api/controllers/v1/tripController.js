@@ -144,16 +144,23 @@ exports.search_trips = function(req, res) {
     cache.get(keyCache)
         .then((value) => {
             if (value == null) {
-                Trips.find(query)
-                    .lean()
-                    .exec(function(err, trip){
-                        if(err) {
-                            res.status(500).send({ err: dict.get('ErrorGetDB', lang) });
-                        } else {
-                            cache.set(keyCache, trip);
-                            res.status(200).json(trip);
-                        }
-                    });
+                GlobalVars.find({}, function(err, globalVars) {
+                    if(err) {
+                        res.status(500).send({ err: dict.get('ErrorGetDB', lang) });
+                    } else {
+                        Trips.find(query)
+                            .lean()
+                            .limit(globalVars.maxNumberFinderResults)
+                            .exec(function(err, trip){
+                                if(err) {
+                                    res.status(500).send({ err: dict.get('ErrorGetDB', lang) });
+                                } else {
+                                    cache.set(keyCache, trip, globalVars.cacheTimeOutFinderResults + 'h');
+                                    res.status(200).json(trip);
+                                }
+                            });
+                    }
+                });
             }
             else {
                 res.status(200).json(value);
@@ -312,6 +319,7 @@ exports.edit_a_trip = function(req, res) {
                         } else if (!trip) {
                             res.status(404).send({ err: dict.get('RessourceNotFound', lang, 'trip', req.params.tripId) });
                         } else {
+                            cache.clear();
                             unique_find(req, res);
                         }
                     })
@@ -361,6 +369,7 @@ exports.delete_a_trip = function(req, res) {
                         if(err) {
                             res.status(500).send({ err: dict.get('ErrorDeleteDB', lang) });
                         } else {
+                            cache.clear();
                             res.sendStatus(204);
                         }
                     });
@@ -444,6 +453,7 @@ exports.add_a_stage_in_trip = function(req, res) {
                                     res.status(500).send({ err: dict.get('ErrorUpdateDB', lang) });
                                 }
                             } else {
+                                cache.clear();
                                 res.status(200).send(newTrip); // return the updated actor
                             }
                         });
@@ -537,6 +547,7 @@ exports.cancel_a_trip = function(req, res) {
                                             res.status(500).send({ err: dict.get('ErrorUpdateDB', lang) });
                                         }
                                     } else {
+                                        cache.clear();
                                         res.status(200).send(newTrip); // return the updated actor
                                     }
                                 });

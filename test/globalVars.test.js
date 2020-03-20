@@ -38,33 +38,33 @@ describe('GlobalVars Integration tests', () => {
             }
         })
 
-    // var handleTimeOutResultsFunc = (done, patch, callback) => chai
-    //     .request(app)
-    //     .patch('/v1/finders/flatRate')
-    //     .send(patch)
-    //     .end((err, res) => {
-    //         if (err) {
-    //             done(err);
-    //         } 
-    //         else {
-    //             callback(res);
-    //             done();
-    //         }
-    //     })
+    var handleTimeOutResultsFunc = (done, patch, callback) => chai
+        .request(app)
+        .patch('/v1/globalVars/cacheTimeOutFinderResults')
+        .send(patch)
+        .end((err, res) => {
+            if (err) {
+                done(err);
+            } 
+            else {
+                callback(res);
+                done();
+            }
+        })
 
-    // var handleMaxNumberResults = (done, patch, callback) => chai
-    //     .request(app)
-    //     .patch('/v1/sponsorships/flatRate')
-    //     .send(patch)
-    //     .end((err, res) => {
-    //         if (err) {
-    //             done(err);
-    //         } 
-    //         else {
-    //             callback(res);
-    //             done();
-    //         }
-    //     })
+    var handleMaxNumberResults = (done, patch, callback) => chai
+        .request(app)
+        .patch('/v1/globalVars/maxNumberFinderResults')
+        .send(patch)
+        .end((err, res) => {
+            if (err) {
+                done(err);
+            } 
+            else {
+                callback(res);
+                done();
+            }
+        })
 
     before((done) => {
         GlobalVars.collection.deleteMany({}, () => {
@@ -95,7 +95,7 @@ describe('GlobalVars Integration tests', () => {
         it('should return status code 200', done => {
             handleFlatRateFunc(done, correctPatch, res => expect(res).to.have.status(200));
         });
-        it('should return the right banned actor', done => {
+        it('should return the right number', done => {
             handleFlatRateFunc(done, correctPatch,  res => expect(res.body.flatRateSponsorships).to.eql(50));
         });
         it('should return status code 422', done => {
@@ -103,41 +103,53 @@ describe('GlobalVars Integration tests', () => {
         });
     });
 
-    // describe('PATCH Finders TimeOutResults', () => {
-    //     var correctPatch = {
-    //         "cacheTimeOutFinderResults": 50,
-    //     };
-    //     var wrongPatch = {
-    //         "cacheTimeOutFinderResults": -50
-    //     };
-    //     it('should return status code 200', done => {
-    //         handleTimeOutResultsFunc(done, correctPatch, res => expect(res).to.have.status(200));
-    //     });
-    //     it('should return the right banned actor', done => {
-    //         handleTimeOutResultsFunc(done, correctPatch,  res => expect(res.body.cacheTimeOutFinderResults).to.eql(50));
-    //     });
-    //     it('should return status code 422', done => {
-    //         handleTimeOutResultsFunc(done, wrongPatch, res => expect(res).to.have.status(422));
-    //     });
-    // });
+    describe('PATCH Finders TimeOutResults', () => {
+        var correctPatch = {
+            "cacheTimeOutFinderResults": 8,
+        };
+        var wrongPatchBelow = {
+            "cacheTimeOutFinderResults": -50
+        };
+        var wrongPatchAbove = {
+            "cacheTimeOutFinderResults": 15
+        };
+        it('should return status code 200', done => {
+            handleTimeOutResultsFunc(done, correctPatch, res => expect(res).to.have.status(200));
+        });
+        it('should return the right number', done => {
+            handleTimeOutResultsFunc(done, correctPatch,  res => expect(res.body.cacheTimeOutFinderResults).to.eql(8));
+        });
+        it('should return status code 422', done => {
+            handleTimeOutResultsFunc(done, wrongPatchBelow, res => expect(res).to.have.status(422));
+        });
+        it('should return status code 422', done => {
+            handleTimeOutResultsFunc(done, wrongPatchAbove, res => expect(res).to.have.status(422));
+        });
+    });
 
-    // describe('PATCH Finders MaxNumberResults', () => {
-    //     var correctPatch = {
-    //         "maxNumberFinderResults": 50,
-    //     };
-    //     var wrongPatch = {
-    //         "maxNumberFinderResults": -50
-    //     };
-    //     it('should return status code 200', done => {
-    //         handleMaxNumberResults(done, correctPatch, res => expect(res).to.have.status(200));
-    //     });
-    //     it('should return the right banned actor', done => {
-    //         handleMaxNumberResults(done, correctPatch,  res => expect(res.body.maxNumberFinderResults).to.eql(50));
-    //     });
-    //     it('should return status code 422', done => {
-    //         handleMaxNumberResults(done, wrongPatch, res => expect(res).to.have.status(422));
-    //     });
-    // });
+    describe('PATCH Finders MaxNumberResults', () => {
+        var correctPatch = {
+            "maxNumberFinderResults": 50,
+        };
+        var wrongPatchBelow = {
+            "maxNumberFinderResults": -50
+        };
+        var wrongPatchAbove = {
+            "maxNumberFinderResults": 150
+        };
+        it('should return status code 200', done => {
+            handleMaxNumberResults(done, correctPatch, res => expect(res).to.have.status(200));
+        });
+        it('should return the right number', done => {
+            handleMaxNumberResults(done, correctPatch,  res => expect(res.body.maxNumberFinderResults).to.eql(50));
+        });
+        it('should return status code 422', done => {
+            handleMaxNumberResults(done, wrongPatchBelow, res => expect(res).to.have.status(422));
+        });
+        it('should return status code 422', done => {
+            handleMaxNumberResults(done, wrongPatchAbove, res => expect(res).to.have.status(422));
+        });
+    });
 
     after((done) => {
         GlobalVars.collection.deleteMany({}, () => {

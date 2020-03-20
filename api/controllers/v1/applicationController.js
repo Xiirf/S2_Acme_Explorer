@@ -256,7 +256,7 @@ exports.delete_an_application = function(req, res) {
  *              required:
  *                - status
  *              properties:
- *                banned:
+ *                status:
  *                  type: string
  *      responses:
  *        '200':
