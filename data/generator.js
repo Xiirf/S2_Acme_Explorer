@@ -17,21 +17,34 @@ mocker()
     if (error) {
         console.error(error);
     } else {
-        console.log(data.actors.length + " actors generated");
-        console.log(data.trips.length + " trips generated");
-        console.log(data.sponsorships.length + " sponsorships generated");
-        console.log(data.applications.length + " applications generated");
-        console.log(data.finders.length + " finders generated");
-        fs.writeFileSync('dataActors.json', JSON.stringify(data.actors));
+        var idExplorer = new Array();
+        var finders = new Array()
+
         data.trips.forEach(trip => {
             trip.price = 0;
             trip.stages.forEach((stage => {
                 trip.price += stage.price;
             }))
         });
+
+        data.finders.forEach(finder => {
+            if (!idExplorer.includes(finder.idExplorer)) {
+                idExplorer.push(finder.idExplorer);
+                finders.push(finder);
+            }
+        });
+        data.finders = finders;
+        
+        fs.writeFileSync('dataActors.json', JSON.stringify(data.actors));
         fs.writeFileSync('dataTrips.json', JSON.stringify(data.trips));
         fs.writeFileSync('dataSponsorships.json', JSON.stringify(data.sponsorships));
         fs.writeFileSync('dataApplications.json', JSON.stringify(data.applications));
         fs.writeFileSync('dataFinders.json', JSON.stringify(data.finders));
+
+        console.log(data.actors.length + " actors generated");
+        console.log(data.trips.length + " trips generated");
+        console.log(data.sponsorships.length + " sponsorships generated");
+        console.log(data.applications.length + " applications generated");
+        console.log(data.finders.length + " finders generated");
     }
 })
