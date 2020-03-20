@@ -10,7 +10,7 @@ const options = {
       openapi: "3.0.0",
       info: {
         title: "API ACME Explorer",
-        version: "1.0.0",
+        version: "2.0.0",
         description:
           "Documentation API ACME Explorer",
         license: {
@@ -50,7 +50,7 @@ const options = {
       }],
       servers: [
         {
-          url: process.env.urlApp || "https://localhost:8080/v1"
+          url: process.env.urlApp || "https://localhost:8080/v2"
         }
       ]
     },
@@ -62,13 +62,13 @@ const options = {
         "./api/models/finderModel.js",
         "./api/models/globalVarsModel.js",
         "./api/models/dataWareHouseModel.js",
-        "./api/controllers/v1/globalVarsController.js",
-        "./api/controllers/v1/actorController.js",
-        "./api/controllers/v1/sponsorshipController.js",
-        "./api/controllers/v1/tripController.js",
-        "./api/controllers/v1/applicationController.js",
-        "./api/controllers/v1/finderController.js",
-        "./api/controllers/v1/dataWareHouseController.js",
+        "./api/controllers/v2/globalVarsController.js",
+        "./api/controllers/v2/actorController.js",
+        "./api/controllers/v2/sponsorshipController.js",
+        "./api/controllers/v2/tripController.js",
+        "./api/controllers/v2/applicationController.js",
+        "./api/controllers/v2/finderController.js",
+        "./api/controllers/v2/dataWareHouseController.js",
         "./api/controllers/storageController.js"
     ],        
   };
