@@ -109,7 +109,7 @@ describe('Sponsorships Integration tests', () => {
                 "email": "t@t.com",
                 "phone": "0123456789",
                 "password": "pwd",
-                "adress": "algun lugar",
+                "address": "algun lugar",
                 "role": "Manager"
             })
             .end((err, resManager) => {
@@ -127,7 +127,7 @@ describe('Sponsorships Integration tests', () => {
                         "email": "f@f.com",
                         "phone": "012459786",
                         "password": "pwd",
-                        "adress": "algun lugar",
+                        "address": "algun lugar",
                         "role": "Sponsor"
                     })
                     .end((err, resSponsor) => {

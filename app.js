@@ -87,7 +87,7 @@ mongoose.connection.on("open", function (err, conn) {
                 "email": "admin@test.com",
                 "phone": "012459786",
                 "password": "mdp",
-                "adress": "algun lugar",
+                "address": "algun lugar",
                 "role": "Administrator"
             }).save();
         }

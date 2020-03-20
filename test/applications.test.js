@@ -29,7 +29,7 @@ describe('Applications Integration Tests', () => {
                 "email": "f@f.com",
                 "phone": "012459786",
                 "password": "pwd",
-                "adress": "algun lugar",
+                "address": "algun lugar",
                 "role": "Manager"
             })
             .end((err, res) => {
@@ -84,7 +84,7 @@ describe('Applications Integration Tests', () => {
                 "email": "foo@fr.com",
                 "phone": "012459786",
                 "password": "123",
-                "adress": "algun lugar",
+                "address": "algun lugar",
                 "role": "Explorer"
             })
             .end((err, res) => {

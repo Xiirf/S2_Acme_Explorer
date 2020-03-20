@@ -26,7 +26,7 @@ describe('Trips Integration tests', () => {
                 "email": "flavien@testManager.com",
                 "phone": "012459786",
                 "password": "pwd",
-                "adress": "algun lugar",
+                "address": "algun lugar",
                 "role": "Manager"
             })
             .end((err, res) => {
