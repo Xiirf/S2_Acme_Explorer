@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "5557a921-9f92-4ea3-9c27-19e5252e146a",
+		"_postman_id": "a49eb09f-a058-4939-aa66-f7e8a000dfef",
 		"name": "ACME-Explorer-Finders",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -189,7 +189,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"idExplorer\": \"{{explorer}}\",\r\n  \"keyWord\": \"Paris\",\r\n  \"priceMin\": 250,\r\n  \"priceMax\": 650,\r\n  \"dateMin\": \"2020-02-12\",\r\n  \"dateMax\": \"2020-02-28\"\r\n}",
+					"raw": "{\r\n  \"keyWord\": \"Paris\",\r\n  \"priceMin\": 250,\r\n  \"priceMax\": 650,\r\n  \"dateMin\": \"2020-02-12\",\r\n  \"dateMax\": \"2020-02-28\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -204,6 +204,49 @@
 					"path": [
 						"finders",
 						"{{findersId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET finders/byExplorer/explorerId",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "d1000ce8-b5f8-4ed1-9c7b-866db579201b",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "b3c83f03-ea2b-4b4c-a965-f850784359a6",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/finders/byExplorer/{{explorer}}",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"finders",
+						"byExplorer",
+						"{{explorer}}"
 					]
 				}
 			},

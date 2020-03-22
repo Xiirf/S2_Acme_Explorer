@@ -16,6 +16,8 @@ module.exports = function(app) {
         .get(findersV1.read_a_finder)
         .put(findersV1.edit_a_finder)
         .delete(findersV1.delete_a_finder);
+    routerV1.route('/finders/byExplorer/:explorerId')
+        .get(findersV1.read_a_finder_with_explorer_id);
     
     routerV2.route('/finders')
         .get(authController.verifyUser(["Explorer"]), findersV2.list_all_finders)
@@ -24,6 +26,8 @@ module.exports = function(app) {
         .get(authController.verifyUser(["Explorer"]), findersV2.read_a_finder)
         .put(authController.verifyUser(["Explorer"]), findersV2.edit_a_finder)
         .delete(authController.verifyUser(["Administrator"]), findersV2.delete_a_finder);
+    routerV2.route('/finders/byExplorer/:explorerId')
+        .get(authController.verifyUser(["Explorer"]), findersV2.read_a_finder_with_explorer_id);
     
     app.use("/v1/", routerV1);
     app.use("/v2/", routerV2);
