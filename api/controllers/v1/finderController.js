@@ -168,20 +168,29 @@ exports.read_a_finder = function(req, res) {
  */
 exports.edit_a_finder = function(req, res) {
     var lang = dict.getLang(req);
-    Finders.findOneAndUpdate({_id: req.params.finderId}, req.body, {new:true, runValidators: true}, function(err, finder) {
+    var updatedFinder = req.body;
+
+    Finders.findById(req.params.finderId, function(err, finder) {
         if (err) {
-            if (err.name=='ValidationError') {
-                res.status(422).send({ err: dict.get('ErrorSchema', lang) });
-            }
-            else {
-              res.status(500).send({ err: dict.get('ErrorUpdateDB', lang) });
-            }
-        } 
-        else if (!finder) {
+            res.status(500).send({ err: dict.get('ErrorUpdateDB', lang) });
+        }
+        if (finder) {
+            finder = Object.assign(finder, updatedFinder);
+            finder.save(function(err2, newFinder) {
+                if (err2) {
+                    if(err2.name=='ValidationError') {
+                        res.status(422).send({ err: dict.get('ErrorSchema', lang) });
+                    }
+                    else{
+                        console.error(err2);
+                        res.status(500).send({ err: dict.get('ErrorUpdateDB', lang) });
+                    }
+                } else {
+                    res.send(newFinder); // return the updated sponsorship
+                }
+            });
+        } else {
             res.status(404).send({ err: dict.get('RessourceNotFound', lang, 'finder', req.params.finderId) });
-        } 
-        else {
-            res.status(200).json(finder);
         }
     })
 }
@@ -216,6 +225,48 @@ exports.delete_a_finder = function(req, res) {
         } 
         else {
             res.sendStatus(204);
+        }
+    })
+}
+
+/**
+ * @swagger
+ * path:
+ *  /finders/byExplorer/{explorerId}:
+ *    get:
+ *      summary: Get a finder by the explorer id
+ *      tags: [Finders]
+ *      parameters:
+ *         - name: explorerId
+ *           in: path
+ *           description: explorer Id
+ *           required: true
+ *           schema:
+ *             type: string
+ *         - $ref: '#/components/parameters/language'
+ *      responses:
+ *        "200":
+ *          description: Return a finder
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/Finders'
+ *        "404":
+ *          description: Ressource not found
+ *        "500":
+ *          description: Internal error
+ */
+exports.read_a_finder_with_explorer_id = function(req, res) {
+    var lang = dict.getLang(req);
+    Finders.find({'idExplorer': req.params.explorerId}, function(err, finder) {
+        if (err) {
+            res.status(500).send({ err: dict.get('ErrorGetDB', lang) });
+        } 
+        else if (!finder.length) {
+            res.status(404).send({ err: dict.get('RessourceNotFound', lang, 'finder', req.params.explorerId) });
+        }
+        else {
+            res.json(finder[0]);
         }
     })
 }

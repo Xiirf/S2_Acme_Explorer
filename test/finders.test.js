@@ -139,6 +139,33 @@ describe('Finders Integration tests', () => {
         });
     });
 
+    describe('GET finders/byExplorer/:explorerId', () => {
+        it('should return status code 200', done => {
+            chai
+                .request(app)
+                .get('/v1/finders/byExplorer/'+actorId)
+                .end((err, res) => {
+                    expect(res).to.have.status(200);
+                    expect(res.body.idExplorer).to.equals(actorId);
+
+                    if (err) done(err);
+                    else done();
+                });
+        });
+
+        it('should return status code 404', done => {
+            chai
+                .request(app)
+                .get('/v1/finders/byExplorer/'+finderId)
+                .end((err, res) => {
+                    expect(res).to.have.status(404);
+
+                    if (err) done(err);
+                    else done();
+                });
+        });
+    });
+
     describe('PUT finders/:findersId', () => {
         it('should return status code 200', done => {
             chai
@@ -164,7 +191,7 @@ describe('Finders Integration tests', () => {
                 });
         });
 
-        it('should return status code 500', done => {
+        it('should return status code 422', done => {
             chai
                 .request(app)
                 .put('/v1/finders/'+finderId)
@@ -176,7 +203,7 @@ describe('Finders Integration tests', () => {
                     "dateMax": "2020-02-28"
                 })
                 .end((err, res) => {
-                    expect(res).to.have.status(500);
+                    expect(res).to.have.status(422);
 
                     if (err) done(err);
                     else done();
