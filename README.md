@@ -17,3 +17,6 @@ npm start
 npm run genData para la generacion de los datos para la carga massiva
 Se puede cambiar el numero de datos aqui: ./data/generator.js
 Hemos utilizados el insertMany porque con el otro los id de mongodb no funcionan
+
+## Otro
+Si vacías la base de datos tienes que reiniciar el servidor.
