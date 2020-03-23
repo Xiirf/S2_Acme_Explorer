@@ -499,7 +499,7 @@ function computeRatioApplicationsByStatus (callback) {
                 }
             }
         ], function(err, res){
-            callback(err, res.length != 0 ? res[0] : res)
+            callback(err, res)
         });
     });
 };
