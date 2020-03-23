@@ -46,11 +46,10 @@ Class Stage {
 }
 
 Class Application {
-  date: Date {NotBlank}
   status: Status = Status.PENDING
   payedAt: Date
   comments: String
-  reasonCancelling: String
+  reasonRejected: String
 }
 
 class Finder {
@@ -74,6 +73,41 @@ Class GlobalVars {
   maxNumberFinderResults: Integer
 }
 
+Class statsNumberTripsByManager {
+  avg: Float
+  min: Integer
+  max: Integer
+  stdDeviation: Float
+}
+Class statsNumberApplicationByTrips {
+  avg: Float
+  min: Integer
+  max: Integer
+  stdDeviation: Float
+}
+Class statsPriceByTrips {
+  avg: Float
+  min: Integer
+  max: Integer
+  stdDeviation: Float
+}
+Class ratioApplicationsByStatus {
+  status: Status
+  ratio: Float
+    
+}
+Class statsAveragePriceInFinders {
+  minAvg: Float
+  maxAvg: Float
+}
+Class statsTopKeyWords {
+  keyWord: String
+}
+
+Class StatsDataWareHouse {
+  
+}
+
 Actor <|-- Administrator
 Actor <|-- Manager
 Actor <|-- Explorer
@@ -85,4 +119,11 @@ Explorer "*" --> "*" Trip: Apply
 Explorer *-- "1" Finder
 Sponsor "*" --> "*" Trip: Sponsor
 (Sponsor , Trip) .. Sponsorship
+
+StatsDataWareHouse *-up- statsNumberTripsByManager
+StatsDataWareHouse *-up- statsNumberApplicationByTrips
+StatsDataWareHouse *-right- statsPriceByTrips
+StatsDataWareHouse *-left- "5" ratioApplicationsByStatus
+StatsDataWareHouse *-down- statsAveragePriceInFinders
+StatsDataWareHouse *-down- "10" statsTopKeyWords
 @enduml
