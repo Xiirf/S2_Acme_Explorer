@@ -220,7 +220,7 @@ exports.compute_cube = function(req, res) {
  *          required: true
  *          schema:
  *            type: string
- *          example: M01-M036
+ *          example: M01-M36
  *        - name: explorer
  *          in: query
  *          description: Id of the explorer that you wanna retrieve the money spent on the period
