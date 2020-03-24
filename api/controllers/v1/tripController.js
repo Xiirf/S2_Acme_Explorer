@@ -564,3 +564,42 @@ exports.cancel_a_trip = function(req, res) {
         });
     }
 }
+
+exports.add_a_poi_in_stage = function(req, res) {
+    var lang = dict.getLang(req);
+    var tripId = req.params.tripId;
+    var stageId = req.params.stageId;
+    var poiId = req.params.poiId;
+
+    console.log("coucou")
+    
+    Trips.findById(tripId, function(err, trip) {
+        if (err) {
+            res.status(500).send({ err: dict.get('ErrorGetDB', lang) });
+        } else {
+            if (trip) {
+                var stage = trip.stages.find(stage => stage._id = stageId);
+                if(!stage) {
+                    res.status(404).send({ err: dict.get('RessourceNotFound', lang, 'stage', req.params.stageId) });
+                } else {
+                    stage.pois.push(poiId);
+                    trip.save(function(err2, newTrip) {
+                        if (err2) {
+                            if(err2.name=='ValidationError') {
+                                res.status(422).send({ err: dict.get('ErrorSchema', lang) });
+                            }
+                            else{
+                                res.status(500).send({ err: dict.get('ErrorUpdateDB', lang) });
+                            }
+                        } else {
+                            cache.clear();
+                            res.status(200).send(newTrip);
+                        }
+                    });
+                }
+            } else {
+                res.status(404).send({ err: dict.get('RessourceNotFound', lang, 'trip', req.params.tripId) });
+            }
+        }
+    });
+}

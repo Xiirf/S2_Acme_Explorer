@@ -3,6 +3,7 @@ const chai = require("chai");
 const chaiHttp = require("chai-http");
 var mongoose = require('mongoose'),
 Actors = mongoose.model('Actors'),
+POIs = mongoose.model('POIs'),
 Trips = mongoose.model('Trips');
 Stages = mongoose.model('Stages');
 
@@ -12,10 +13,13 @@ chai.use(chaiHttp);
 describe('Trips Integration tests', () => {
     var actorId = null;
     var tripId = null;
+    var stageId = null;
+    var poiId = null;
 
     before((done) => {
         Actors.collection.deleteMany({});
         Trips.collection.deleteMany({});
+        POIs.collection.deleteMany({});
 
         chai
             .request(app)
@@ -35,7 +39,24 @@ describe('Trips Integration tests', () => {
                 } 
                 else {
                     actorId = res.body._id;
-                    done();
+                    chai
+                        .request(app)
+                        .post('/v1/pois')
+                        .send({
+                            "title": "A title",
+                            "description": "A description",
+                            "coordinates": "18°N ...",
+                            "type": "Restaurant"
+                        })
+                        .end((err, res) => {
+                            if (err) {
+                                done(err);
+                            }
+                            else {
+                                poiId = res.body._id;
+                                done();
+                            }
+                        });
                 }
             });
     });
@@ -373,6 +394,88 @@ describe('Trips Integration tests', () => {
                 .request(app)
                 .get('/v1/trips/'+actorId)
                 .end((err, res) => {
+                    expect(res).to.have.status(404);
+
+                    if (err) done(err);
+                    else done();
+                });
+        });
+    });
+
+    describe('PATCH /trips/:tripId/stages/:stageId/pois/:poiId', () => {
+        it('should return status code 201', done => {
+            chai
+                .request(app)
+                .post('/v1/trips')
+                .send({
+                    "title": "titleTrip",
+                    "description": "descTrip",
+                    "requirementes": [
+                      "testReq"
+                    ],
+                    "start": Date() + 1,
+                    "end": Date() + 2,
+                    "stages": [{
+                      "title": "testExample",
+                      "description": "desExample",
+                      "price": 250
+                    },
+                    {
+                        "title": "testExample2",
+                        "description": "desExample2",
+                        "price": 251
+                    }],
+                    "managerId": actorId
+                })
+                .end((err, res) => {
+                    expect(res).to.have.status(201);
+                    expect(res.body.managerId).to.equals(actorId);
+                    expect(res.body.price).to.equals(501);
+
+                    if (err) {
+                        done(err);
+                    }
+                    else {
+                        tripId = res.body._id;
+                        stageId = res.body.stages[0]._id;
+                        done();
+                    }
+                });
+        });
+
+        it('should return status code 200', done => {
+            chai
+                .request(app)
+                .patch('v1/trips/'+tripId+'/stages/'+stageId+'/pois/'+poiId)
+                .send()
+                .end((err, res) => {
+                    expect(res).to.have.status(200);
+
+                    if (err) done(err);
+                    else done();
+                });
+        });
+
+        it('should return status code 422', done => {
+            chai
+                .request(app)
+                .patch('v1/trips/'+tripId+'/stages/'+stageId+'/pois/'+actorId)
+                .send()
+                .end((err, res) => {
+                    expect(res).to.have.status(422);
+
+                    if (err) done(err);
+                    else done();
+                });
+        });
+
+        it('should return status code 404', done => {
+            chai
+                .request(app)
+                .get('v1/trips/'+actorId+'/stages/'+stageId+'/pois/'+poiId)
+                .send()
+                .end((err, res) => {
+                    console.log(err);
                     expect(res).to.have.status(404);
 
                     if (err) done(err);

@@ -13,6 +13,7 @@ Application = require('./api/models/applicationModel'),
 Finder = require('./api/models/finderModel'),
 DataWareHouse = require('./api/models/dataWareHouseModel'),
 Cube = require('./api/models/cubeModel'),
+POIs = require('./api/models/poiModel'),
 admin = require('firebase-admin'),
 serviceAccount = require("./acme-explorer-6415d-firebase-adminsdk-ea57g-024809d2fe"),
 bodyParser = require('body-parser');
@@ -63,7 +64,8 @@ routesFinders = require('./api/routes/finderRoutes')
 routesGlobalVars = require('./api/routes/globalVarsRoutes');
 routesDataWareHouse = require('./api/routes/dataWareHouseRoutes'),
 routesStorage = require('./api/routes/storageRoutes'),
-routesLogin = require('./api/routes/loginRoutes');
+routesLogin = require('./api/routes/loginRoutes'),
+routesPOIs = require('./api/routes/poiRoutes');
  
 routesActors(app);
 routesSponsorships(app);
@@ -74,6 +76,7 @@ routesGlobalVars(app);
 routesDataWareHouse(app);
 routesStorage(app);
 routesLogin(app);
+routesPOIs(app);
  
 console.log("Connecting DB to: " + mongoDBURI);
 mongoose.connection.on("open", function (err, conn) {

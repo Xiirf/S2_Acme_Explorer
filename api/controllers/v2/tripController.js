@@ -668,6 +668,53 @@ exports.cancel_a_trip = function(req, res) {
     }
 }
 
+exports.add_a_poi_in_stage = function(req, res) {
+    var lang = dict.getLang(req);
+    var tripId = req.params.tripId;
+    var stageId = req.params.stageId;
+    var poiId = req.params.stageId;
+    
+    Trips.findById(tripId, function(err, trip) {
+        if (err) {
+            res.status(500).send({ err: dict.get('ErrorGetDB', lang) });
+          } else {
+            if (trip) {
+                verifyManagerTripOwner(req.headers['authorization'], trip.managerId)
+                    .then((isSame) => {
+                        if (isSame) {
+                            var stage = trip.stages.find(stage => stage._id = stageId);
+                            stage.pois.push(poiId);
+                            if(!stage) {
+                                res.status(404).send({ err: dict.get('RessourceNotFound', lang, 'stage', req.params.stageId) });
+                            } else {
+                                trip.save(function(err2, newTrip) {
+                                    if (err2) {
+                                        if(err2.name=='ValidationError') {
+                                            res.status(422).send({ err: dict.get('ErrorSchema', lang) });
+                                        }
+                                        else{
+                                            res.status(500).send({ err: dict.get('ErrorUpdateDB', lang) });
+                                        }
+                                    } else {
+                                        cache.clear();
+                                        res.status(200).send(newTrip);
+                                    }
+                                });
+                            }
+                        } else {
+                            res.status(401).send({ err: dict.get('Unauthorized', lang) });
+                        }
+                    })
+                    .catch((error) => {
+                        res.status(500).send(error);
+                    });
+            } else {
+                res.status(404).send({ err: dict.get('RessourceNotFound', lang, 'trip', req.params.tripId) });
+            }
+        }
+    });
+}
+
 verifyManagerTripOwner = (token, idManager) => {
     return authController.getUserId(token)
     .then((idActor) => {

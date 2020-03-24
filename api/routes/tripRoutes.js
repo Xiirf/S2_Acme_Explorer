@@ -22,6 +22,8 @@ module.exports = function(app) {
         .patch(tripsV1.add_a_stage_in_trip);
     routerV1.route('/trips/:tripId/cancel')
         .patch(tripsV1.cancel_a_trip);
+    routerV1.route('/trips/:tripId/stages/:stageId/pois/:poiId')
+        .patch(tripsV1.add_a_poi_in_stage);
     
     app.use("/v1/", routerV1);
 
@@ -38,6 +40,8 @@ module.exports = function(app) {
         .patch(authController.verifyUser(["Manager"]), tripsV2.add_a_stage_in_trip);
     routerV2.route('/trips/:tripId/cancel')
         .patch(authController.verifyUser(["Manager"]), tripsV2.cancel_a_trip);
+    routerV2.route('/trips/:tripId/stages/:stageId/pois/:poiId')
+        .patch(tripsV2.add_a_poi_in_stage);
     
     app.use("/v2/", routerV2);
 }

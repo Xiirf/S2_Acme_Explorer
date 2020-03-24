@@ -7,6 +7,7 @@ var mongoose = require('mongoose')
 Actors = require('./actorModel');
 Sponsorships = require('./sponsorshipModel');
 Applications = require('./applicationModel');
+POIs = require('./poiModel');
 
 /**
  * @swagger
@@ -44,7 +45,17 @@ var stageSchema = new Schema({
         type: Number,
         required: 'Enter the price of the stage please',
         min: 0
-    }
+    }, pois: [{
+        type: mongodb.ObjectID,
+        validate: {
+            validator: async function(v) {
+                return Promise.resolve(POIs.findById(v, function(err, poi) {
+                    return poi;
+                }));
+            },
+            message: "There are no poi with this id"
+        }
+    }]
 }, {strict: false});
 mongoose.model('Stages', stageSchema);
 Stages = mongoose.model('Stages');
