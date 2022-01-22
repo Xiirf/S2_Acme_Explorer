@@ -32,7 +32,7 @@
     "https": "^1.0.0",
     "mocker-data-generator": "^2.6.6",
     "mongoose": "^5.8.11",
-    "nanoid": "^2.1.11",
+    "nanoid": "^3.1.31",
     "newman": "^4.5.7",
     "olap-cube": "^1.0.0",
     "randexp": "^0.5.3",
